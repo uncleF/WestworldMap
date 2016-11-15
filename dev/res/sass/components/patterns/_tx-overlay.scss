@@ -1,0 +1,31 @@
+@import '_tx-fade';
+
+
+
+/* Overlay */
+
+$tx-overlay-background: $black;
+$tx-overlay-opacity: .75;
+
+%tx-overlay {
+  @extend %tx-fadeOut;
+  @include tx-layer(top);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: $tx-overlay-background;
+  background: rgba($tx-overlay-background, $tx-overlay-opacity);
+  text-align: center;
+  white-space: nowrap;
+
+  &:before {
+    @include tx-pseudo-va;
+  }
+
+  &-is-active {
+    @extend %tx-fadeIn;
+  }
+
+}

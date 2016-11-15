@@ -1,0 +1,36 @@
+// Transitions
+
+$UITransitionDefault: .2s;
+$UITransitionMedium: .3s;
+$UITransitionSlow: .4s;
+$UITransitionSlowest: .5s;
+
+
+
+// Links
+
+$link: $blue;
+$visited: $purple;
+$hover: $red;
+$active: $blue-dark;
+
+$underlineOpacity: .5;
+
+$focus-outlineWidth: 1px;
+$focus-outlineColor: $gray-light;
+
+
+
+// Fields
+
+$field-borderWidth: 1px;
+$field-borderColor: $gray-light;
+
+$placeholder-color: $gray-light;
+
+
+
+// Selection
+
+$selection-color: $white;
+$selection-background: $blue;

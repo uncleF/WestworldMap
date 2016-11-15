@@ -1,0 +1,674 @@
+/* Baseline, Typography & Vertical Rhythm */
+
+%block {
+  display: block;
+}
+
+html {
+  font-size: $fontSize;
+  text-size-adjust: 100%;
+  line-height: $lineHeight;
+}
+
+body {
+  @include tx-hyphens;
+  color: $text;
+  font-family: $font-sans;
+  font-feature-settings: 'liga' 1, 'clig' 1, 'kern' 1;
+  font-display: swap;
+}
+
+article {
+  @extend %block;
+}
+
+aside {
+  @extend %block;
+}
+
+canvas {
+  @extend %block;
+}
+
+figure {
+  @extend %block;
+}
+
+figcaption {
+  @extend %block;
+}
+
+footer {
+  @extend %block;
+}
+
+header {
+  @extend %block;
+}
+
+hgroup {
+  @extend %block;
+}
+
+nav {
+  @extend %block;
+}
+
+main {
+  @extend %block;
+}
+
+progress {
+  @extend %block;
+}
+
+section {
+  @extend %block;
+}
+
+summary {
+  @extend %block;
+}
+
+%header {
+  @include tx-rhythm(2, .75);
+  font-weight: bold;
+  text-rendering: auto;
+  page-break-after: avoid;
+  break-after: avoid;
+  orphans: 3;
+  widows: 3;
+}
+
+h1 {
+  @extend %header;
+  @include tx-font-size(h1);
+}
+
+h2 {
+  @extend %header;
+  @include tx-font-size(h2);
+}
+
+h3 {
+  @extend %header;
+  @include tx-font-size(h3);
+}
+
+h4 {
+  @extend %header;
+  @include tx-font-size(h4);
+}
+
+h5 {
+  @extend %header;
+  @include tx-font-size(h5);
+}
+
+h6 {
+  @extend %header;
+  @include tx-font-size(h6);
+}
+
+%defaultBlock {
+  @include tx-rhythm(.75, .75);
+}
+
+%list {
+  padding: 0 0 0 1em;
+
+  &-nested {
+    @include tx-rhythm(1, 1);
+  }
+
+}
+
+%mono {
+  font-family: $font-mono;
+}
+
+p {
+  @extend %defaultBlock;
+}
+
+dl {
+  @extend %defaultBlock;
+}
+
+dt {
+  @include tx-rhythm(1, .5);
+  font-weight: bold;
+}
+
+dd {
+  @extend %list;
+  @include tx-rhythm(.5, .5);
+  font-style: italic;
+}
+
+ul {
+  @extend %defaultBlock;
+  @extend %list;
+  list-style: disc;
+}
+
+ol {
+  @extend %defaultBlock;
+  @extend %list;
+  list-style: decimal;
+}
+
+li {
+  @include tx-rhythm(.5, .5);
+
+  > ul {
+    @extend %list-nested;
+  }
+
+  > ol {
+    @extend %list-nested;
+  }
+
+}
+
+%attention {
+  font-weight: bold;
+}
+
+$highlight-color: $red;
+
+%highlight {
+  color: $highlight-color;
+}
+
+pre {
+  @extend %defaultBlock;
+  @extend %mono;
+  overflow-x: auto;
+  padding: 0 1.5em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  tab-size: 2;
+}
+
+code {
+  @extend %mono;
+  @extend %highlight;
+}
+
+samp {
+  @extend %mono;
+  @extend %highlight;
+}
+
+var {
+  @extend %mono;
+  @extend %highlight;
+  @extend %attention;
+  font-style: normal;
+}
+
+tt {
+  @extend %mono;
+}
+
+strong {
+  @extend %attention;
+}
+
+b {
+  @extend %attention;
+}
+
+%quoteEmphasis {
+  font-style: italic;
+}
+
+%quotes {
+  quotes: none;
+
+  &:before,
+  &:after {
+    content: none;
+  }
+
+}
+
+blockquote {
+  @extend %quoteEmphasis;
+  @extend %quotes;
+  @include tx-rhythm(1, 1, $marginRight: 3em, $marginLeft: 3em);
+}
+
+em {
+  @extend %quoteEmphasis;
+}
+
+cite {
+  @extend %quoteEmphasis;
+}
+
+q {
+  @extend %quoteEmphasis;
+  @extend %quotes;
+}
+
+i {
+  @extend %quoteEmphasis;
+}
+
+%interactive {
+  text-decoration: none;
+  cursor: help;
+}
+
+%interactiveHighlight {
+  $interactiveHighlight-color: $blue;
+
+  border-bottom: 1px dotted $interactiveHighlight-color;
+  color: $interactiveHighlight-color;
+}
+
+%removed {
+  text-decoration: line-through;
+}
+
+%acronymAbbr {
+  margin: 0 -.075em 0 0;
+  letter-spacing: .075em;
+}
+
+%small {
+  @include tx-font-size(small, 0);
+}
+
+%supSub {
+  @extend %small;
+  position: relative;
+}
+
+address {
+  @extend %defaultBlock;
+  font-style: normal;
+}
+
+dfn {
+  @extend %attention;
+}
+
+acronym {
+  @extend %attention;
+  @extend %interactive;
+  @extend %interactiveHighlight;
+  @extend %acronymAbbr;
+}
+
+abbr {
+  @extend %attention;
+  @extend %interactive;
+  @extend %interactiveHighlight;
+  @extend %acronymAbbr;
+}
+
+ins {
+  @extend %interactive;
+  @extend %interactiveHighlight;
+}
+
+mark {
+  @extend %interactiveHighlight;
+}
+
+del {
+  $del-color: $gray;
+  $del-borderWidth: 1px;
+
+  @extend %removed;
+  border-bottom: $del-borderWidth dotted $del-color;
+  color: $del-color;
+}
+
+strike {
+  @extend %removed;
+}
+
+s {
+  @extend %removed;
+}
+
+$kbd-background: $gray;
+
+kbd {
+  @extend %attention;
+  @include tx-inline-block;
+  @include tx-grid-height(1, 1);
+  padding: 0 .25em;
+  border-radius: 3px;
+  background: $kbd-background;
+  background-clip: padding-box;
+  font-weight: bold;
+  font-family: $font-mono;
+  vertical-align: top;
+}
+
+sup {
+  @extend %supSub;
+  top: -.65em;
+}
+
+sub {
+  @extend %supSub;
+  bottom: -.25em;
+}
+
+big {
+  @include tx-font-size(large, 0);
+}
+
+small {
+  @extend %small;
+}
+
+u {
+  text-decoration: underline;
+}
+
+img {
+  height: auto;
+  max-width: 100%;
+  border: 0;
+  vertical-align: top;
+  -ms-interpolation-mode: bicubic;
+}
+
+audio {
+  @extend %defaultBlock;
+}
+
+video {
+  @extend %defaultBlock;
+}
+
+$tableCell-borderColor: $gray;
+
+%tableCell {
+  @include tx-table-borders(1px, 1, $color: $tableCell-borderColor, $paddingRight: ($gap / 2), $paddingLeft: ($gap / 2));
+}
+
+caption {
+  @include tx-rhythm-padding(0, .5);
+  font-weight: bold;
+  text-align: left;
+}
+
+table {
+  @include tx-rhythm(1, 1);
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+td {
+  @extend %tableCell;
+}
+
+th {
+  @extend %attention;
+  @extend %tableCell;
+  text-align: left;
+}
+
+hr {
+  $hr-borderColor: $black;
+
+  @include tx-rhythm(1, 1);
+  display: block;
+  height: 0;
+  padding: 0;
+  border-top: 1px solid $hr-borderColor;
+}
+
+
+
+/* Selection */
+
+::selection {
+  color: $selection-color;
+  background: $selection-background;
+}
+
+
+
+/* Focus */
+
+%focus {
+
+  &:focus {
+    outline: $focus-outlineWidth dotted $focus-outlineColor;
+  }
+
+}
+
+
+
+/* Links */
+
+a {
+  @extend %focus;
+  @extend %tx-fastTouch;
+  @extend %tx-linkTouchStates;
+  @include tx-link($link, $visited, $hover, $active);
+  -webkit-tap-highlight-color: rgba($active, .25);
+  text-decoration: underline;
+  transition: $UITransitionDefault;
+}
+
+
+
+/* Forms */
+
+fieldset {
+  @extend %block;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+$legend-padding: 1.5em;
+
+legend {
+  position: relative;
+  left: -$legend-padding;
+  padding: 0 $legend-padding;
+  font-weight: bold;
+}
+
+label {
+  @extend %tx-fastTouch;
+  cursor: pointer;
+}
+
+%formBaseline {
+  @extend %focus;
+  margin: 0;
+  font-family: inherit;
+}
+
+%formFont {
+  font-size: inherit;
+}
+
+%formBoxSizing {
+  box-sizing: content-box;
+}
+
+%formBorderReset {
+  border: 0;
+
+  &::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+  }
+
+}
+
+%formTextReset {
+  text-transform: none;
+}
+
+%formAlign {
+  vertical-align: top;
+}
+
+%form {
+  border: $field-borderWidth solid $field-borderColor;
+}
+
+%formRadioCheckbox {
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+%formAppearanceReset {
+  appearance: none;
+}
+
+%formInactive {
+  opacity: .5;
+  cursor: default;
+  cursor: not-allowed;
+}
+
+%formPlaceholder {
+  $formPlaceholder-color: $gray;
+
+  &::placeholder {
+    color: $formPlaceholder-color;
+    opacity: 1;
+  }
+
+}
+
+input {
+  @extend %formBaseline;
+  @extend %formFont;
+  @extend %formBoxSizing;
+  @extend %formBorderReset;
+  @extend %formAlign;
+  @extend %formPlaceholder;
+
+  &[type='radio'] {
+    @extend %formRadioCheckbox;
+  }
+
+  &[type='checkbox'] {
+    @extend %formRadioCheckbox;
+  }
+
+  &[type='submit'] {
+    @extend %formAppearanceReset;
+  }
+
+  &[type='file'] {
+    height: auto;
+    border: 0;
+  }
+
+  &[type='search'] {
+    @extend %formAppearanceReset;
+  }
+
+  &[type='number'] {
+    @extend %formAppearanceReset;
+
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
+
+  }
+
+  &[disabled] {
+    @extend %formInactive;
+  }
+
+  &[readonly] {
+    @extend %formInactive;
+  }
+
+}
+
+select {
+  @extend %formBaseline;
+  @extend %formFont;
+  @extend %formTextReset;
+  @extend %formAlign;
+  @extend %form;
+  @extend %tx-fastTouch;
+  @include tx-grid-height(1.5, $setLineHeight: false);
+  vertical-align: top;
+
+  &[multiple] {
+    @include tx-grid-height(5, $setLineHeight: false);
+  }
+
+}
+
+%button {
+  @extend %tx-fastTouch;
+  @include tx-grid-height(1.5, $setLineHeight: false);
+  padding: 0 ($gap / 2);
+  cursor: pointer;
+}
+
+button {
+  @extend %formBaseline;
+  @extend %formFont;
+  @extend %formBoxSizing;
+  @extend %formBorderReset;
+  @extend %formTextReset;
+  @extend %formAppearanceReset;
+  @extend %button;
+
+  &[disabled] {
+    @extend %formInactive;
+  }
+
+}
+
+textarea {
+  @extend %block;
+  @extend %formBaseline;
+  @extend %formBoxSizing;
+  @extend %form;
+  @extend %formPlaceholder;
+  @include tx-form-height(9, 1);
+  @include tx-rhythm-padding(.25, .25, $paddingRight: ($gap / 2), $paddingLeft: ($gap / 2));
+  overflow: auto;
+  font-size: inherit;
+
+  &[disabled] {
+    @extend %formInactive;
+  }
+
+  &[readonly] {
+    @extend %formInactive;
+  }
+
+}
+
+
+
+/* TemplateX Baseline */
+
+@import 'patterns/_tx-fastTouch';
+@import 'patterns/_tx-linkTouchStates';
+
+
+
+/* Print Baseline, Typography & Vertical Rhythm */
+
+@include tx-media(phone) {
+
+  @import '_baseline-print';
+
+}

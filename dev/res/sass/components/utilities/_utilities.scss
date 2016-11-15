@@ -1,0 +1,70 @@
+/* Reset */
+
+%u-positionReset {
+  position: initial;
+}
+
+%u-boxReset {
+  padding: 0;
+  margin: 0;
+}
+
+
+
+/* Lists Reset */
+
+%u-bulletReset {
+
+  &:after {
+    display: none;
+  }
+
+}
+
+%u-listReset {
+  @extend %u-boxReset;
+  list-style: none;
+
+  > li {
+    @extend %u-positionReset;
+    @extend %u-boxReset;
+    @extend %u-bulletReset;
+  }
+
+}
+
+%u-descriptionListReset {
+  @extend %u-boxReset;
+
+  > dt,
+  > dd {
+    @extend %u-boxReset;
+    font-weight: normal;
+    font-style: normal;
+  }
+
+}
+
+
+
+/* Image Blocker */
+
+%u-imageBlocker {
+  background-image: none;
+}
+
+
+
+/* Visually Hidden */
+
+%u-visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip: rect(0 0 0 0);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+}

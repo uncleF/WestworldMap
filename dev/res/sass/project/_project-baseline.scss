@@ -1,0 +1,42 @@
+// Colors
+
+$text: $black-light;
+$background: $white;
+
+$text-print: $text;
+$background-print: $background;
+
+
+
+// Fonts
+
+$sansSerifFontStack: 'Segoe UI', Roboto, 'Droid Sans', 'Helvetica Neue', Helvetica, Calibri, Arial, sans-serif;
+$serifFontStack: 'Roboto Slab', 'Droid Serif', Cambria, Georgia , 'Times New Roman', Times, serif;
+$monospaceFontStack: Consolas, Monaco, 'Andale Mono', 'Courier New', Courier, Freemono, 'Nimbus Mono L', monospace;
+
+$font-sans: $sansSerifFontStack;
+$font-serif: $serifFontStack;
+$font-mono: $monospaceFontStack;
+
+$fontSize: 16px;
+$lineHeight: 1.5;
+
+$remFallback: true;
+
+$fontRatio: 1.2;
+$fontSizeQuotient: $fontSize / 16px;
+
+
+
+// Typography
+
+$fontSizes: (
+  h1: $fontSize * txf-pow($fontRatio, 5),
+  h2: $fontSize * txf-pow($fontRatio, 4),
+  h3: $fontSize * txf-pow($fontRatio, 3),
+  h4: $fontSize * txf-pow($fontRatio, 2),
+  h5: $fontSize * $fontRatio,
+  h6: $fontSize,
+  small: $fontSize * .75,
+  large: $fontSize * txf-pow($fontRatio, 4)
+);

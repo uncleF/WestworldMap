@@ -1,0 +1,173 @@
+/* csslint ignore:start */
+
+/* Typography & Vertical Rhythm */
+
+%printReset {
+  border: 0;
+  color: $text-print;
+  text-decoration: none;
+}
+
+%printBackground {
+  background: $background-print;
+}
+
+%pageBreakPrevent {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+%titleContent {
+
+  &[title] {
+
+    &:after {
+      content: ' (' attr(title) ')';
+    }
+
+  }
+
+}
+
+@page {
+  size: A4;
+  margin: .5cm;
+}
+
+html {
+  @extend %printBackground;
+}
+
+body {
+  @extend %printBackground;
+  color: $text-print;
+  font-size: 12pt;
+  line-height: 1.5;
+}
+
+p {
+  orphans: 3;
+  widows: 3;
+}
+
+pre {
+  @extend %printReset;
+}
+
+code {
+  @extend %printReset;
+}
+
+var {
+  @extend %printReset;
+}
+
+blockquote {
+  @extend %pageBreakPrevent;
+}
+
+acronym {
+  @extend %printReset;
+  @extend %titleContent;
+}
+
+abbr {
+  @extend %printReset;
+  @extend %titleContent;
+}
+
+ins {
+  @extend %printReset;
+  @extend %titleContent;
+}
+
+del {
+  @extend %printReset;
+  @extend %titleContent;
+}
+
+img {
+  @extend %pageBreakPrevent;
+}
+
+table {
+  @extend %pageBreakPrevent;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tr {
+  @extend %pageBreakPrevent;
+}
+
+
+
+/* Links */
+
+%otherHREF {
+
+  &:after {
+    content: '';
+  }
+
+}
+
+a {
+  @include tx-link($text-print, $all: true);
+  text-decoration: none;
+
+  &:after {
+    content: ' (' attr(href) ')';
+    font-size: 90%;
+  }
+
+  &[href^='javascript:'] {
+    @extend %otherHREF;
+  }
+
+
+  &[href^='#'] {
+    @extend %otherHREF;
+  }
+
+  &[href^='mailto:'] {
+    @extend %otherHREF;
+  }
+
+  &[href^='tel:'] {
+    @extend %otherHREF;
+  }
+
+}
+
+
+
+/* Forms */
+
+%hideForm {
+  display: none;
+}
+
+form {
+  @extend %hideForm;
+}
+
+input {
+  @extend %hideForm;
+}
+
+select {
+  @extend %hideForm;
+}
+
+button {
+  @extend %hideForm;
+}
+
+textarea {
+  @extend %hideForm;
+}
+
+/* csslint ignore:end */

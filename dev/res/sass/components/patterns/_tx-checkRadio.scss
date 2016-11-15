@@ -1,0 +1,148 @@
+/* Checkbox & Radio Button */
+
+$tx-checkRadioBox-size: 20px;
+$tx-checkRadioBox-borderWidth: 2px;
+$tx-checkRadioBox-borderColor: $gray;
+
+%tx-checkRadio {
+  position: absolute;
+  z-index: -1;
+  left: -10000px;
+
+  &-label {
+    position: relative;
+    padding: 0 0 0 ($tx-checkRadioBox-size + 10px);
+    user-select: none;
+  }
+
+  &-box {
+    @include tx-pseudo;
+    top: 50%;
+    left: 0;
+    width: ($tx-checkRadioBox-size - $tx-checkRadioBox-borderWidth * 2);
+    height: ($tx-checkRadioBox-size - $tx-checkRadioBox-borderWidth * 2);
+    border: $tx-checkRadioBox-borderWidth solid $tx-checkRadioBox-borderColor;
+    margin: ($tx-checkRadioBox-size / -2) 0 0;
+  }
+
+  &-check {
+    @include tx-pseudo;
+    top: 50%;
+    left: ($tx-checkRadioBox-size / 2);
+  }
+
+  &Focus {
+    outline: $focus-outlineWidth dotted $focus-outlineColor;
+  }
+
+}
+
+
+
+
+/* Checkbox */
+
+$tx-checkboxCheck-width: 10px;
+$tx-checkboxCheck-height: 8px;
+$tx-checkboxCheck-background: $blue;
+
+%tx-checkbox {
+  @extend %tx-checkRadio;
+
+  &:checked + %tx-checkbox-label {
+
+    &:after {
+      @extend %tx-checkbox-check;
+    }
+
+  }
+
+  &:focus + %tx-checkbox-label {
+
+    &:before {
+      @extend %tx-checkboxFocus;
+    }
+
+  }
+
+  &-label {
+    @extend %tx-checkRadio-label;
+
+    &:before {
+      @extend %tx-checkbox-box;
+    }
+
+  }
+
+  &-box {
+    @extend %tx-checkRadio-box;
+  }
+
+  &-check {
+    @extend %tx-checkRadio-check;
+    width: $tx-checkboxCheck-width;
+    height: $tx-checkboxCheck-height;
+    margin: ($tx-checkboxCheck-height / -2) 0 0 ($tx-checkboxCheck-width / -2);
+    background: $tx-checkboxCheck-background;
+  }
+
+  &Focus {
+    @extend %tx-checkRadioFocus;
+  }
+
+}
+
+
+
+/* Radio Button */
+
+$tx-radioCheck-size: 8px;
+$tx-radioCheck-background: $blue;
+
+%tx-radio {
+  @extend %tx-checkRadio;
+
+  &:checked + %tx-radio-label {
+
+    &:after {
+      @extend %tx-radio-check;
+    }
+
+  }
+
+  &:focus + %tx-radio-label {
+
+    &:before {
+      @extend %tx-radioFocus;
+    }
+
+  }
+
+  &-label {
+    @extend %tx-checkRadio-label;
+
+    &:before {
+      @extend %tx-radio-box;
+    }
+
+  }
+
+  &-box {
+    @extend %tx-checkRadio-box;
+    border-radius: 50%;
+  }
+
+  &-check {
+    @extend %tx-checkRadio-check;
+    width: $tx-radioCheck-size;
+    height: $tx-radioCheck-size;
+    border-radius: 50%;
+    margin: ($tx-radioCheck-size / -2) 0 0 ($tx-radioCheck-size / -2);
+    background: $tx-radioCheck-background;
+  }
+
+  &Focus {
+    @extend %tx-checkRadioFocus;
+  }
+
+}
