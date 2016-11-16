@@ -1,3 +1,17 @@
+/* Sprites */
+
+@include ssh-sprites;
+
 /* HDPI */
 
-@include tx-media(hdpi) {}
+@include tx-media(hdpi) {
+
+  @include ssh-sprites-2x;
+
+}
+
+@include tx-media(xhdpi) {
+
+  @include ssh-sprites-3x;
+
+}

@@ -1,0 +1,75 @@
+/* Loactions */
+
+.locationsToggle {
+  @include tx-layer(over);
+  position: absolute;
+  top: $gap;
+  left: $gap;
+  padding: 0 0 0 (txf-sprite-width($spt-drawerClosed) + $gap);
+  font-weight: bold;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &:before,
+  &:after {
+    @include tx-pseudo;
+    top: 50%;
+    left: 0;
+    transition: inherit;
+  }
+
+  &:before {
+    @include tx-sprite($spt-drawerClosed, $block: true);
+    margin: (txf-sprite-height($spt-drawerClosed) / -2) 0 0;
+  }
+
+  &:after {
+    @include tx-sprite($spt-drawerOpened, $block: true);
+    margin: (txf-sprite-height($spt-drawerOpened) / -2) 0 0;
+    opacity: 0;
+  }
+
+  &-is-active {
+
+    &:before {
+      opacity: 0;
+    }
+
+    &:after {
+      opacity: 1;
+    }
+
+  }
+
+}
+
+.locations {
+  @extend %u-listReset;
+  @include tx-layer(top);
+  @include tx-font-size(large, 2.5);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0 0 $gap;
+  font-weight: bold;
+  text-transform: uppercase;
+  visibility: hidden;
+  transform: translateX(-120%) translateZ(0);
+  transition: transform $UITransitionSlow, visibility $UITransitionSlow step-end;
+
+  &-is-active {
+    visibility: visible;
+    transform: translateX(0) translateZ(0);
+    transition: transform $UITransitionSlow, visibility $UITransitionSlow step-start;
+  }
+
+}
+
+.location {
+  @include tx-inline-block;
+  text-decoration: none;
+}

@@ -457,8 +457,8 @@ a {
   @extend %focus;
   @extend %tx-fastTouch;
   @extend %tx-linkTouchStates;
-  @include tx-link($link, $visited, $hover, $active);
-  -webkit-tap-highlight-color: rgba($active, .25);
+  @include tx-link($link, $all: true);
+  -webkit-tap-highlight-color: rgba($link, .25);
   text-decoration: underline;
   transition: $UITransitionDefault;
 }

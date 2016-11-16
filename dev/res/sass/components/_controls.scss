@@ -1,0 +1,76 @@
+/* Controls */
+
+.controls {
+  @include tx-layer(content);
+  position: absolute;
+  top: $gap;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 24px;
+}
+
+%control {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 0;
+  margin: 0 ($gap / 2);
+}
+
+.rotateCCW {
+  @extend %control;
+  @include tx-sprite($spt-rotateCCW, $block: true, $padding: true);
+}
+
+.rotateCW {
+  @extend %control;
+  @include tx-sprite($spt-rotateCW, $block: true, $padding: true);
+}
+
+.zoomIn {
+  @extend %control;
+  @include tx-sprite($spt-zoomIn, $block: true, $padding: true);
+}
+
+.zoomOut {
+  @extend %control;
+  @include tx-sprite($spt-zoomOut, $block: true, $padding: true);
+}
+
+.fullScreen {
+  @extend %control;
+  @include tx-sprite-block($spt-fullScreen, $padding: true);
+
+  &:before,
+  &:after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+  }
+
+  &:before {
+    @include tx-sprite($spt-fullScreen, $block: true);
+  }
+
+  &:after {
+    @include tx-sprite($spt-window, $block: true);
+    display: none;
+  }
+
+  &-is-active {
+
+    &:before {
+      display: none;
+    }
+
+    &:after {
+      display: block;
+    }
+
+  }
+
+}

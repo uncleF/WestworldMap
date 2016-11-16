@@ -4,47 +4,40 @@
 
 const character = require('./character');
 
-module.export = charactersDataURL => {
+module.export = characterData => {
 
-  let characterList;
+  let list;
   let dom;
 
+  function createCharacterList() {
+    console.log('Create Character List');
+  }
+
   function createCharactersDOM() {
-    return true;
+    console.log('Create Characters DOM');
   }
 
-  function inittializeCharacterList(dataURL) {
-    characterList = [];
-    dom = createCharactersDOM();
-    return Promise.resolve(dataURL);
-  }
-
-  function downloadCharactersData(dataURL) {
-
-  }
-
-  function updateCharacterList(rawCharactersData) {
-
+  function updateCharacterList() {
+    console.log('Update Character List');
   }
 
   function getCharacterList() {
-    return characterList;
+    return list;
   }
 
   function getDOM() {
     return dom;
   }
 
-  function initializeCharacters(dataURL) {
-    inittializeCharacterList()
-      .then(downloadCharactersData)
-      .then(updateCharacterList);
+  function initializeCharacters() {
+    list = createCharacterList();
+    dom = createCharactersDOM();
   }
 
-  initializeCharacters(charactersDataURL);
+  initializeCharacters();
 
   return {
-    init: initializeCharacters,
+    update: updateCharacterList,
     list: getCharacterList,
     dom: getDOM
   };

@@ -2,14 +2,14 @@
 
 html {
   -webkit-overflow-scrolling: touch;
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
-  @include tx-set-boundaries($body-minWidth);
-  @include tx-scroll-bar(true);
   position: relative;
-  padding: 0 $gap;
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
   background: $background;
 }
 

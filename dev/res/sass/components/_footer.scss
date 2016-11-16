@@ -1,0 +1,16 @@
+/* Footer */
+
+.footer {
+  @include tx-font-size(small);
+  position: absolute;
+  right: $gap;
+  bottom: $gap;
+  width: 100%;
+  color: $footer-color;
+  background: $gap;
+  text-align: right;
+}
+
+.mail {
+  margin: 0 -4px 0 0;
+}

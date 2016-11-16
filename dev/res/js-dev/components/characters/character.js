@@ -7,13 +7,16 @@ module.export = characterData => {
   let info;
   let dom;
 
-  function createCharacterDOM() {
-    return true;
+  function createCharacter() {
+    console.log('Create Character');
   }
 
-  function createCharacter(data) {
-    info = data;
-    dom = createCharacterDOM();
+  function createCharacterDOM() {
+    console.log('Create Character DOM');
+  }
+
+  function updateCharacter() {
+    console.log('Update Character');
   }
 
   function removeCharacter() {
@@ -40,10 +43,15 @@ module.export = characterData => {
     return dom;
   }
 
-  createCharacter(characterData);
+  function initilizeCharacter() {
+    info = createCharacter();
+    dom = createCharacterDOM();
+  }
+
+  initilizeCharacter(characterData);
 
   return {
-    create: createCharacter,
+    update: updateCharacter,
     remove: removeCharacter,
     info: getCharacter,
     name: getCharacterName,
