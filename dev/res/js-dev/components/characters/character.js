@@ -2,7 +2,7 @@
 
 'use strict';
 
-module.export = characterData => {
+module.exports = characterData => {
 
   let info;
   let dom;

@@ -4,7 +4,7 @@
 
 const location = require('./location');
 
-module.export = locationsData => {
+module.exports = locationsData => {
 
   let list;
   let dom;

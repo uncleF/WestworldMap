@@ -4,7 +4,7 @@
 
 const character = require('./character');
 
-module.export = characterData => {
+module.exports = characterData => {
 
   let list;
   let dom;

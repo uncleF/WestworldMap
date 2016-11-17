@@ -2,7 +2,7 @@
 
 'use strict';
 
-module.export = locationData => {
+module.exports = locationData => {
 
   let info;
   let dom;

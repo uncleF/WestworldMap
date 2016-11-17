@@ -2,19 +2,49 @@
 
 'use strict';
 
+let canvas = require('./canvas');
+let animation = require('./animation');
+
+let renderer;
+let scene;
+let camera;
+let light;
+let object;
+
+const ROTATION_STEP = 0.5235;
+const ROTATION_DURATION = 250;
+const ZOOM_STEP = 1;
+
+function renderMap() {
+  renderer.render(scene, camera);
+}
+
+function rotateMap(angle) {
+  object.rotation.y = angle;
+  renderMap();
+}
+
 function rotateMapCCW() {
-  console.log('Rotate CCW');
+  animation.stop();
+  animation.go(ROTATION_DURATION, object.rotation.y, ROTATION_STEP, rotateMap);
 }
 
 function rotateMapCW() {
-  console.log('Rotate CW');
+  animation.stop();
+  animation.go(ROTATION_DURATION, object.rotation.y, -ROTATION_STEP, rotateMap);
+}
+
+function zoomMap(factor) {
+  console.log(factor);
 }
 
 function zoomInMap() {
+  zoomMap(ZOOM_STEP);
   console.log('Zoom In');
 }
 
 function zoomOutMap() {
+  zoomMap(ZOOM_STEP);
   console.log('Zoom Out');
 }
 
@@ -23,7 +53,8 @@ function toggleFullScreenMap() {
 }
 
 function initializeMap() {
-  console.log('Map Initialized');
+  ({renderer, scene, camera, light, object} = canvas());
+  renderMap();
 }
 
 exports.init = initializeMap;
