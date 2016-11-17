@@ -14,6 +14,9 @@ const CAMERA_ROTATION = {x: 100};
 const LIGHT_POSITION = {y: 150, z: 500};
 const LIGHT_COLOR = 0xFFFFFF;
 
+const MODEL_URL = '/res/models/placeholder.json';
+const MODEL_SCALE = 40;
+
 module.exports = _ => {
 
   let holderDOM;
@@ -70,10 +73,24 @@ module.exports = _ => {
     scene.add(light);
   }
 
-  function setupObject() {
+  function scaleObject() {
+    object.scale.x = MODEL_SCALE;
+    object.scale.y = MODEL_SCALE;
+    object.scale.z = MODEL_SCALE;
+  }
+
+  function addObject(geometry) {
     let material = new THREE.MeshLambertMaterial({color: 0xCC0000});
-    object = new THREE.Mesh(new THREE.CubeGeometry(100, 100, 100), material);
+    object.geometry = geometry;
+    object.material = material;
+    scaleObject();
     scene.add(object);
+  }
+
+  function setupObject() {
+    object = new THREE.Mesh();
+    let loader = new THREE.JSONLoader();
+    loader.load(MODEL_URL, addObject);
   }
 
   function inititalizeCanvas() {

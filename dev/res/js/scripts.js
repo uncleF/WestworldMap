@@ -47,6 +47,9 @@ var CAMERA_ROTATION = { x: 100 };
 var LIGHT_POSITION = { y: 150, z: 500 };
 var LIGHT_COLOR = 0xFFFFFF;
 
+var MODEL_URL = '/res/models/placeholder.json';
+var MODEL_SCALE = 40;
+
 module.exports = function (_) {
 
   var holderDOM = void 0;
@@ -103,10 +106,24 @@ module.exports = function (_) {
     scene.add(light);
   }
 
-  function setupObject() {
+  function scaleObject() {
+    object.scale.x = MODEL_SCALE;
+    object.scale.y = MODEL_SCALE;
+    object.scale.z = MODEL_SCALE;
+  }
+
+  function addObject(geometry) {
     var material = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
-    object = new THREE.Mesh(new THREE.CubeGeometry(100, 100, 100), material);
+    object.geometry = geometry;
+    object.material = material;
+    scaleObject();
     scene.add(object);
+  }
+
+  function setupObject() {
+    object = new THREE.Mesh();
+    var loader = new THREE.JSONLoader();
+    loader.load(MODEL_URL, addObject);
   }
 
   function inititalizeCanvas() {
@@ -146,7 +163,7 @@ var object = void 0;
 
 var ROTATION_STEP = 0.5235;
 var ROTATION_DURATION = 250;
-var ZOOM_STEP = 1;
+var ZOOM_STEP = 10;
 
 function renderMap() {
   renderer.render(scene, camera);

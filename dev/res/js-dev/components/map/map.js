@@ -13,7 +13,7 @@ let object;
 
 const ROTATION_STEP = 0.5235;
 const ROTATION_DURATION = 250;
-const ZOOM_STEP = 1;
+const ZOOM_STEP = 10;
 
 function renderMap() {
   renderer.render(scene, camera);
