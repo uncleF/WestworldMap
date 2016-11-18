@@ -12,8 +12,8 @@ let light;
 let object;
 
 const ROTATION_STEP = 0.5235;
-const ROTATION_DURATION = 250;
-const ZOOM_STEP = 10;
+const ZOOM_STEP = 0.35;
+const TRANSITION_DURATION = 500;
 
 function renderMap() {
   renderer.render(scene, camera);
@@ -26,35 +26,38 @@ function rotateMap(angle) {
 
 function rotateMapCCW() {
   animation.stop();
-  animation.go(ROTATION_DURATION, object.rotation.y, ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, object.rotation.y, ROTATION_STEP, rotateMap);
 }
 
 function rotateMapCW() {
   animation.stop();
-  animation.go(ROTATION_DURATION, object.rotation.y, -ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, object.rotation.y, -ROTATION_STEP, rotateMap);
 }
 
 function zoomMap(factor) {
-  console.log(factor);
+  object.scale.set(factor, factor, factor);
+  renderMap();
 }
 
 function zoomInMap() {
-  zoomMap(ZOOM_STEP);
-  console.log('Zoom In');
+  animation.stop();
+  animation.go(TRANSITION_DURATION, object.scale.x, ZOOM_STEP, zoomMap);
 }
 
 function zoomOutMap() {
-  zoomMap(ZOOM_STEP);
-  console.log('Zoom Out');
+  animation.stop();
+  animation.go(TRANSITION_DURATION, object.scale.x, -ZOOM_STEP, zoomMap);
 }
 
-function toggleFullScreenMap() {
-  console.log('Full Screen');
+function setupMap(properties) {
+  ({renderer, scene, camera, light, object} = properties);
+  return Promise.resolve();
 }
 
 function initializeMap() {
-  ({renderer, scene, camera, light, object} = canvas());
-  renderMap();
+  canvas.init()
+    .then(setupMap)
+    .then(renderMap);
 }
 
 exports.init = initializeMap;
@@ -62,4 +65,3 @@ exports.rotateCCW = rotateMapCCW;
 exports.rotateCW = rotateMapCW;
 exports.zoomIn = zoomInMap;
 exports.zoomOut = zoomOutMap;
-exports.toggleFullScreen = toggleFullScreenMap;

@@ -20,6 +20,40 @@
   margin: 0 ($gap / 2);
 }
 
+.showLocations {
+  @extend %control;
+  @include tx-sprite-block($spt-hideLocations, $padding: true);
+
+  &:before,
+  &:after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    transition: $UITransitionDefault;
+  }
+
+  &:before {
+    @include tx-sprite($spt-showLocations, $block: true);
+    left: 50%;
+    margin: 0 0 0 (txf-sprite-width($spt-showLocations) / -2);
+  }
+
+  &:after {
+    @include tx-sprite($spt-hideLocations, $block: true, $color: $background);
+    opacity: 0;
+  }
+
+  &-is-active {
+
+    &:after {
+      opacity: 1;
+    }
+
+  }
+
+}
+
 .rotateCCW {
   @extend %control;
   @include tx-sprite($spt-rotateCCW, $block: true, $padding: true);
@@ -58,17 +92,41 @@
 
   &:after {
     @include tx-sprite($spt-window, $block: true);
-    display: none;
+    opacity: 0;
+  }
+
+  &:active {
+
+    &:before {
+      opacity: 0;
+    }
+
+    &:after {
+      opacity: 1;
+    }
+
   }
 
   &-is-active {
 
     &:before {
-      display: none;
+      opacity: 0;
     }
 
     &:after {
-      display: block;
+      opacity: 1;
+    }
+
+    &:active {
+
+      &:before {
+        opacity: 1;
+      }
+
+      &:after {
+        opacity: 0;
+      }
+
     }
 
   }

@@ -445,6 +445,7 @@ hr {
 
   &:focus {
     outline: $focus-outlineWidth dotted $focus-outlineColor;
+    outline-offset: 3px;
   }
 
 }
@@ -460,7 +461,6 @@ a {
   @include tx-link($link, $all: true);
   -webkit-tap-highlight-color: rgba($link, .25);
   text-decoration: underline;
-  transition: $UITransitionDefault;
 }
 
 
@@ -667,7 +667,7 @@ textarea {
 
 /* Print Baseline, Typography & Vertical Rhythm */
 
-@include tx-media(phone) {
+@include tx-media(print) {
 
   @import '_baseline-print';
 

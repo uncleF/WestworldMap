@@ -1,11 +1,11 @@
 /* Inline-block */
-kbd, .location {
+kbd {
   display: inline-block;
 }
 
 /* Inline-block IE */
 /* Pseudo Element */
-.locationsToggle:before, .locationsToggle:after {
+.westworld:before, .westworld:after {
   position: absolute;
   content: '';
   display: block;
@@ -13,7 +13,7 @@ kbd, .location {
 
 /* Verticla Alignment */
 /* Sprite Block */
-.rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen {
+.showLocations, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen {
   overflow: hidden;
   height: 0;
 }
@@ -296,7 +296,8 @@ hr {
 
 /* Focus */
 a:focus, input:focus, select:focus, button:focus, textarea:focus {
-  outline: 1px dotted #ccc;
+  outline: 1px dotted #666;
+  outline-offset: 3px;
 }
 
 /* Links */
@@ -304,8 +305,6 @@ a {
   color: #fff;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0.25);
   text-decoration: underline;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
 }
 
 a:visited, a:hover, a:active {
@@ -451,7 +450,7 @@ a, label, select, button {
 }
 
 /* Print Baseline, Typography & Vertical Rhythm */
-@media only screen and (max-width: 45em) {
+@media print {
   /* csslint ignore:start */
   /* Typography & Vertical Rhythm */
   pre, code, var, acronym, abbr, ins, del {
@@ -542,49 +541,88 @@ body {
 }
 
 /* Sprites */
-.rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after, .locationsToggle:before, .locationsToggle:after {
+.westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after {
   background-image: url("../images/sprites.png");
 }
 
 /* HDPI */
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), and {
-  .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after, .locationsToggle:before, .locationsToggle:after {
+  .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after {
     background-image: url("../images/sprites@2x.png");
-    background-size: 72px 72px;
+    background-size: 102px 72px;
   }
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2.5), and {
-  .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after, .locationsToggle:before, .locationsToggle:after {
+  .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after {
     background-image: url("../images/sprites@3x.png");
-    background-size: 72px 72px;
+    background-size: 102px 72px;
   }
 }
 
 /* Reset */
-.locations > li {
-  position: initial;
-}
-
-.locations, .locations > li {
-  padding: 0;
-  margin: 0;
-}
-
 /* Lists Reset */
-.locations > li:after {
-  display: none;
-}
-
-.locations {
-  list-style: none;
-}
-
 /* Image Blocker */
 /* Visually Hidden */
 /* Header */
+.westworldLogo {
+  z-index: 100;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  margin: 0;
+  font-size: 0;
+  text-indent: -10000px;
+}
+
 .westworld {
-  display: none;
+  width: 51px;
+  height: 21px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+.westworld:before, .westworld:after {
+  top: 0;
+  -webkit-transform-origin: 50% 125%;
+      -ms-transform-origin: 50% 125%;
+          transform-origin: 50% 125%;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.westworld:before {
+  width: 39px;
+  height: 21px;
+  background-position: 0 -26px;
+  left: 6px;
+}
+
+.westworld:after {
+  width: 51px;
+  height: 21px;
+  background-position: 0 0;
+  left: 0;
+  opacity: 0;
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.westworld-is-active:before {
+  opacity: 0;
+  -webkit-transform: rotate(-180deg);
+      -ms-transform: rotate(-180deg);
+          transform: rotate(-180deg);
+}
+
+.westworld-is-active:after {
+  opacity: 1;
+  -webkit-transform: rotate(0);
+      -ms-transform: rotate(0);
+          transform: rotate(0);
 }
 
 /* Controls */
@@ -606,7 +644,7 @@ body {
   height: 24px;
 }
 
-.rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen {
+.showLocations, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen {
   position: relative;
   display: block;
   overflow: hidden;
@@ -614,28 +652,62 @@ body {
   margin: 0 5px;
 }
 
+.showLocations {
+  width: 18px;
+  padding: 22px 0 0;
+}
+
+.showLocations:before, .showLocations:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+.showLocations:before {
+  width: 16px;
+  height: 22px;
+  background-position: -84px -27px;
+  left: 50%;
+  margin: 0 0 0 -8px;
+}
+
+.showLocations:after {
+  width: 18px;
+  height: 22px;
+  background-color: #000;
+  background-position: -84px 0;
+  opacity: 0;
+}
+
+.showLocations-is-active:after {
+  opacity: 1;
+}
+
 .rotateCCW {
   width: 23px;
   padding: 20px 0 0;
-  background-position: 0 0;
+  background-position: -56px 0;
 }
 
 .rotateCW {
   width: 23px;
   padding: 20px 0 0;
-  background-position: -28px 0;
+  background-position: -56px -25px;
 }
 
 .zoomIn {
   width: 20px;
   padding: 20px 0 0;
-  background-position: 0 -25px;
+  background-position: 0 -52px;
 }
 
 .zoomOut {
   width: 20px;
   padding: 20px 0 0;
-  background-position: -25px -25px;
+  background-position: -25px -52px;
 }
 
 .fullScreen {
@@ -653,109 +725,99 @@ body {
 .fullScreen:before {
   width: 18px;
   height: 18px;
-  background-position: -21px -50px;
+  background-position: -84px -54px;
 }
 
 .fullScreen:after {
   width: 18px;
   height: 18px;
-  background-position: -44px -50px;
-  display: none;
-}
-
-.fullScreen-is-active:before {
-  display: none;
-}
-
-.fullScreen-is-active:after {
-  display: block;
-}
-
-/* Loactions */
-.locationsToggle {
-  z-index: 200;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 0 0 0 26px;
-  font-weight: bold;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-.locationsToggle:before, .locationsToggle:after {
-  top: 50%;
-  left: 0;
-  -webkit-transition: inherit;
-  transition: inherit;
-}
-
-.locationsToggle:before {
-  width: 16px;
-  height: 22px;
-  background-position: -56px 0;
-  margin: -11px 0 0;
-}
-
-.locationsToggle:after {
-  width: 16px;
-  height: 22px;
-  background-position: 0 -50px;
-  margin: -11px 0 0;
+  background-position: -50px -52px;
   opacity: 0;
 }
 
-.locationsToggle-is-active:before {
+.fullScreen:active:before {
   opacity: 0;
 }
 
-.locationsToggle-is-active:after {
+.fullScreen:active:after {
   opacity: 1;
 }
 
+.fullScreen-is-active:before {
+  opacity: 0;
+}
+
+.fullScreen-is-active:after {
+  opacity: 1;
+}
+
+.fullScreen-is-active:active:before {
+  opacity: 1;
+}
+
+.fullScreen-is-active:active:after {
+  opacity: 0;
+}
+
+/* Loactions */
 .locations {
-  z-index: 100;
-  font-size: 36px;
-  font-size: 2.25rem;
-  line-height: 1.66667;
-  position: fixed;
+  z-index: 1;
+  position: absolute;
   top: 0;
+  right: 0;
   bottom: 0;
   left: 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  padding: 0 0 0 10px;
-  font-weight: bold;
-  text-transform: uppercase;
-  visibility: hidden;
-  -webkit-transform: translateX(-120%) translateZ(0);
-          transform: translateX(-120%) translateZ(0);
-  -webkit-transition: visibility 0.4s step-end, -webkit-transform 0.4s;
-  transition: visibility 0.4s step-end, -webkit-transform 0.4s;
-  transition: transform 0.4s, visibility 0.4s step-end;
-  transition: transform 0.4s, visibility 0.4s step-end, -webkit-transform 0.4s;
+  opacity: 0;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
 }
 
 .locations-is-active {
-  visibility: visible;
-  -webkit-transform: translateX(0) translateZ(0);
-          transform: translateX(0) translateZ(0);
-  -webkit-transition: visibility 0.4s step-start, -webkit-transform 0.4s;
-  transition: visibility 0.4s step-start, -webkit-transform 0.4s;
-  transition: transform 0.4s, visibility 0.4s step-start;
-  transition: transform 0.4s, visibility 0.4s step-start, -webkit-transform 0.4s;
+  opacity: 1;
 }
 
 .location {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.location:before {
+  display: block;
+  content: "";
+  position: relative;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.locationInfo {
+  margin: 0 0 0 10px;
+  vertical-align: middle;
+}
+
+.locationName {
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.locationDescription {
+  font-size: 12px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  display: block;
 }
 
 /* Map */
@@ -766,71 +828,6 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
-}
-
-.rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  height: 0;
-  margin: 0 5px;
-}
-
-.rotateCCW {
-  width: 23px;
-  padding: 20px 0 0;
-  background-position: 0 0;
-}
-
-.rotateCW {
-  width: 23px;
-  padding: 20px 0 0;
-  background-position: -28px 0;
-}
-
-.zoomIn {
-  width: 20px;
-  padding: 20px 0 0;
-  background-position: 0 -25px;
-}
-
-.zoomOut {
-  width: 20px;
-  padding: 20px 0 0;
-  background-position: -25px -25px;
-}
-
-.fullScreen {
-  width: 18px;
-  padding: 18px 0 0;
-}
-
-.fullScreen:before, .fullScreen:after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  content: '';
-}
-
-.fullScreen:before {
-  width: 18px;
-  height: 18px;
-  background-position: -21px -50px;
-}
-
-.fullScreen:after {
-  width: 18px;
-  height: 18px;
-  background-position: -44px -50px;
-  display: none;
-}
-
-.fullScreen-is-active:before {
-  display: none;
-}
-
-.fullScreen-is-active:after {
-  display: block;
 }
 
 /* Footer */

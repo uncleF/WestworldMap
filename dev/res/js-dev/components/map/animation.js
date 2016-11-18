@@ -4,13 +4,17 @@
 
 let animation;
 
+function easing(fraction) {
+  return fraction < 0.5 ? 16 * Math.pow(fraction, 5) : 1 + 16 * (--fraction) * Math.pow(fraction, 4);
+}
+
 function runAnimation(startTime, duration, value, change, task) {
   animation = requestAnimationFrame(_ => {
     let fraction = (Date.now() - startTime) / duration;
     if (fraction >= 1) {
       task(value + change);
     } else {
-      task(value + change * fraction);
+      task(value + change * easing(fraction));
       runAnimation(startTime, duration, value, change, task);
     }
   });
