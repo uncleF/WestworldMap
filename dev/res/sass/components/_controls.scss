@@ -9,7 +9,16 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 24px;
+
+  .mdz-touchevents & {
+    top: 0;
+    right: $gap;
+    bottom: 0;
+    left: auto;
+    flex-direction: column;
+    width: auto;
+  }
+
 }
 
 %control {
@@ -18,6 +27,11 @@
   overflow: hidden;
   height: 0;
   margin: 0 $gap;
+
+  .mdz-touchevents & {
+    margin: $gap 0;
+  }
+
 }
 
 %toggle {
@@ -63,6 +77,32 @@
 
   &-is-active {
     @extend %toggle-is-active;
+  }
+
+}
+
+.topDown {
+  @extend %control;
+  width: txf-sprite-width($spt-topDown) + 4px;
+  height: 0;
+  padding: txf-sprite-height($spt-topDown) 0 0;
+  perspective: 50px;
+
+  &:before {
+    @include tx-pseudo;
+    @include tx-sprite($spt-topDown, $block: true);
+    top: 0;
+    left: 50%;
+    margin: 0 0 0 (txf-sprite-width($spt-topDown) / -2);
+    transition: $UITransitionDefault;
+  }
+
+  &-is-active {
+
+    &:before {
+      transform: rotateX(50deg);
+    }
+
   }
 
 }
@@ -122,35 +162,6 @@
 .reset {
   @extend %control;
   @include tx-sprite($spt-reset, $block: true, $padding: true);
-}
-
-.topDown {
-  @extend %control;
-  @extend %toggle;
-  width: txf-sprite-width($spt-perspective);
-  padding: txf-sprite-height($spt-topDown) 0 0;
-
-  &:before {
-    @include tx-sprite($spt-topDown, $block: true);
-    left: 50%;
-    margin: 0 0 0 (txf-sprite-width($spt-topDown) / -2);
-  }
-
-  &:after {
-    @include tx-sprite($spt-perspective, $block: true);
-    top: 50%;
-    margin: (txf-sprite-height($spt-perspective) / -2) 0 0;
-  }
-
-  &-is-active {
-    @extend %toggle-is-active;
-
-    &:before {
-      opacity: 0;
-    }
-
-  }
-
 }
 
 .fullScreen {
@@ -233,12 +244,25 @@
 @include tx-media(phone) {
 
   .controls {
-    top: auto;
-    bottom: $gap * 2;
-    left: 10%;
-    justify-content: space-between;
-    width: 80%;
-    margin: 0 auto;
+
+    .mdz-touchevents & {
+      top: auto;
+      right: 0;
+      bottom: ($gap * 4);
+      left: 0;
+      flex-direction: row;
+      justify-content: space-around;
+      padding: 0 ($gap * 2);
+    }
+
+  }
+
+  %control {
+
+    .mdz-touchevents & {
+      margin: 0;
+    }
+
   }
 
   %unnecessary {

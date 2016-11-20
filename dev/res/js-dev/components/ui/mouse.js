@@ -7,6 +7,7 @@ let eventTool = require('patterns/tx-event');
 const CONTAINER_ID = 'locations';
 
 const ROTATION_STEP = 0.005;
+const SCALE_STEP = 0.01;
 
 module.exports = map => {
 
@@ -41,7 +42,16 @@ module.exports = map => {
     initializeMouseMove();
   }
 
+  function onWheel(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    let startScale = map.scale();
+    let deltaScale = event.deltaY > 0 ? SCALE_STEP : -SCALE_STEP;
+    map.zoom(startScale + deltaScale * 2);
+  }
+
   container = document.getElementById(CONTAINER_ID);
-  eventTool.bind(document, 'mousedown', onMouseDown);
+  eventTool.bind(container, 'mousedown', onMouseDown);
+  eventTool.bind(container, 'wheel', onWheel);
 
 };

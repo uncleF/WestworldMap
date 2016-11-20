@@ -11,7 +11,7 @@ const ROTATION_STEP = 0.5235;
 const ZOOM_STEP = 0.35;
 const ZOOM_MAX = 4;
 const ZOOM_MIN = 0.25;
-const TRANSITION_DURATION = 500;
+const TRANSITION_DURATION = 300;
 
 const EVENT_RENDER = 'maprender';
 const EVENT_TYPE = 'UIEvent';
@@ -20,6 +20,7 @@ let renderer;
 let scene;
 let camera;
 let light;
+let world;
 let object;
 
 let width;
@@ -40,12 +41,12 @@ function rotateMap(angle) {
 
 function rotateMapCCW() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.rotation.y, ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_STEP, rotateMap);
 }
 
 function rotateMapCW() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.rotation.y, -ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, getMapRotation(), -ROTATION_STEP, rotateMap);
 }
 
 function zoomMap(factor) {
@@ -57,25 +58,26 @@ function zoomMap(factor) {
 
 function zoomInMap() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.scale.x, ZOOM_STEP, zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), ZOOM_STEP, zoomMap);
 }
 
 function zoomOutMap() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.scale.x, -ZOOM_STEP, zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), -ZOOM_STEP, zoomMap);
 }
 
 function resetMap() {
+  let scaleChange = 1 - getMapScale();
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.scale.x, (1 - getMapScale()), zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), scaleChange, zoomMap);
+}
+
+function toggleTopDownMapView() {
+  console.log('Top-Down View');
 }
 
 function toggleMapPanorama() {
   panorama.toggle();
-}
-
-function showTopDownMapView() {
-  console.log('Top-Down View');
 }
 
 function triggerRenderEvent() {
@@ -92,14 +94,10 @@ function renderMap() {
   triggerRenderEvent();
 }
 
-function setMapSize() {
+function setupMap(properties) {
+  ({renderer, scene, camera, light, world, object} = properties);
   width = renderer.domElement.width;
   height = renderer.domElement.height;
-}
-
-function setupMap(properties) {
-  ({renderer, scene, camera, light, object} = properties);
-  setMapSize();
   return Promise.resolve();
 }
 
@@ -117,7 +115,7 @@ exports.angle = getMapRotation;
 exports.zoom = zoomMap;
 exports.zoomIn = zoomInMap;
 exports.zoomOut = zoomOutMap;
-exports.reset = resetMap;
 exports.panorama = toggleMapPanorama;
-exports.topDown = showTopDownMapView;
+exports.topDown = toggleTopDownMapView;
 exports.scale = getMapScale;
+exports.reset = resetMap;

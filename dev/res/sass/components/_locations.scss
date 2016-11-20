@@ -9,10 +9,16 @@
   left: 0;
   overflow: hidden;
   opacity: 0;
+  cursor: grab;
   transition: $UITransitionDefault;
 
   &-is-active {
     opacity: 1;
+  }
+
+  &:active {
+    cursor: -webkit-grabbing;
+    cursor: grabing;
   }
 
 }
@@ -59,3 +65,28 @@ $locationMarker-borderColor: $white;
 }
 
 
+
+/* Phone */
+
+@include tx-media(phone) {
+
+  $locationMarker-phone-size: 12px;
+
+  .location {
+
+    &:before {
+      width: $locationMarker-phone-size;
+      height: $locationMarker-phone-size;
+    }
+
+  }
+
+  .locationName {
+    @include tx-font-size(small, .75);
+  }
+
+  .locationDescription {
+    display: none;
+  }
+
+}

@@ -11,7 +11,6 @@ const CAMERA_ANGLE = 45;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 1000;
 const CAMERA_POSITION = {x: 0, y: 200, z: 350};
-const CAMERA_ROTATION = {x: 100, y: 0, z: 0};
 
 const LIGHT_POSITION = {x: 0, y: 150, z: 500};
 const LIGHT_COLOR = 0xFFFFFF;
@@ -31,6 +30,8 @@ let cameraNear;
 let cameraFar;
 
 let light;
+
+let world;
 
 let object;
 
@@ -59,7 +60,7 @@ function setupCamera() {
   cameraFar = CAMERA_FAR;
   camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
   camera.position.set(CAMERA_POSITION.x, CAMERA_POSITION.y, CAMERA_POSITION.z);
-  camera.rotation.set(CAMERA_ROTATION.x, CAMERA_ROTATION.y, CAMERA_ROTATION.z);
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
   scene.add(camera);
 }
 
@@ -85,7 +86,15 @@ function addObject(geometry) {
   object = new THREE.Object3D();
   object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
   addLocationPoints();
-  scene.add(object);
+  world.add(object);
+}
+
+function addWorld() {
+  world = new THREE.Object3D();
+}
+
+function addWorldToScene() {
+  scene.add(world);
 }
 
 function getProperties() {
@@ -94,6 +103,7 @@ function getProperties() {
     scene: scene,
     camera: camera,
     light: light,
+    world: world,
     object: object
   };
 }
@@ -102,7 +112,9 @@ function setupObject() {
   return new Promise((resolve, reject) => {
     let loader = new THREE.JSONLoader();
     loader.load(SCENE_URL, (geometry) => {
+      addWorld();
       addObject(geometry);
+      addWorldToScene();
       resolve(getProperties());
     });
   });

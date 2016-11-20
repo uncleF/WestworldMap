@@ -30,5 +30,5 @@ function go(duration, value, change, task) {
   runAnimation(Date.now(), duration, value, change, task);
 }
 
-exports.go = go;
 exports.stop = stopAnimation;
+exports.go = go;

@@ -7,7 +7,7 @@ let eventTool = require('patterns/tx-event');
 module.exports = (map, locations) => {
 
   let KEY_ACTIONS = {
-    9: locations.toggle,
+    32: locations.toggle,
     37: map.rotateCCW,
     39: map.rotateCW,
     38: map.zoomIn,

@@ -24,15 +24,13 @@
 
   .footer {
     @include tx-font-size(tiny);
-    position: absolute;
-    top: 50%;
-    right: $gap-phone;
-    bottom: auto;
-    width: auto;
+    bottom: $gap-phone;
+    text-align: center;
     line-height: 1;
-    white-space: nowrap;
-    transform: rotate(-90deg) translateX(50%);
-    transform-origin: 100% 100%;
+  }
+
+  .gitHub {
+    display: none;
   }
 
 }

@@ -205,8 +205,8 @@ function go(duration, value, change, task) {
   runAnimation(Date.now(), duration, value, change, task);
 }
 
-exports.go = go;
 exports.stop = stopAnimation;
+exports.go = go;
 
 },{}],4:[function(require,module,exports){
 /* jshint browser:true */
@@ -222,7 +222,6 @@ var CAMERA_ANGLE = 45;
 var CAMERA_NEAR = 0.1;
 var CAMERA_FAR = 1000;
 var CAMERA_POSITION = { x: 0, y: 200, z: 350 };
-var CAMERA_ROTATION = { x: 100, y: 0, z: 0 };
 
 var LIGHT_POSITION = { x: 0, y: 150, z: 500 };
 var LIGHT_COLOR = 0xFFFFFF;
@@ -242,6 +241,8 @@ var cameraNear = void 0;
 var cameraFar = void 0;
 
 var light = void 0;
+
+var world = void 0;
 
 var object = void 0;
 
@@ -270,7 +271,7 @@ function setupCamera() {
   cameraFar = CAMERA_FAR;
   camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
   camera.position.set(CAMERA_POSITION.x, CAMERA_POSITION.y, CAMERA_POSITION.z);
-  camera.rotation.set(CAMERA_ROTATION.x, CAMERA_ROTATION.y, CAMERA_ROTATION.z);
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
   scene.add(camera);
 }
 
@@ -296,7 +297,15 @@ function addObject(geometry) {
   object = new THREE.Object3D();
   object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
   addLocationPoints();
-  scene.add(object);
+  world.add(object);
+}
+
+function addWorld() {
+  world = new THREE.Object3D();
+}
+
+function addWorldToScene() {
+  scene.add(world);
 }
 
 function getProperties() {
@@ -305,6 +314,7 @@ function getProperties() {
     scene: scene,
     camera: camera,
     light: light,
+    world: world,
     object: object
   };
 }
@@ -313,7 +323,9 @@ function setupObject() {
   return new Promise(function (resolve, reject) {
     var loader = new THREE.JSONLoader();
     loader.load(SCENE_URL, function (geometry) {
+      addWorld();
       addObject(geometry);
+      addWorldToScene();
       resolve(getProperties());
     });
   });
@@ -345,7 +357,7 @@ var ROTATION_STEP = 0.5235;
 var ZOOM_STEP = 0.35;
 var ZOOM_MAX = 4;
 var ZOOM_MIN = 0.25;
-var TRANSITION_DURATION = 500;
+var TRANSITION_DURATION = 300;
 
 var EVENT_RENDER = 'maprender';
 var EVENT_TYPE = 'UIEvent';
@@ -354,6 +366,7 @@ var renderer = void 0;
 var scene = void 0;
 var camera = void 0;
 var light = void 0;
+var world = void 0;
 var object = void 0;
 
 var width = void 0;
@@ -374,12 +387,12 @@ function rotateMap(angle) {
 
 function rotateMapCCW() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.rotation.y, ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_STEP, rotateMap);
 }
 
 function rotateMapCW() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.rotation.y, -ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, getMapRotation(), -ROTATION_STEP, rotateMap);
 }
 
 function zoomMap(factor) {
@@ -391,25 +404,26 @@ function zoomMap(factor) {
 
 function zoomInMap() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.scale.x, ZOOM_STEP, zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), ZOOM_STEP, zoomMap);
 }
 
 function zoomOutMap() {
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.scale.x, -ZOOM_STEP, zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), -ZOOM_STEP, zoomMap);
 }
 
 function resetMap() {
+  var scaleChange = 1 - getMapScale();
   animation.stop();
-  animation.go(TRANSITION_DURATION, object.scale.x, 1 - getMapScale(), zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), scaleChange, zoomMap);
+}
+
+function toggleTopDownMapView() {
+  console.log('Top-Down View');
 }
 
 function toggleMapPanorama() {
   panorama.toggle();
-}
-
-function showTopDownMapView() {
-  console.log('Top-Down View');
 }
 
 function triggerRenderEvent() {
@@ -426,19 +440,16 @@ function renderMap() {
   triggerRenderEvent();
 }
 
-function setMapSize() {
-  width = renderer.domElement.width;
-  height = renderer.domElement.height;
-}
-
 function setupMap(properties) {
   renderer = properties.renderer;
   scene = properties.scene;
   camera = properties.camera;
   light = properties.light;
+  world = properties.world;
   object = properties.object;
 
-  setMapSize();
+  width = renderer.domElement.width;
+  height = renderer.domElement.height;
   return Promise.resolve();
 }
 
@@ -454,10 +465,10 @@ exports.angle = getMapRotation;
 exports.zoom = zoomMap;
 exports.zoomIn = zoomInMap;
 exports.zoomOut = zoomOutMap;
-exports.reset = resetMap;
 exports.panorama = toggleMapPanorama;
-exports.topDown = showTopDownMapView;
+exports.topDown = toggleTopDownMapView;
 exports.scale = getMapScale;
+exports.reset = resetMap;
 
 },{"./animation":3,"./canvas":4,"./panorama":6,"patterns/tx-event":8}],6:[function(require,module,exports){
 /* jshint browser:true */
@@ -614,7 +625,7 @@ var eventTool = require('patterns/tx-event');
 module.exports = function (map, locations) {
 
   var KEY_ACTIONS = {
-    9: locations.toggle,
+    32: locations.toggle,
     37: map.rotateCCW,
     39: map.rotateCW,
     38: map.zoomIn,
@@ -643,6 +654,7 @@ var eventTool = require('patterns/tx-event');
 var CONTAINER_ID = 'locations';
 
 var ROTATION_STEP = 0.005;
+var SCALE_STEP = 0.01;
 
 module.exports = function (map) {
 
@@ -677,8 +689,17 @@ module.exports = function (map) {
     initializeMouseMove();
   }
 
+  function onWheel(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var startScale = map.scale();
+    var deltaScale = event.deltaY > 0 ? SCALE_STEP : -SCALE_STEP;
+    map.zoom(startScale + deltaScale * 2);
+  }
+
   container = document.getElementById(CONTAINER_ID);
-  eventTool.bind(document, 'mousedown', onMouseDown);
+  eventTool.bind(container, 'mousedown', onMouseDown);
+  eventTool.bind(container, 'wheel', onWheel);
 };
 
 },{"patterns/tx-event":8}],14:[function(require,module,exports){
