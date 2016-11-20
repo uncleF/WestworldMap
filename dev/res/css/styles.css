@@ -522,7 +522,7 @@ body {
 }
 
 /* Phone Layout */
-@media screen and (max-width: 45em) {
+@media only screen and (max-width: 45em) {
   /* Layout */
   body {
     min-width: 0;
@@ -546,14 +546,14 @@ body {
 }
 
 /* HDPI */
-@media screen and (-webkit-min-device-pixel-ratio: 1.5), screen and (min--moz-device-pixel-ratio: 1.5), screen and (min-device-pixel-ratio: 1.5), screen and (-webkit-min-device-pixel-ratio: 1.5625), screen and (min-resolution: 150dpi), screen and (min-resolution: 1.5dppx) {
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5), only screen and (-webkit-min-device-pixel-ratio: 1.5625), only screen and (min-resolution: 150dpi), only screen and (min-resolution: 1.5dppx) {
   .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .panorama:before, .panorama:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .reset, .topDown:before, .topDown:after, .fullScreen:before, .fullScreen:after, .help {
     background-image: url("../images/sprites@2x.png");
     background-size: 123px 122px;
   }
 }
 
-@media screen and (-webkit-min-device-pixel-ratio: 2.5), screen and (min--moz-device-pixel-ratio: 2.5), screen and (min-device-pixel-ratio: 2.5), screen and (-webkit-min-device-pixel-ratio: 2.6041666666666665), screen and (min-resolution: 250dpi), screen and (min-resolution: 2.5dppx) {
+@media only screen and (-webkit-min-device-pixel-ratio: 2.5), only screen and (min--moz-device-pixel-ratio: 2.5), only screen and (min-device-pixel-ratio: 2.5), only screen and (-webkit-min-device-pixel-ratio: 2.6041666666666665), only screen and (min-resolution: 250dpi), only screen and (min-resolution: 2.5dppx) {
   .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .panorama:before, .panorama:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .reset, .topDown:before, .topDown:after, .fullScreen:before, .fullScreen:after, .help {
     background-image: url("../images/sprites@3x.png");
     background-size: 123px 122px;
@@ -833,7 +833,7 @@ body {
 }
 
 /* Phone */
-@media screen and (max-width: 45em) {
+@media only screen and (max-width: 45em) {
   .controls {
     top: auto;
     bottom: 20px;
@@ -945,7 +945,7 @@ body {
 }
 
 /* Phone */
-@media screen and (max-width: 45em) {
+@media only screen and (max-width: 45em) {
   .footer {
     font-size: 10.4px;
     font-size: 0.65rem;

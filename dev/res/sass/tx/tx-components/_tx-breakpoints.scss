@@ -33,9 +33,9 @@
 }
 
 @function txf-breakpointQuery($min: null, $max: null, $dpi: null, $type: screen) {
-  $breakpoint: $type;
+  $breakpoint: only $type;
   @if ($min) {
-    $breakpoint: unquote($breakpoint) unquote('and') (min-width: txf-breakpoint($min));
+    $breakpoint: $breakpoint unquote('and') (min-width: txf-breakpoint($min));
   }
   @if ($max) {
     $breakpoint: $breakpoint unquote('and') (max-width: txf-breakpoint($max));
