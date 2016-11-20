@@ -13,7 +13,7 @@ kbd {
 
 /* Verticla Alignment */
 /* Sprite Block */
-.showLocations, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen {
+.showLocations, .panorama, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .reset, .fullScreen, .help {
   overflow: hidden;
   height: 0;
 }
@@ -522,7 +522,7 @@ body {
 }
 
 /* Phone Layout */
-@media only screen and (max-width: 45em) {
+@media screen and (max-width: 45em) {
   /* Layout */
   body {
     min-width: 0;
@@ -541,22 +541,22 @@ body {
 }
 
 /* Sprites */
-.westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after {
+.westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .panorama:before, .panorama:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .reset, .topDown:before, .topDown:after, .fullScreen:before, .fullScreen:after, .help {
   background-image: url("../images/sprites.png");
 }
 
 /* HDPI */
-@media only screen and (-webkit-min-device-pixel-ratio: 1.5), and {
-  .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after {
+@media screen and (-webkit-min-device-pixel-ratio: 1.5), screen and (min--moz-device-pixel-ratio: 1.5), screen and (min-device-pixel-ratio: 1.5), screen and (-webkit-min-device-pixel-ratio: 1.5625), screen and (min-resolution: 150dpi), screen and (min-resolution: 1.5dppx) {
+  .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .panorama:before, .panorama:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .reset, .topDown:before, .topDown:after, .fullScreen:before, .fullScreen:after, .help {
     background-image: url("../images/sprites@2x.png");
-    background-size: 102px 72px;
+    background-size: 123px 122px;
   }
 }
 
-@media only screen and (-webkit-min-device-pixel-ratio: 2.5), and {
-  .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen:before, .fullScreen:after {
+@media screen and (-webkit-min-device-pixel-ratio: 2.5), screen and (min--moz-device-pixel-ratio: 2.5), screen and (min-device-pixel-ratio: 2.5), screen and (-webkit-min-device-pixel-ratio: 2.6041666666666665), screen and (min-resolution: 250dpi), screen and (min-resolution: 2.5dppx) {
+  .westworld:before, .westworld:after, .showLocations:before, .showLocations:after, .panorama:before, .panorama:after, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .reset, .topDown:before, .topDown:after, .fullScreen:before, .fullScreen:after, .help {
     background-image: url("../images/sprites@3x.png");
-    background-size: 102px 72px;
+    background-size: 123px 122px;
   }
 }
 
@@ -627,7 +627,7 @@ body {
 
 /* Controls */
 .controls {
-  z-index: 50;
+  z-index: 52;
   position: absolute;
   top: 10px;
   left: 0;
@@ -644,12 +644,28 @@ body {
   height: 24px;
 }
 
-.showLocations, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .fullScreen {
+.showLocations, .panorama, .rotateCCW, .rotateCW, .zoomIn, .zoomOut, .reset, .topDown, .fullScreen {
   position: relative;
   display: block;
   overflow: hidden;
   height: 0;
-  margin: 0 5px;
+  margin: 0 10px;
+}
+
+.showLocations:before, .panorama:before, .topDown:before, .showLocations:after, .panorama:after, .topDown:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+}
+
+.showLocations:after, .panorama:after, .topDown:after {
+  background-color: #000;
+  opacity: 0;
+}
+
+.showLocations-is-active:after, .panorama-is-active:after, .topDown-is-active:after {
+  opacity: 1;
 }
 
 .showLocations {
@@ -657,19 +673,10 @@ body {
   padding: 22px 0 0;
 }
 
-.showLocations:before, .showLocations:after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  content: '';
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-}
-
 .showLocations:before {
   width: 16px;
   height: 22px;
-  background-position: -84px -27px;
+  background-position: -107px 0;
   left: 50%;
   margin: 0 0 0 -8px;
 }
@@ -677,42 +684,93 @@ body {
 .showLocations:after {
   width: 18px;
   height: 22px;
-  background-color: #000;
-  background-position: -84px 0;
-  opacity: 0;
+  background-position: -83px -27px;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
 }
 
-.showLocations-is-active:after {
-  opacity: 1;
+.panorama {
+  width: 19px;
+  padding: 22px 0 0;
+}
+
+.panorama:before {
+  width: 19px;
+  height: 22px;
+  background-position: -83px 0;
+}
+
+.panorama:after {
+  background-position: -83px -54px;
+  top: 50%;
+  width: 19px;
+  height: 18px;
+  margin: -9px 0 0;
+}
+
+.panorama-is-active:before {
+  opacity: 0;
 }
 
 .rotateCCW {
   width: 23px;
   padding: 20px 0 0;
-  background-position: -56px 0;
+  background-position: -55px -52px;
 }
 
 .rotateCW {
   width: 23px;
   padding: 20px 0 0;
-  background-position: -56px -25px;
+  background-position: -27px -52px;
 }
 
 .zoomIn {
   width: 20px;
   padding: 20px 0 0;
-  background-position: 0 -52px;
+  background-position: 0 -79px;
 }
 
 .zoomOut {
   width: 20px;
   padding: 20px 0 0;
-  background-position: -25px -52px;
+  background-position: -56px -27px;
+}
+
+.reset {
+  width: 22px;
+  padding: 22px 0 0;
+  background-position: -56px 0;
+}
+
+.topDown {
+  width: 24px;
+  padding: 22px 0 0;
+}
+
+.topDown:before {
+  width: 22px;
+  height: 22px;
+  background-position: 0 -52px;
+  left: 50%;
+  margin: 0 0 0 -11px;
+}
+
+.topDown:after {
+  width: 24px;
+  height: 16px;
+  background-position: -25px -79px;
+  top: 50%;
+  margin: -8px 0 0;
+}
+
+.topDown-is-active:before {
+  opacity: 0;
 }
 
 .fullScreen {
   width: 18px;
   padding: 18px 0 0;
+  display: none;
 }
 
 .fullScreen:before, .fullScreen:after {
@@ -725,13 +783,13 @@ body {
 .fullScreen:before {
   width: 18px;
   height: 18px;
-  background-position: -84px -54px;
+  background-position: -23px -104px;
 }
 
 .fullScreen:after {
   width: 18px;
   height: 18px;
-  background-position: -50px -52px;
+  background-position: 0 -104px;
   opacity: 0;
 }
 
@@ -759,14 +817,47 @@ body {
   opacity: 0;
 }
 
+.mdz-fullscreen .fullScreen {
+  display: block;
+}
+
+.help {
+  width: 14px;
+  padding: 23px 0 0;
+  background-position: -107px -27px;
+  z-index: 100;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: block;
+}
+
+/* Phone */
+@media screen and (max-width: 45em) {
+  .controls {
+    top: auto;
+    bottom: 20px;
+    left: 10%;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    width: 80%;
+    margin: 0 auto;
+  }
+  .rotateCCW, .rotateCW, .zoomIn, .zoomOut {
+    display: none;
+  }
+}
+
 /* Loactions */
 .locations {
-  z-index: 1;
+  z-index: 51;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  overflow: hidden;
   opacity: 0;
   -webkit-transition: 0.2s;
   transition: 0.2s;
@@ -778,8 +869,8 @@ body {
 
 .location {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  bottom: 100%;
+  left: -9px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -788,6 +879,9 @@ body {
           align-items: center;
   text-decoration: none;
   white-space: nowrap;
+  -webkit-transform-origin: 0 100%;
+      -ms-transform-origin: 0 100%;
+          transform-origin: 0 100%;
 }
 
 .location:before {
@@ -822,12 +916,13 @@ body {
 
 /* Map */
 .map {
-  z-index: 0;
+  z-index: 50;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  overflow: hidden;
 }
 
 /* Footer */
@@ -835,6 +930,7 @@ body {
   font-size: 12px;
   font-size: 0.75rem;
   line-height: 2;
+  z-index: 100;
   position: absolute;
   right: 10px;
   bottom: 10px;
@@ -846,5 +942,27 @@ body {
 
 .mail {
   margin: 0 -4px 0 0;
+}
+
+/* Phone */
+@media screen and (max-width: 45em) {
+  .footer {
+    font-size: 10.4px;
+    font-size: 0.65rem;
+    line-height: 2.30769;
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    bottom: auto;
+    width: auto;
+    line-height: 1;
+    white-space: nowrap;
+    -webkit-transform: rotate(-90deg) translateX(50%);
+        -ms-transform: rotate(-90deg) translateX(50%);
+            transform: rotate(-90deg) translateX(50%);
+    -webkit-transform-origin: 100% 100%;
+        -ms-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+  }
 }
 /*# sourceMappingURL=styles.css.map */

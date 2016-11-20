@@ -38,5 +38,6 @@ $fontSizes: (
   h5: $fontSize * $fontRatio,
   h6: $fontSize,
   small: $fontSize * .75,
+  tiny: $fontSize * .65,
   large: $fontSize * 2.25
 );

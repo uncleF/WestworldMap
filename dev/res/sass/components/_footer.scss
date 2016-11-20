@@ -2,6 +2,7 @@
 
 .footer {
   @include tx-font-size(small);
+  @include tx-layer(top);
   position: absolute;
   right: $gap;
   bottom: $gap;
@@ -13,4 +14,25 @@
 
 .mail {
   margin: 0 -4px 0 0;
+}
+
+
+
+/* Phone */
+
+@include tx-media(phone) {
+
+  .footer {
+    @include tx-font-size(tiny);
+    position: absolute;
+    top: 50%;
+    right: $gap-phone;
+    bottom: auto;
+    width: auto;
+    line-height: 1;
+    white-space: nowrap;
+    transform: rotate(-90deg) translateX(50%);
+    transform-origin: 100% 100%;
+  }
+
 }
