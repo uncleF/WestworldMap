@@ -10,14 +10,16 @@ const SCENE_URL = '/res/models/placeholder.json';
 const CAMERA_ANGLE = 45;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 1000;
-const CAMERA_POSITION = {x: 0, y: 200, z: 350};
+const CAMERA_POSITION = [0, 200, 350];
 
-const LIGHT_POSITION = {x: 0, y: 150, z: 500};
 const LIGHT_COLOR = 0xFFFFFF;
+const LIGHT_POSITION = [0, 150, 500];
 
 let holderDOM;
 let width;
 let height;
+
+let locations;
 
 let renderer;
 
@@ -35,7 +37,20 @@ let world;
 
 let object;
 
-let locations;
+/* Get */
+
+function getProperties() {
+  return {
+    renderer: renderer,
+    scene: scene,
+    camera: camera,
+    light: light,
+    world: world,
+    object: object
+  };
+}
+
+/* Initialization */
 
 function setupCanvas() {
   holderDOM = document.getElementById(CANVAS_HOLDER_ID);
@@ -46,7 +61,6 @@ function setupCanvas() {
 function setupRenderer() {
   renderer = new THREE.WebGLRenderer({antialias: true, castShadows: true});
   renderer.setSize(width, height);
-  holderDOM.appendChild(renderer.domElement);
 }
 
 function setupScene() {
@@ -59,15 +73,20 @@ function setupCamera() {
   cameraNear = CAMERA_NEAR;
   cameraFar = CAMERA_FAR;
   camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
-  camera.position.set(CAMERA_POSITION.x, CAMERA_POSITION.y, CAMERA_POSITION.z);
+  camera.position.set(...CAMERA_POSITION);
   camera.lookAt(new THREE.Vector3(0, 0, 0));
   scene.add(camera);
 }
 
 function setupLights() {
   light = new THREE.PointLight(LIGHT_COLOR);
-  light.position.set(LIGHT_POSITION.x, LIGHT_POSITION.y, LIGHT_POSITION.z);
+  light.position.set(...LIGHT_POSITION);
   scene.add(light);
+}
+
+function addWorld() {
+  world = new THREE.Object3D();
+  scene.add(world);
 }
 
 function addLocationPoint(currentLocation) {
@@ -89,45 +108,33 @@ function addObject(geometry) {
   world.add(object);
 }
 
-function addWorld() {
-  world = new THREE.Object3D();
-}
-
-function addWorldToScene() {
-  scene.add(world);
-}
-
-function getProperties() {
-  return {
-    renderer: renderer,
-    scene: scene,
-    camera: camera,
-    light: light,
-    world: world,
-    object: object
-  };
-}
-
 function setupObject() {
   return new Promise((resolve, reject) => {
     let loader = new THREE.JSONLoader();
-    loader.load(SCENE_URL, (geometry) => {
+    loader.load(SCENE_URL, geometry => {
       addWorld();
       addObject(geometry);
-      addWorldToScene();
-      resolve(getProperties());
+      resolve();
     });
   });
 }
 
-function inititalizeCanvas(locationsInstance) {
-  locations = locationsInstance;
+function setupDOM() {
+  holderDOM.appendChild(renderer.domElement);
+}
+
+function inititalizeCanvas(locationData) {
+  locations = locationData;
   setupCanvas();
   setupRenderer();
   setupScene();
   setupCamera();
   setupLights();
-  return setupObject();
+  return setupObject()
+    .then(setupDOM)
+    .then(getProperties);
 }
+
+/* Interface */
 
 exports.init = inititalizeCanvas;

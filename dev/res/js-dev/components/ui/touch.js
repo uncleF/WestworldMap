@@ -4,22 +4,35 @@
 
 let eventTool = require('patterns/tx-event');
 
-const CONTAINER_ID = 'locations';
+const CATCHER_ID = 'locations';
 
 const ROTATION_STEP = 0.005;
 const SCALE_STEP = 0.01;
 
 module.exports = map => {
 
-  let container;
+  let catcher;
 
   let startPosition;
-  let startAngle;
+  let startRotation;
   let startDistance;
   let startScale;
 
+  /* Utilities */
+
   function calculateDistance(touches) {
     return Math.sqrt(Math.pow((touches[1].clientX - touches[0].clientX), 2) + Math.pow((touches[1].clientY - touches[0].clientY), 2));
+  }
+
+  /* Actions */
+
+  function singleTouchMove(event) {
+    requestAnimationFrame(_ => {
+      let currentPosition = event.touches[0].clientX;
+      let currentAngle = startRotation[1] + (startPosition - currentPosition) * ROTATION_STEP;
+      let currentRotation = [startRotation[0], currentAngle, startRotation[2]];
+      map.rotate(currentRotation);
+    });
   }
 
   function doubleTouchMove(event) {
@@ -30,23 +43,17 @@ module.exports = map => {
     });
   }
 
-  function singleTouchMove(event) {
-    requestAnimationFrame(_ => {
-      let currentPosition = event.touches[0].clientX;
-      let currentAngle = startAngle + (currentPosition - startPosition) * ROTATION_STEP;
-      map.rotate(currentAngle);
-    });
+  function singleTouchStart(event) {
+    startPosition = event.touches[0].clientX;
+    startRotation = map.getRotation();
   }
 
   function doubleTouchStart(event) {
     startDistance = calculateDistance(event.touches);
-    startScale = map.scale();
+    startScale = map.getScale();
   }
 
-  function singleTouchStart(event) {
-    startPosition = event.touches[0].clientX;
-    startAngle = map.angle();
-  }
+  /* Interactions */
 
   function onTouchStart(event) {
     event.preventDefault();
@@ -66,8 +73,11 @@ module.exports = map => {
     }
   }
 
-  container = document.getElementById(CONTAINER_ID);
-  eventTool.bind(container, 'touchstart', onTouchStart, true);
-  eventTool.bind(container, 'touchmove', onTouchMove, true);
+  /* Inititalization */
+
+  catcher = document.getElementById(CATCHER_ID);
+  eventTool.bind(catcher, 'touchstart', onTouchStart, true);
+  eventTool.bind(catcher, 'touchmove', onTouchMove, true);
+  return Promise.resolve();
 
 };

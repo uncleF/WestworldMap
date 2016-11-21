@@ -11,6 +11,8 @@ const ACTIVE_CLASS_NAME = 'locations-is-active';
 let locations;
 let dom;
 
+/* Mock Locations */
+
 let locationsData = [
   {
     name: 'Sweetwater',
@@ -25,17 +27,7 @@ let locationsData = [
   }
 ];
 
-function getLocations() {
-  return locations;
-}
-
-function getLocationsDOM() {
-  return dom;
-}
-
-function setLocationsDOM() {
-  dom = document.getElementById(LOCATIONS_ID);
-}
+/* Actions */
 
 function toggleLocations() {
   dom.classList.toggle(ACTIVE_CLASS_NAME);
@@ -45,10 +37,18 @@ function translateLocations(event) {
   locations.forEach(currentLocation => {currentLocation.project(event.data);});
 }
 
+/* Events */
+
+function initializeEvents() {
+  eventTool.bind(document, 'maprender', translateLocations);
+}
+
+/* Initialization */
+
 function appendLocations() {
-  var container = document.createDocumentFragment();
+  let container = document.createDocumentFragment();
   locations.forEach(currentLocation => {container.appendChild(currentLocation.dom());});
-  getLocationsDOM().appendChild(container);
+  dom.appendChild(container);
 }
 
 function setupLocations() {
@@ -56,16 +56,14 @@ function setupLocations() {
   appendLocations();
 }
 
-function setupEvents() {
-  eventTool.bind(document, 'maprender', translateLocations);
+function initializeLocations() {
+  dom = document.getElementById(LOCATIONS_ID);
+  setupLocations();
+  initializeEvents();
+  return Promise.resolve(locations);
 }
 
-function initializeLocations() {
-  setLocationsDOM();
-  setupLocations();
-  setupEvents();
-}
+/* Interface */
 
 exports.init = initializeLocations;
 exports.toggle = toggleLocations;
-exports.locations = getLocations;

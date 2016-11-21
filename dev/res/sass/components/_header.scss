@@ -1,54 +1,11 @@
 /* Header */
 
-.westworldLogo {
+.westworld {
+  @include tx-sprite($spt-westworld, $block: true, $padding: true);
   @include tx-layer(top);
   position: absolute;
   top: $gap;
   left: $gap;
-  margin: 0;
-  font-size: 0;
-  text-indent: -10000px;
-}
-
-.westworld {
-  @include tx-sprite-block($spt-westworldOld);
-  position: absolute;
-  top: 0;
-  left: 0;
   display: block;
-
-  &:before,
-  &:after {
-    @include tx-pseudo;
-    top: 0;
-    transform-origin: 50% 125%;
-    transition: $UITransitionSlow;
-  }
-
-  &:before {
-    @include tx-sprite($spt-westworldNew, $block: true);
-    left: ((txf-sprite-width($spt-westworldOld) - txf-sprite-width($spt-westworldNew)) / 2);
-  }
-
-  &:after {
-    @include tx-sprite($spt-westworldOld, $block: true);
-    left: 0;
-    opacity: 0;
-    transform: rotate(180deg);
-  }
-
-  &-is-active {
-
-    &:before {
-      opacity: 0;
-      transform: rotate(-180deg);
-    }
-
-    &:after {
-      opacity: 1;
-      transform: rotate(0);
-    }
-
-  }
-
+  margin: 0;
 }

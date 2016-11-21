@@ -6,6 +6,6 @@ let map = require('map/map');
 let locations = require('locations/locations');
 let ui = require('ui/ui');
 
-locations.init();
-map.init(locations.locations());
-ui(map, locations);
+locations.init()
+  .then(map.init)
+  .then(_ => ui(locations, map));

@@ -109,6 +109,8 @@ var ACTIVE_CLASS_NAME = 'locations-is-active';
 var locations = void 0;
 var dom = void 0;
 
+/* Mock Locations */
+
 var locationsData = [{
   name: 'Sweetwater',
   description: 'Has a train station',
@@ -121,17 +123,7 @@ var locationsData = [{
   position: { x: 60, y: 15, z: 15 }
 }];
 
-function getLocations() {
-  return locations;
-}
-
-function getLocationsDOM() {
-  return dom;
-}
-
-function setLocationsDOM() {
-  dom = document.getElementById(LOCATIONS_ID);
-}
+/* Actions */
 
 function toggleLocations() {
   dom.classList.toggle(ACTIVE_CLASS_NAME);
@@ -143,12 +135,20 @@ function translateLocations(event) {
   });
 }
 
+/* Events */
+
+function initializeEvents() {
+  eventTool.bind(document, 'maprender', translateLocations);
+}
+
+/* Initialization */
+
 function appendLocations() {
   var container = document.createDocumentFragment();
   locations.forEach(function (currentLocation) {
     container.appendChild(currentLocation.dom());
   });
-  getLocationsDOM().appendChild(container);
+  dom.appendChild(container);
 }
 
 function setupLocations() {
@@ -158,19 +158,17 @@ function setupLocations() {
   appendLocations();
 }
 
-function setupEvents() {
-  eventTool.bind(document, 'maprender', translateLocations);
+function initializeLocations() {
+  dom = document.getElementById(LOCATIONS_ID);
+  setupLocations();
+  initializeEvents();
+  return Promise.resolve(locations);
 }
 
-function initializeLocations() {
-  setLocationsDOM();
-  setupLocations();
-  setupEvents();
-}
+/* Interface */
 
 exports.init = initializeLocations;
 exports.toggle = toggleLocations;
-exports.locations = getLocations;
 
 },{"./location":1,"patterns/tx-event":8}],3:[function(require,module,exports){
 /* jshint browser:true */
@@ -179,33 +177,76 @@ exports.locations = getLocations;
 
 var animation = void 0;
 
-function easing(fraction) {
-  return fraction < 0.5 ? 16 * Math.pow(fraction, 5) : 1 + 16 * --fraction * Math.pow(fraction, 4);
+/* Easing */
+
+function cubicInOut(fraction) {
+  return fraction < 0.5 ? 4 * Math.pow(fraction, 3) : (fraction - 1) * (2 * fraction - 2) * (2 * fraction - 2) + 1;
 }
 
-function runAnimation(startTime, duration, value, change, task) {
+/* Utilities */
+
+function calculateDeltaValues(startValues, targetValues) {
+  if (typeof startValues === 'number') {
+    return targetValues - startValues;
+  } else {
+    return startValues.map(function (value, index) {
+      return targetValues[index] - startValues[index];
+    });
+  }
+}
+
+function calculateNewValues(startValues, deltaValues, fraction) {
+  if (typeof startValues === 'number') {
+    return startValues + deltaValues * fraction;
+  } else {
+    return startValues.map(function (value, index) {
+      return startValues[index] + deltaValues[index] * fraction;
+    });
+  }
+}
+
+/* Animation */
+
+function progressAnimation(startTime, duration, startValues, deltaValues, fraction, task) {
+  var adjustedFraction = cubicInOut(fraction);
+  var newValues = calculateNewValues(startValues, deltaValues, adjustedFraction);
+  task(newValues);
+  runAnimation(startTime, duration, startValues, deltaValues, task);
+}
+
+function completeAnimation(startValues, deltaValues, fraction, task) {
+  var newValues = calculateNewValues(startValues, deltaValues, fraction);
+  task(newValues);
+}
+
+function runAnimation(startTime, duration, startValues, deltaValues, task) {
   animation = requestAnimationFrame(function (_) {
     var fraction = (Date.now() - startTime) / duration;
-    if (fraction >= 1) {
-      task(value + change);
+    if (fraction < 1) {
+      progressAnimation(startTime, duration, startValues, deltaValues, fraction, task);
     } else {
-      task(value + change * easing(fraction));
-      runAnimation(startTime, duration, value, change, task);
+      completeAnimation(startValues, deltaValues, 1, task);
     }
   });
 }
 
-function stopAnimation() {
+/* Actions */
+
+function stop() {
   if (animation) {
     cancelAnimationFrame(animation);
   }
 }
 
-function go(duration, value, change, task) {
-  runAnimation(Date.now(), duration, value, change, task);
+function go(duration, startValues, targetValues, task, relative) {
+  var deltaValues = relative ? targetValues : calculateDeltaValues(startValues, targetValues);
+  stop();
+  runAnimation(Date.now(), duration, startValues, deltaValues, task);
 }
 
-exports.stop = stopAnimation;
+/* Interface */
+
+exports.stop = stop;
 exports.go = go;
 
 },{}],4:[function(require,module,exports){
@@ -221,14 +262,16 @@ var SCENE_URL = '/res/models/placeholder.json';
 var CAMERA_ANGLE = 45;
 var CAMERA_NEAR = 0.1;
 var CAMERA_FAR = 1000;
-var CAMERA_POSITION = { x: 0, y: 200, z: 350 };
+var CAMERA_POSITION = [0, 200, 350];
 
-var LIGHT_POSITION = { x: 0, y: 150, z: 500 };
 var LIGHT_COLOR = 0xFFFFFF;
+var LIGHT_POSITION = [0, 150, 500];
 
 var holderDOM = void 0;
 var width = void 0;
 var height = void 0;
+
+var locations = void 0;
 
 var renderer = void 0;
 
@@ -246,7 +289,20 @@ var world = void 0;
 
 var object = void 0;
 
-var locations = void 0;
+/* Get */
+
+function getProperties() {
+  return {
+    renderer: renderer,
+    scene: scene,
+    camera: camera,
+    light: light,
+    world: world,
+    object: object
+  };
+}
+
+/* Initialization */
 
 function setupCanvas() {
   holderDOM = document.getElementById(CANVAS_HOLDER_ID);
@@ -257,7 +313,6 @@ function setupCanvas() {
 function setupRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
   renderer.setSize(width, height);
-  holderDOM.appendChild(renderer.domElement);
 }
 
 function setupScene() {
@@ -265,20 +320,29 @@ function setupScene() {
 }
 
 function setupCamera() {
+  var _camera$position;
+
   cameraAngle = CAMERA_ANGLE;
   cameraAspect = width / height;
   cameraNear = CAMERA_NEAR;
   cameraFar = CAMERA_FAR;
   camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
-  camera.position.set(CAMERA_POSITION.x, CAMERA_POSITION.y, CAMERA_POSITION.z);
+  (_camera$position = camera.position).set.apply(_camera$position, CAMERA_POSITION);
   camera.lookAt(new THREE.Vector3(0, 0, 0));
   scene.add(camera);
 }
 
 function setupLights() {
+  var _light$position;
+
   light = new THREE.PointLight(LIGHT_COLOR);
-  light.position.set(LIGHT_POSITION.x, LIGHT_POSITION.y, LIGHT_POSITION.z);
+  (_light$position = light.position).set.apply(_light$position, LIGHT_POSITION);
   scene.add(light);
+}
+
+function addWorld() {
+  world = new THREE.Object3D();
+  scene.add(world);
 }
 
 function addLocationPoint(currentLocation) {
@@ -300,46 +364,32 @@ function addObject(geometry) {
   world.add(object);
 }
 
-function addWorld() {
-  world = new THREE.Object3D();
-}
-
-function addWorldToScene() {
-  scene.add(world);
-}
-
-function getProperties() {
-  return {
-    renderer: renderer,
-    scene: scene,
-    camera: camera,
-    light: light,
-    world: world,
-    object: object
-  };
-}
-
 function setupObject() {
   return new Promise(function (resolve, reject) {
     var loader = new THREE.JSONLoader();
     loader.load(SCENE_URL, function (geometry) {
       addWorld();
       addObject(geometry);
-      addWorldToScene();
-      resolve(getProperties());
+      resolve();
     });
   });
 }
 
-function inititalizeCanvas(locationsInstance) {
-  locations = locationsInstance;
+function setupDOM() {
+  holderDOM.appendChild(renderer.domElement);
+}
+
+function inititalizeCanvas(locationData) {
+  locations = locationData;
   setupCanvas();
   setupRenderer();
   setupScene();
   setupCamera();
   setupLights();
-  return setupObject();
+  return setupObject().then(setupDOM).then(getProperties);
 }
+
+/* Interface */
 
 exports.init = inititalizeCanvas;
 
@@ -348,83 +398,141 @@ exports.init = inititalizeCanvas;
 
 'use strict';
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var canvas = require('./canvas');
 var animation = require('./animation');
 var panorama = require('./panorama');
 var eventTool = require('patterns/tx-event');
 
-var ROTATION_STEP = 0.5235;
-var ZOOM_STEP = 0.35;
-var ZOOM_MAX = 4;
-var ZOOM_MIN = 0.25;
+var ROTATION_DEFAULT = [0, 0, 0];
+var ROTATION_STEP = Math.PI / 180 * 30;
+var ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
+var ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
+
+var SCALE_DEFAULT = 1;
+var SCALE_STEP = 0.25;
+var SCALE_MAX = 4;
+var SCALE_MIN = 0.25;
+
 var TRANSITION_DURATION = 300;
 
 var EVENT_RENDER = 'maprender';
-var EVENT_TYPE = 'UIEvent';
+
+var CAMERA_TOP_POSITION = [0, 500, 0];
+var CAMERA_TOP_ROTATION = [-1.57069, 0, 0];
+var CAMERA_PERSPECTIVE_POSITION = [0, 200, 350];
+var CAMERA_PERSPECTIVE_ROTATION = [-0.5191, 0, 0];
 
 var renderer = void 0;
-var scene = void 0;
-var camera = void 0;
-var light = void 0;
-var world = void 0;
-var object = void 0;
-
 var width = void 0;
 var height = void 0;
 
+var scene = void 0;
+
+var camera = void 0;
+var cameraStatus = void 0;
+
+var light = void 0;
+
+var world = void 0;
+
+var object = void 0;
+
+/* Get */
+
 function getMapRotation() {
-  return object.rotation.y;
+  return [object.rotation.x, object.rotation.y, object.rotation.z];
 }
 
 function getMapScale() {
   return object.scale.x;
 }
 
-function rotateMap(angle) {
-  object.rotation.set(0, angle, 0);
+/* Map Actions */
+
+function renderMap() {
+  renderer.render(scene, camera);
+  triggerRenderEvent();
+}
+
+function rotateMap(angles) {
+  var _object$rotation;
+
+  (_object$rotation = object.rotation).set.apply(_object$rotation, _toConsumableArray(angles));
   renderMap();
 }
 
 function rotateMapCCW() {
-  animation.stop();
-  animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CCW_STEP, rotateMap, true);
 }
 
 function rotateMapCW() {
-  animation.stop();
-  animation.go(TRANSITION_DURATION, getMapRotation(), -ROTATION_STEP, rotateMap);
+  animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CW_STEP, rotateMap, true);
 }
 
 function zoomMap(factor) {
-  factor = factor > ZOOM_MAX ? ZOOM_MAX : factor;
-  factor = factor < ZOOM_MIN ? ZOOM_MIN : factor;
+  factor = factor > SCALE_MAX ? SCALE_MAX : factor;
+  factor = factor < SCALE_MIN ? SCALE_MIN : factor;
   object.scale.set(factor, factor, factor);
   renderMap();
 }
 
 function zoomInMap() {
-  animation.stop();
-  animation.go(TRANSITION_DURATION, getMapScale(), ZOOM_STEP, zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), SCALE_STEP, zoomMap, true);
 }
 
 function zoomOutMap() {
-  animation.stop();
-  animation.go(TRANSITION_DURATION, getMapScale(), -ZOOM_STEP, zoomMap);
+  animation.go(TRANSITION_DURATION, getMapScale(), -SCALE_STEP, zoomMap, true);
+}
+
+function scaleRotateMap(anglesFactor) {
+  zoomMap(anglesFactor.pop());
+  rotateMap(anglesFactor);
+  renderMap();
 }
 
 function resetMap() {
-  var scaleChange = 1 - getMapScale();
-  animation.stop();
-  animation.go(TRANSITION_DURATION, getMapScale(), scaleChange, zoomMap);
+  var startValues = [].concat(_toConsumableArray(getMapRotation()), [getMapScale()]);
+  var targetValues = [].concat(ROTATION_DEFAULT, [SCALE_DEFAULT]);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, scaleRotateMap);
 }
 
-function toggleTopDownMapView() {
-  console.log('Top-Down View');
+/* Views */
+
+function positionRotateCamera(positionRotation) {
+  camera.position.set(positionRotation[0], positionRotation[1], positionRotation[2]);
+  camera.rotation.set(positionRotation[3], positionRotation[4], positionRotation[5]);
+  renderMap();
 }
 
-function toggleMapPanorama() {
+function moveCameraTop() {
+  var startValues = [].concat(CAMERA_PERSPECTIVE_POSITION, CAMERA_PERSPECTIVE_ROTATION);
+  var targetValues = [].concat(CAMERA_TOP_POSITION, CAMERA_TOP_ROTATION);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, positionRotateCamera);
+}
+
+function moveCameraPerspective() {
+  var startValues = [].concat(CAMERA_TOP_POSITION, CAMERA_TOP_ROTATION);
+  var targetValues = [].concat(CAMERA_PERSPECTIVE_POSITION, CAMERA_PERSPECTIVE_ROTATION);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, positionRotateCamera);
+}
+
+function toggleTopDownView() {
+  if (cameraStatus) {
+    moveCameraTop();
+    cameraStatus = false;
+  } else {
+    moveCameraPerspective();
+    cameraStatus = true;
+  }
+}
+
+function togglePanoramaView() {
   panorama.toggle();
 }
+
+/* Map Events */
 
 function triggerRenderEvent() {
   var data = {
@@ -432,13 +540,10 @@ function triggerRenderEvent() {
     width: width,
     height: height
   };
-  eventTool.trigger(document, EVENT_RENDER, false, EVENT_TYPE, data);
+  eventTool.trigger(document, EVENT_RENDER, false, 'UIEvent', data);
 }
 
-function renderMap() {
-  renderer.render(scene, camera);
-  triggerRenderEvent();
-}
+/* Map Initialization */
 
 function setupMap(properties) {
   renderer = properties.renderer;
@@ -450,25 +555,29 @@ function setupMap(properties) {
 
   width = renderer.domElement.width;
   height = renderer.domElement.height;
+  cameraStatus = true;
   return Promise.resolve();
 }
 
 function initializeMap(locations) {
-  canvas.init(locations).then(setupMap).then(renderMap);
+  return canvas.init(locations).then(setupMap).then(renderMap);
 }
 
+/* Interface */
+
 exports.init = initializeMap;
+exports.getRotation = getMapRotation;
+exports.getScale = getMapScale;
+exports.render = renderMap;
 exports.rotate = rotateMap;
 exports.rotateCCW = rotateMapCCW;
 exports.rotateCW = rotateMapCW;
-exports.angle = getMapRotation;
 exports.zoom = zoomMap;
 exports.zoomIn = zoomInMap;
 exports.zoomOut = zoomOutMap;
-exports.panorama = toggleMapPanorama;
-exports.topDown = toggleTopDownMapView;
-exports.scale = getMapScale;
 exports.reset = resetMap;
+exports.toggleTopView = toggleTopDownView;
+exports.togglePanorama = togglePanoramaView;
 
 },{"./animation":3,"./canvas":4,"./panorama":6,"patterns/tx-event":8}],6:[function(require,module,exports){
 /* jshint browser:true */
@@ -632,6 +741,8 @@ module.exports = function (map, locations) {
     40: map.zoomOut
   };
 
+  /* Interactions */
+
   function onKeyDown(event) {
     var key = event.keyCode;
     if (KEY_ACTIONS[key]) {
@@ -640,6 +751,8 @@ module.exports = function (map, locations) {
       KEY_ACTIONS[key]();
     }
   }
+
+  /* Initialization */
 
   eventTool.bind(document, 'keydown', onKeyDown);
 };
@@ -651,24 +764,27 @@ module.exports = function (map, locations) {
 
 var eventTool = require('patterns/tx-event');
 
-var CONTAINER_ID = 'locations';
+var CATCHER_ID = 'locations';
 
 var ROTATION_STEP = 0.005;
 var SCALE_STEP = 0.01;
 
 module.exports = function (map) {
 
-  var container = void 0;
+  var catcher = void 0;
 
   var startPosition = void 0;
-  var startAngle = void 0;
+  var startRotation = void 0;
+
+  /* Interactions */
 
   function onMouseMove(event) {
     event.preventDefault();
     requestAnimationFrame(function (_) {
       var currentPosition = event.clientX;
-      var currentAngle = startAngle + (startPosition - currentPosition) * ROTATION_STEP;
-      map.rotate(currentAngle);
+      var currentAngle = startRotation[1] + (startPosition - currentPosition) * ROTATION_STEP;
+      var currentRotation = [startRotation[0], currentAngle, startRotation[2]];
+      map.rotate(currentRotation);
     });
   }
 
@@ -677,29 +793,28 @@ module.exports = function (map) {
     eventTool.unbind(document, 'mouseup', onMouseUp);
   }
 
-  function initializeMouseMove() {
-    eventTool.bind(document, 'mousemove', onMouseMove);
-    eventTool.bind(document, 'mouseup', onMouseUp);
-  }
-
   function onMouseDown(event) {
     event.preventDefault();
     startPosition = event.clientX;
-    startAngle = map.angle();
-    initializeMouseMove();
+    startRotation = map.getRotation();
+    eventTool.bind(document, 'mousemove', onMouseMove);
+    eventTool.bind(document, 'mouseup', onMouseUp);
   }
 
   function onWheel(event) {
     event.preventDefault();
     event.stopPropagation();
-    var startScale = map.scale();
+    var startScale = map.getScale();
     var deltaScale = event.deltaY > 0 ? SCALE_STEP : -SCALE_STEP;
     map.zoom(startScale + deltaScale * 2);
   }
 
-  container = document.getElementById(CONTAINER_ID);
-  eventTool.bind(container, 'mousedown', onMouseDown);
-  eventTool.bind(container, 'wheel', onWheel);
+  /* Inititalization */
+
+  catcher = document.getElementById(CATCHER_ID);
+  eventTool.bind(catcher, 'mousedown', onMouseDown);
+  eventTool.bind(catcher, 'wheel', onWheel);
+  return Promise.resolve();
 };
 
 },{"patterns/tx-event":8}],14:[function(require,module,exports){
@@ -732,22 +847,35 @@ module.exports = function (id, task) {
 
 var eventTool = require('patterns/tx-event');
 
-var CONTAINER_ID = 'locations';
+var CATCHER_ID = 'locations';
 
 var ROTATION_STEP = 0.005;
 var SCALE_STEP = 0.01;
 
 module.exports = function (map) {
 
-  var container = void 0;
+  var catcher = void 0;
 
   var startPosition = void 0;
-  var startAngle = void 0;
+  var startRotation = void 0;
   var startDistance = void 0;
   var startScale = void 0;
 
+  /* Utilities */
+
   function calculateDistance(touches) {
     return Math.sqrt(Math.pow(touches[1].clientX - touches[0].clientX, 2) + Math.pow(touches[1].clientY - touches[0].clientY, 2));
+  }
+
+  /* Actions */
+
+  function singleTouchMove(event) {
+    requestAnimationFrame(function (_) {
+      var currentPosition = event.touches[0].clientX;
+      var currentAngle = startRotation[1] + (startPosition - currentPosition) * ROTATION_STEP;
+      var currentRotation = [startRotation[0], currentAngle, startRotation[2]];
+      map.rotate(currentRotation);
+    });
   }
 
   function doubleTouchMove(event) {
@@ -758,23 +886,17 @@ module.exports = function (map) {
     });
   }
 
-  function singleTouchMove(event) {
-    requestAnimationFrame(function (_) {
-      var currentPosition = event.touches[0].clientX;
-      var currentAngle = startAngle + (currentPosition - startPosition) * ROTATION_STEP;
-      map.rotate(currentAngle);
-    });
+  function singleTouchStart(event) {
+    startPosition = event.touches[0].clientX;
+    startRotation = map.getRotation();
   }
 
   function doubleTouchStart(event) {
     startDistance = calculateDistance(event.touches);
-    startScale = map.scale();
+    startScale = map.getScale();
   }
 
-  function singleTouchStart(event) {
-    startPosition = event.touches[0].clientX;
-    startAngle = map.angle();
-  }
+  /* Interactions */
 
   function onTouchStart(event) {
     event.preventDefault();
@@ -794,9 +916,12 @@ module.exports = function (map) {
     }
   }
 
-  container = document.getElementById(CONTAINER_ID);
-  eventTool.bind(container, 'touchstart', onTouchStart, true);
-  eventTool.bind(container, 'touchmove', onTouchMove, true);
+  /* Inititalization */
+
+  catcher = document.getElementById(CATCHER_ID);
+  eventTool.bind(catcher, 'touchstart', onTouchStart, true);
+  eventTool.bind(catcher, 'touchmove', onTouchMove, true);
+  return Promise.resolve();
 };
 
 },{"patterns/tx-event":8}],16:[function(require,module,exports){
@@ -812,7 +937,7 @@ var mouse = require('./mouse');
 var touch = require('./touch');
 var help = require('./help');
 
-var WESTWORLD_ID = 'westworld';
+// const WESTWORLD_ID = 'westworld';
 var LOCATIONS_ID = 'showLocations';
 var PANORAMA_ID = 'panorama';
 var ROTATE_CCW_ID = 'rotateCCW';
@@ -824,23 +949,25 @@ var TOP_DOWN_ID = 'topDown';
 var FULL_SCREEN_ID = 'fullScreen';
 var HELP_ID = 'help';
 
-module.exports = function (map, locations) {
+module.exports = function (locations, map) {
 
-  function inititalizeControlPanel() {
-    toggle(WESTWORLD_ID, function (_) {});
+  function controlPanel() {
+    // toggle(WESTWORLD_ID, _ => {});
     toggle(LOCATIONS_ID, locations.toggle);
-    toggle(PANORAMA_ID, map.panorama);
+    toggle(TOP_DOWN_ID, map.toggleTopView);
+    // toggle(PANORAMA_ID, map.togglePanorama);
     control(ROTATE_CCW_ID, map.rotateCCW);
     control(ROTATE_CW_ID, map.rotateCW);
-    control(ZOOM_IN_ID, map.zoomIn);
     control(ZOOM_OUT_ID, map.zoomOut);
+    control(ZOOM_IN_ID, map.zoomIn);
     control(RESET_ID, map.reset);
-    toggle(TOP_DOWN_ID, map.topDown);
     toggle(FULL_SCREEN_ID, display.toggle);
     control(HELP_ID, help.toggle);
   }
 
-  inititalizeControlPanel();
+  /* UI Initialization */
+
+  controlPanel();
   keyboard(map, locations);
   mouse(map);
   touch(map);
@@ -855,8 +982,8 @@ var map = require('map/map');
 var locations = require('locations/locations');
 var ui = require('ui/ui');
 
-locations.init();
-map.init(locations.locations());
-ui(map, locations);
+locations.init().then(map.init).then(function (_) {
+  return ui(locations, map);
+});
 
 },{"locations/locations":2,"map/map":5,"ui/ui":16}]},{},[17]);

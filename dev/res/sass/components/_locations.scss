@@ -11,6 +11,7 @@
   opacity: 0;
   cursor: grab;
   transition: $UITransitionDefault;
+  user-select: none;
 
   &-is-active {
     opacity: 1;

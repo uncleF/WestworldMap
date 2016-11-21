@@ -24,9 +24,9 @@
 %control {
   position: relative;
   display: block;
-  overflow: hidden;
   height: 0;
   margin: 0 $gap;
+  text-indent: -10000px;
 
   .mdz-touchevents & {
     margin: $gap 0;
@@ -34,49 +34,43 @@
 
 }
 
-%toggle {
+%controlTransition {
+  transition: $UITransitionDefault;
+}
+
+.showLocations {
+  @extend %control;
+  @include tx-sprite($spt-showLocations, $block: true);
 
   &:before,
   &:after {
-    position: absolute;
-    top: 0;
-    left: 0;
-    content: '';
+    @extend %controlTransition;
+    @include tx-pseudo;
+  }
+
+  &:before {
+    @include tx-sprite($spt-showLocationsHole, $block: true);
+    top: 4px;
+    left: 4px;
   }
 
   &:after {
-    background-color: $background;
+    @include tx-sprite($spt-hideLocationsMarker, $block: true);
+    top: 0;
+    left: -1px;
     opacity: 0;
   }
 
   &-is-active {
 
+    &:before {
+      opacity: 0;
+    }
+
     &:after {
       opacity: 1;
     }
 
-  }
-
-}
-
-.showLocations {
-  @extend %control;
-  @extend %toggle;
-  @include tx-sprite-block($spt-hideLocations, $padding: true);
-
-  &:before {
-    @include tx-sprite($spt-showLocations, $block: true);
-    left: 50%;
-    margin: 0 0 0 (txf-sprite-width($spt-showLocations) / -2);
-  }
-
-  &:after {
-    @include tx-sprite($spt-hideLocations, $block: true);
-    transition: $UITransitionDefault;
-  }
-
-  &-is-active {
-    @extend %toggle-is-active;
   }
 
 }
@@ -88,6 +82,12 @@
   padding: txf-sprite-height($spt-topDown) 0 0;
   perspective: 50px;
 
+  &:before,
+  &:after {
+    position: absolute;
+    content: '';
+  }
+
   &:before {
     @include tx-pseudo;
     @include tx-sprite($spt-topDown, $block: true);
@@ -95,6 +95,14 @@
     left: 50%;
     margin: 0 0 0 (txf-sprite-width($spt-topDown) / -2);
     transition: $UITransitionDefault;
+  }
+
+  &:after {
+    @include tx-pseudo;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
 
   &-is-active {
@@ -107,33 +115,42 @@
 
 }
 
-.panorama {
-  @extend %control;
-  @extend %toggle;
-  @include tx-sprite-block($spt-panoramaStart, $padding: true);
+// .panorama {
+//   @extend %control;
+//   @include tx-sprite-block($spt-panoramaStart, $padding: true);
 
-  &:before {
-    @include tx-sprite($spt-panoramaStart, $block: true);
-  }
+//   &:before,
+//   &:after {
+//     @extend %controlTransition;
+//     @include tx-pseudo;
+//     left: 0;
+//     transition: $UITransitionDefault;
+//   }
 
-  &:after {
-    @include tx-sprite($spt-panoramaStop);
-    top: 50%;
-    width: txf-sprite-width($spt-panoramaStart);
-    height: txf-sprite-height($spt-panoramaStop);
-    margin: (txf-sprite-height($spt-panoramaStop) / -2) 0 0;
-  }
+//   &:before {
+//     @include tx-sprite($spt-panoramaStart, $block: true);
+//     top: 0;
+//   }
 
-  &-is-active {
-    @extend %toggle-is-active;
+//   &:after {
+//     @include tx-sprite($spt-panoramaStop, $block: true);
+//     top: 2px;
+//     opacity: 0;
+//   }
 
-    &:before {
-      opacity: 0;
-    }
+//   &-is-active {
 
-  }
+//     &:before {
+//       opacity: 0;
+//     }
 
-}
+//     &:after {
+//       opacity: 1;
+//     }
+
+//   }
+
+// }
 
 .rotateCCW {
   @extend %control;
@@ -147,16 +164,16 @@
   @include tx-sprite($spt-rotateCW, $block: true, $padding: true);
 }
 
-.zoomIn {
-  @extend %control;
-  @extend %unnecessary;
-  @include tx-sprite($spt-zoomIn, $block: true, $padding: true);
-}
-
 .zoomOut {
   @extend %control;
   @extend %unnecessary;
   @include tx-sprite($spt-zoomOut, $block: true, $padding: true);
+}
+
+.zoomIn {
+  @extend %control;
+  @extend %unnecessary;
+  @include tx-sprite($spt-zoomIn, $block: true, $padding: true);
 }
 
 .reset {
@@ -171,6 +188,7 @@
 
   &:before,
   &:after {
+    @extend %controlTransition;
     position: absolute;
     top: 0;
     left: 0;

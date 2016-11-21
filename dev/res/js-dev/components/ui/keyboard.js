@@ -14,6 +14,8 @@ module.exports = (map, locations) => {
     40: map.zoomOut
   };
 
+  /* Interactions */
+
   function onKeyDown(event) {
     let key = event.keyCode;
     if (KEY_ACTIONS[key]) {
@@ -22,6 +24,8 @@ module.exports = (map, locations) => {
       KEY_ACTIONS[key]();
     }
   }
+
+  /* Initialization */
 
   eventTool.bind(document, 'keydown', onKeyDown);
 
