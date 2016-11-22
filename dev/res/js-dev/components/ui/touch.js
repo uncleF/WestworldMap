@@ -6,8 +6,12 @@ let eventTool = require('patterns/tx-event');
 
 const CATCHER_ID = 'locations';
 
-const ROTATION_STEP = 0.005;
+const PAN_STEP = 0.35;
+
+const ROTATION_STEP = -0.005;
+
 const SCALE_STEP = 0.01;
+const SCALE_THRESHOLD = 120;
 
 module.exports = map => {
 
@@ -20,8 +24,8 @@ module.exports = map => {
 
   /* Utilities */
 
-  function calculateDistance(touches) {
-    return Math.sqrt(Math.pow((touches[1].clientX - touches[0].clientX), 2) + Math.pow((touches[1].clientY - touches[0].clientY), 2));
+  function calculateDistance(startPosition, currentPosition) {
+    return Math.sqrt(Math.pow((currentPosition.clientX - startPosition.clientX), 2) + Math.pow((currentPosition.clientY - startPosition.clientY), 2));
   }
 
   /* Actions */
@@ -29,17 +33,30 @@ module.exports = map => {
   function singleTouchMove(event) {
     requestAnimationFrame(_ => {
       let currentPosition = event.touches[0].clientX;
-      let currentAngle = startRotation[1] + (startPosition - currentPosition) * ROTATION_STEP;
+      let currentAngle = startRotation[1] + (currentPosition - startPosition) * ROTATION_STEP;
       let currentRotation = [startRotation[0], currentAngle, startRotation[2]];
       map.rotate(currentRotation);
     });
   }
 
+  function doubleTouchScale(currentDistance) {
+    let currentScale = startScale + (currentDistance - startDistance) * SCALE_STEP;
+    map.zoom(currentScale);
+  }
+
+  function doubleTouchPan(event) {
+    let currentDistance = (event.touches[0].clientX - startPosition) * PAN_STEP;
+    map.pan(currentDistance);
+  }
+
   function doubleTouchMove(event) {
     requestAnimationFrame(_ => {
-      let currentDistance = calculateDistance(event.touches);
-      let currentScale = startScale + (currentDistance - startDistance) * SCALE_STEP;
-      map.zoom(currentScale);
+      let currentDistance = calculateDistance(event.touches[0], event.touches[1]);
+      if (currentDistance > SCALE_THRESHOLD) {
+        doubleTouchScale(currentDistance);
+      } else {
+        doubleTouchPan(event);
+      }
     });
   }
 
@@ -49,7 +66,9 @@ module.exports = map => {
   }
 
   function doubleTouchStart(event) {
-    startDistance = calculateDistance(event.touches);
+    map.snapshot();
+    startPosition = event.touches[0].clientX;
+    startDistance = calculateDistance(event.touches[0], event.touches[1]);
     startScale = map.getScale();
   }
 

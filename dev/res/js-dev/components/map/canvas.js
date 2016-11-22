@@ -7,13 +7,13 @@ const CANVAS_HOLDER_ID = 'map';
 
 const SCENE_URL = '/res/models/placeholder.json';
 
+const CAMERA_POSITION = [0, 200, -350];
 const CAMERA_ANGLE = 45;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 1000;
-const CAMERA_POSITION = [0, 200, 350];
 
-const LIGHT_COLOR = 0xFFFFFF;
 const LIGHT_POSITION = [0, 150, 500];
+const LIGHT_COLOR = 0xFFFFFF;
 
 let holderDOM;
 let width;
@@ -33,8 +33,6 @@ let cameraFar;
 
 let light;
 
-let world;
-
 let object;
 
 /* Get */
@@ -45,7 +43,6 @@ function getProperties() {
     scene: scene,
     camera: camera,
     light: light,
-    world: world,
     object: object
   };
 }
@@ -84,11 +81,6 @@ function setupLights() {
   scene.add(light);
 }
 
-function addWorld() {
-  world = new THREE.Object3D();
-  scene.add(world);
-}
-
 function addLocationPoint(currentLocation) {
   let position = currentLocation.position();
   let point = new THREE.Object3D();
@@ -105,14 +97,13 @@ function addObject(geometry) {
   object = new THREE.Object3D();
   object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
   addLocationPoints();
-  world.add(object);
+  scene.add(object);
 }
 
 function setupObject() {
   return new Promise((resolve, reject) => {
     let loader = new THREE.JSONLoader();
     loader.load(SCENE_URL, geometry => {
-      addWorld();
       addObject(geometry);
       resolve();
     });

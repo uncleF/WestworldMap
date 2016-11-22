@@ -927,10 +927,6 @@ body {
   text-align: right;
 }
 
-.mail {
-  margin: 0 -4px 0 0;
-}
-
 /* Phone */
 @media only screen and (max-width: 45em) {
   .footer {

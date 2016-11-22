@@ -185,12 +185,16 @@ function cubicInOut(fraction) {
 
 /* Utilities */
 
+function calculateDeltaValue(value1, value2) {
+  return value2 - value1;
+}
+
 function calculateDeltaValues(startValues, targetValues) {
   if (typeof startValues === 'number') {
-    return targetValues - startValues;
+    return calculateDeltaValue(startValues, targetValues);
   } else {
     return startValues.map(function (value, index) {
-      return targetValues[index] - startValues[index];
+      return calculateDeltaValue(startValues[index], targetValues[index]);
     });
   }
 }
@@ -259,13 +263,13 @@ var CANVAS_HOLDER_ID = 'map';
 
 var SCENE_URL = '/res/models/placeholder.json';
 
+var CAMERA_POSITION = [0, 200, -350];
 var CAMERA_ANGLE = 45;
 var CAMERA_NEAR = 0.1;
 var CAMERA_FAR = 1000;
-var CAMERA_POSITION = [0, 200, 350];
 
-var LIGHT_COLOR = 0xFFFFFF;
 var LIGHT_POSITION = [0, 150, 500];
+var LIGHT_COLOR = 0xFFFFFF;
 
 var holderDOM = void 0;
 var width = void 0;
@@ -285,8 +289,6 @@ var cameraFar = void 0;
 
 var light = void 0;
 
-var world = void 0;
-
 var object = void 0;
 
 /* Get */
@@ -297,7 +299,6 @@ function getProperties() {
     scene: scene,
     camera: camera,
     light: light,
-    world: world,
     object: object
   };
 }
@@ -340,11 +341,6 @@ function setupLights() {
   scene.add(light);
 }
 
-function addWorld() {
-  world = new THREE.Object3D();
-  scene.add(world);
-}
-
 function addLocationPoint(currentLocation) {
   var position = currentLocation.position();
   var point = new THREE.Object3D();
@@ -361,14 +357,13 @@ function addObject(geometry) {
   object = new THREE.Object3D();
   object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
   addLocationPoints();
-  world.add(object);
+  scene.add(object);
 }
 
 function setupObject() {
   return new Promise(function (resolve, reject) {
     var loader = new THREE.JSONLoader();
     loader.load(SCENE_URL, function (geometry) {
-      addWorld();
       addObject(geometry);
       resolve();
     });
@@ -419,10 +414,12 @@ var TRANSITION_DURATION = 300;
 
 var EVENT_RENDER = 'maprender';
 
+var PAN_STEP = 50;
+
 var CAMERA_TOP_POSITION = [0, 500, 0];
-var CAMERA_TOP_ROTATION = [-1.57069, 0, 0];
-var CAMERA_PERSPECTIVE_POSITION = [0, 200, 350];
-var CAMERA_PERSPECTIVE_ROTATION = [-0.5191, 0, 0];
+var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
+var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
 var renderer = void 0;
 var width = void 0;
@@ -432,21 +429,34 @@ var scene = void 0;
 
 var camera = void 0;
 var cameraStatus = void 0;
+var cameraSnapshotPosition = void 0;
 
 var light = void 0;
-
-var world = void 0;
 
 var object = void 0;
 
 /* Get */
 
 function getMapRotation() {
-  return [object.rotation.x, object.rotation.y, object.rotation.z];
+  var skipedRotation = object.rotation.y % (Math.PI * 2);
+  return [object.rotation.x, skipedRotation, object.rotation.z];
+}
+
+function getMapDefaultRotation() {
+  var skipedDefault = Math.round(object.rotation.y / (Math.PI * 2)) * Math.PI * 2;
+  return [ROTATION_DEFAULT[0], skipedDefault, ROTATION_DEFAULT[2]];
 }
 
 function getMapScale() {
   return object.scale.x;
+}
+
+function getCameraPosition() {
+  return [camera.position.x, camera.position.y, camera.position.z];
+}
+
+function getCameraDefaultPosition() {
+  return cameraStatus ? CAMERA_PERSPECTIVE_POSITION : CAMERA_TOP_POSITION;
 }
 
 /* Map Actions */
@@ -471,7 +481,7 @@ function rotateMapCW() {
   animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CW_STEP, rotateMap, true);
 }
 
-function zoomMap(factor) {
+function scaleMap(factor) {
   factor = factor > SCALE_MAX ? SCALE_MAX : factor;
   factor = factor < SCALE_MIN ? SCALE_MIN : factor;
   object.scale.set(factor, factor, factor);
@@ -479,43 +489,74 @@ function zoomMap(factor) {
 }
 
 function zoomInMap() {
-  animation.go(TRANSITION_DURATION, getMapScale(), SCALE_STEP, zoomMap, true);
+  animation.go(TRANSITION_DURATION, getMapScale(), SCALE_STEP, scaleMap, true);
 }
 
 function zoomOutMap() {
-  animation.go(TRANSITION_DURATION, getMapScale(), -SCALE_STEP, zoomMap, true);
+  animation.go(TRANSITION_DURATION, getMapScale(), -SCALE_STEP, scaleMap, true);
 }
 
-function scaleRotateMap(anglesFactor) {
-  zoomMap(anglesFactor.pop());
-  rotateMap(anglesFactor);
+/* Camera Actions */
+
+function shiftCamera(position) {
+  camera.position.x = position;
   renderMap();
 }
 
-function resetMap() {
-  var startValues = [].concat(_toConsumableArray(getMapRotation()), [getMapScale()]);
-  var targetValues = [].concat(ROTATION_DEFAULT, [SCALE_DEFAULT]);
-  animation.go(TRANSITION_DURATION, startValues, targetValues, scaleRotateMap);
+function panCamera(distance) {
+  var position = cameraSnapshotPosition[0] + distance;
+  shiftCamera(position);
+}
+
+function panCameraLeft() {
+  animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, shiftCamera, true);
+}
+
+function panCameraRight() {
+  animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, shiftCamera, true);
+}
+
+/* Scene Actions */
+
+function sceneSnapshot() {
+  cameraSnapshotPosition = getCameraPosition();
+}
+
+function changeScene(transformation) {
+  var _camera$position, _object$rotation2;
+
+  (_camera$position = camera.position).set.apply(_camera$position, _toConsumableArray(transformation.slice(0, 3)));
+  (_object$rotation2 = object.rotation).set.apply(_object$rotation2, _toConsumableArray(transformation.slice(3, 6)));
+  object.scale.set(transformation[6], transformation[6], transformation[6]);
+  renderMap();
+}
+
+function resetScene() {
+  var startValues = [].concat(_toConsumableArray(getCameraPosition()), _toConsumableArray(getMapRotation()), [getMapScale()]);
+  var targetValues = [].concat(_toConsumableArray(getCameraDefaultPosition()), _toConsumableArray(getMapDefaultRotation()), [SCALE_DEFAULT]);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, changeScene);
 }
 
 /* Views */
 
-function positionRotateCamera(positionRotation) {
-  camera.position.set(positionRotation[0], positionRotation[1], positionRotation[2]);
-  camera.rotation.set(positionRotation[3], positionRotation[4], positionRotation[5]);
+function transformCamera(positionRotation) {
+  var _camera$position2, _camera$rotation;
+
+  (_camera$position2 = camera.position).set.apply(_camera$position2, _toConsumableArray(positionRotation.slice(0, 3)));
+  (_camera$rotation = camera.rotation).set.apply(_camera$rotation, _toConsumableArray(positionRotation.slice(3)));
   renderMap();
 }
 
 function moveCameraTop() {
-  var startValues = [].concat(CAMERA_PERSPECTIVE_POSITION, CAMERA_PERSPECTIVE_ROTATION);
+  var startValues = [].concat(_toConsumableArray(getCameraPosition()), CAMERA_PERSPECTIVE_ROTATION);
   var targetValues = [].concat(CAMERA_TOP_POSITION, CAMERA_TOP_ROTATION);
-  animation.go(TRANSITION_DURATION, startValues, targetValues, positionRotateCamera);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
 }
 
 function moveCameraPerspective() {
-  var startValues = [].concat(CAMERA_TOP_POSITION, CAMERA_TOP_ROTATION);
+  var startValues = [].concat(_toConsumableArray(getCameraPosition()), CAMERA_TOP_ROTATION);
   var targetValues = [].concat(CAMERA_PERSPECTIVE_POSITION, CAMERA_PERSPECTIVE_ROTATION);
-  animation.go(TRANSITION_DURATION, startValues, targetValues, positionRotateCamera);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
 }
 
 function toggleTopDownView() {
@@ -550,7 +591,6 @@ function setupMap(properties) {
   scene = properties.scene;
   camera = properties.camera;
   light = properties.light;
-  world = properties.world;
   object = properties.object;
 
   width = renderer.domElement.width;
@@ -572,10 +612,14 @@ exports.render = renderMap;
 exports.rotate = rotateMap;
 exports.rotateCCW = rotateMapCCW;
 exports.rotateCW = rotateMapCW;
-exports.zoom = zoomMap;
+exports.zoom = scaleMap;
 exports.zoomIn = zoomInMap;
 exports.zoomOut = zoomOutMap;
-exports.reset = resetMap;
+exports.pan = panCamera;
+exports.panLeft = panCameraLeft;
+exports.panRight = panCameraRight;
+exports.snapshot = sceneSnapshot;
+exports.reset = resetScene;
 exports.toggleTopView = toggleTopDownView;
 exports.togglePanorama = togglePanoramaView;
 
@@ -735,10 +779,14 @@ module.exports = function (map, locations) {
 
   var KEY_ACTIONS = {
     32: locations.toggle,
-    37: map.rotateCCW,
-    39: map.rotateCW,
+    33: map.rotateCCW,
+    34: map.rotateCW,
+    37: map.panLeft,
+    39: map.panRight,
     38: map.zoomIn,
-    40: map.zoomOut
+    40: map.zoomOut,
+    49: map.toggleTopView,
+    50: map.togglePanorama
   };
 
   /* Interactions */
@@ -766,7 +814,10 @@ var eventTool = require('patterns/tx-event');
 
 var CATCHER_ID = 'locations';
 
-var ROTATION_STEP = 0.005;
+var PAN_STEP = 0.25;
+
+var ROTATION_STEP = -0.005;
+
 var SCALE_STEP = 0.01;
 
 module.exports = function (map) {
@@ -776,20 +827,34 @@ module.exports = function (map) {
   var startPosition = void 0;
   var startRotation = void 0;
 
+  var MOUSE_ACTIONS = {
+    0: onLeftMouseMove,
+    2: onRightMouseMove
+  };
+
   /* Interactions */
 
-  function onMouseMove(event) {
+  function onLeftMouseMove(event) {
     event.preventDefault();
     requestAnimationFrame(function (_) {
       var currentPosition = event.clientX;
-      var currentAngle = startRotation[1] + (startPosition - currentPosition) * ROTATION_STEP;
+      var currentAngle = startRotation[1] + (currentPosition - startPosition) * ROTATION_STEP;
       var currentRotation = [startRotation[0], currentAngle, startRotation[2]];
       map.rotate(currentRotation);
     });
   }
 
-  function onMouseUp() {
-    eventTool.unbind(document, 'mousemove', onMouseMove);
+  function onRightMouseMove(event) {
+    event.preventDefault();
+    requestAnimationFrame(function (_) {
+      var currentDistance = (event.clientX - startPosition) * PAN_STEP;
+
+      map.pan(currentDistance);
+    });
+  }
+
+  function onMouseUp(event) {
+    eventTool.unbind(document, 'mousemove', MOUSE_ACTIONS[event.button]);
     eventTool.unbind(document, 'mouseup', onMouseUp);
   }
 
@@ -797,16 +862,20 @@ module.exports = function (map) {
     event.preventDefault();
     startPosition = event.clientX;
     startRotation = map.getRotation();
-    eventTool.bind(document, 'mousemove', onMouseMove);
+    map.snapshot();
+    eventTool.bind(document, 'mousemove', MOUSE_ACTIONS[event.button]);
     eventTool.bind(document, 'mouseup', onMouseUp);
   }
 
   function onWheel(event) {
     event.preventDefault();
-    event.stopPropagation();
     var startScale = map.getScale();
     var deltaScale = event.deltaY > 0 ? SCALE_STEP : -SCALE_STEP;
     map.zoom(startScale + deltaScale * 2);
+  }
+
+  function onContextMenu(event) {
+    event.preventDefault();
   }
 
   /* Inititalization */
@@ -814,6 +883,7 @@ module.exports = function (map) {
   catcher = document.getElementById(CATCHER_ID);
   eventTool.bind(catcher, 'mousedown', onMouseDown);
   eventTool.bind(catcher, 'wheel', onWheel);
+  eventTool.bind(catcher, 'contextmenu', onContextMenu);
   return Promise.resolve();
 };
 
@@ -849,8 +919,12 @@ var eventTool = require('patterns/tx-event');
 
 var CATCHER_ID = 'locations';
 
-var ROTATION_STEP = 0.005;
+var PAN_STEP = 0.35;
+
+var ROTATION_STEP = -0.005;
+
 var SCALE_STEP = 0.01;
+var SCALE_THRESHOLD = 120;
 
 module.exports = function (map) {
 
@@ -863,8 +937,8 @@ module.exports = function (map) {
 
   /* Utilities */
 
-  function calculateDistance(touches) {
-    return Math.sqrt(Math.pow(touches[1].clientX - touches[0].clientX, 2) + Math.pow(touches[1].clientY - touches[0].clientY, 2));
+  function calculateDistance(startPosition, currentPosition) {
+    return Math.sqrt(Math.pow(currentPosition.clientX - startPosition.clientX, 2) + Math.pow(currentPosition.clientY - startPosition.clientY, 2));
   }
 
   /* Actions */
@@ -872,17 +946,30 @@ module.exports = function (map) {
   function singleTouchMove(event) {
     requestAnimationFrame(function (_) {
       var currentPosition = event.touches[0].clientX;
-      var currentAngle = startRotation[1] + (startPosition - currentPosition) * ROTATION_STEP;
+      var currentAngle = startRotation[1] + (currentPosition - startPosition) * ROTATION_STEP;
       var currentRotation = [startRotation[0], currentAngle, startRotation[2]];
       map.rotate(currentRotation);
     });
   }
 
+  function doubleTouchScale(currentDistance) {
+    var currentScale = startScale + (currentDistance - startDistance) * SCALE_STEP;
+    map.zoom(currentScale);
+  }
+
+  function doubleTouchPan(event) {
+    var currentDistance = (event.touches[0].clientX - startPosition) * PAN_STEP;
+    map.pan(currentDistance);
+  }
+
   function doubleTouchMove(event) {
     requestAnimationFrame(function (_) {
-      var currentDistance = calculateDistance(event.touches);
-      var currentScale = startScale + (currentDistance - startDistance) * SCALE_STEP;
-      map.zoom(currentScale);
+      var currentDistance = calculateDistance(event.touches[0], event.touches[1]);
+      if (currentDistance > SCALE_THRESHOLD) {
+        doubleTouchScale(currentDistance);
+      } else {
+        doubleTouchPan(event);
+      }
     });
   }
 
@@ -892,7 +979,9 @@ module.exports = function (map) {
   }
 
   function doubleTouchStart(event) {
-    startDistance = calculateDistance(event.touches);
+    map.snapshot();
+    startPosition = event.touches[0].clientX;
+    startDistance = calculateDistance(event.touches[0], event.touches[1]);
     startScale = map.getScale();
   }
 

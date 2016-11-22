@@ -12,11 +12,15 @@ function cubicInOut(fraction) {
 
 /* Utilities */
 
+function calculateDeltaValue(value1, value2) {
+  return value2 - value1;
+}
+
 function calculateDeltaValues(startValues, targetValues) {
   if (typeof startValues === 'number') {
-    return targetValues - startValues;
+    return calculateDeltaValue(startValues, targetValues);
   } else {
-    return startValues.map((value, index) => targetValues[index] - startValues[index]);
+    return startValues.map((value, index) => calculateDeltaValue(startValues[index], targetValues[index]));
   }
 }
 

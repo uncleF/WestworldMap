@@ -21,10 +21,12 @@ const TRANSITION_DURATION = 300;
 
 const EVENT_RENDER = 'maprender';
 
+const PAN_STEP = 50;
+
 const CAMERA_TOP_POSITION = [0, 500, 0];
-const CAMERA_TOP_ROTATION = [-1.57069, 0, 0];
-const CAMERA_PERSPECTIVE_POSITION = [0, 200, 350];
-const CAMERA_PERSPECTIVE_ROTATION = [-0.5191, 0, 0];
+const CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
+const CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+const CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
 let renderer;
 let width;
@@ -34,25 +36,46 @@ let scene;
 
 let camera;
 let cameraStatus;
+let cameraSnapshotPosition;
 
 let light;
-
-let world;
 
 let object;
 
 /* Get */
 
 function getMapRotation() {
+  let skipedRotation = object.rotation.y % (Math.PI * 2);
   return [
     object.rotation.x,
-    object.rotation.y,
+    skipedRotation,
     object.rotation.z,
+  ];
+}
+
+function getMapDefaultRotation() {
+  let skipedDefault = Math.round(object.rotation.y / (Math.PI * 2)) * Math.PI * 2;
+  return [
+    ROTATION_DEFAULT[0],
+    skipedDefault,
+    ROTATION_DEFAULT[2]
   ];
 }
 
 function getMapScale() {
   return object.scale.x;
+}
+
+function getCameraPosition() {
+  return [
+    camera.position.x,
+    camera.position.y,
+    camera.position.z
+  ];
+}
+
+function getCameraDefaultPosition() {
+  return cameraStatus ? CAMERA_PERSPECTIVE_POSITION : CAMERA_TOP_POSITION;
 }
 
 /* Map Actions */
@@ -75,7 +98,7 @@ function rotateMapCW() {
   animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CW_STEP, rotateMap, true);
 }
 
-function zoomMap(factor) {
+function scaleMap(factor) {
   factor = factor > SCALE_MAX ? SCALE_MAX : factor;
   factor = factor < SCALE_MIN ? SCALE_MIN : factor;
   object.scale.set(factor, factor, factor);
@@ -83,43 +106,70 @@ function zoomMap(factor) {
 }
 
 function zoomInMap() {
-  animation.go(TRANSITION_DURATION, getMapScale(), SCALE_STEP, zoomMap, true);
+  animation.go(TRANSITION_DURATION, getMapScale(), SCALE_STEP, scaleMap, true);
 }
 
 function zoomOutMap() {
-  animation.go(TRANSITION_DURATION, getMapScale(), -SCALE_STEP, zoomMap, true);
+  animation.go(TRANSITION_DURATION, getMapScale(), -SCALE_STEP, scaleMap, true);
 }
 
-function scaleRotateMap(anglesFactor) {
-  zoomMap(anglesFactor.pop());
-  rotateMap(anglesFactor);
+/* Camera Actions */
+
+function shiftCamera(position) {
+  camera.position.x = position;
   renderMap();
 }
 
-function resetMap() {
-  let startValues = [...getMapRotation(), getMapScale()];
-  let targetValues = [...ROTATION_DEFAULT, SCALE_DEFAULT];
-  animation.go(TRANSITION_DURATION, startValues, targetValues, scaleRotateMap);
+function panCamera(distance) {
+  let position = cameraSnapshotPosition[0] + distance;
+  shiftCamera(position);
+}
+
+function panCameraLeft() {
+  animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, shiftCamera, true);
+}
+
+function panCameraRight() {
+  animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, shiftCamera, true);
+}
+
+/* Scene Actions */
+
+function sceneSnapshot() {
+  cameraSnapshotPosition = getCameraPosition();
+}
+
+function changeScene(transformation) {
+  camera.position.set(...transformation.slice(0, 3));
+  object.rotation.set(...transformation.slice(3, 6));
+  object.scale.set(transformation[6], transformation[6], transformation[6]);
+  renderMap();
+}
+
+function resetScene() {
+  let startValues = [...getCameraPosition(), ...getMapRotation(), getMapScale()];
+  let targetValues = [...getCameraDefaultPosition(), ...getMapDefaultRotation(), SCALE_DEFAULT];
+  animation.go(TRANSITION_DURATION, startValues, targetValues, changeScene);
 }
 
 /* Views */
 
-function positionRotateCamera(positionRotation) {
-  camera.position.set(positionRotation[0], positionRotation[1], positionRotation[2]);
-  camera.rotation.set(positionRotation[3], positionRotation[4], positionRotation[5]);
+function transformCamera(positionRotation) {
+  camera.position.set(...positionRotation.slice(0, 3));
+  camera.rotation.set(...positionRotation.slice(3));
   renderMap();
 }
 
 function moveCameraTop() {
-  let startValues = [...CAMERA_PERSPECTIVE_POSITION, ...CAMERA_PERSPECTIVE_ROTATION];
+  let startValues = [...getCameraPosition(), ...CAMERA_PERSPECTIVE_ROTATION];
   let targetValues = [...CAMERA_TOP_POSITION, ...CAMERA_TOP_ROTATION];
-  animation.go(TRANSITION_DURATION, startValues, targetValues, positionRotateCamera);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
 }
 
 function moveCameraPerspective() {
-  let startValues = [...CAMERA_TOP_POSITION, ...CAMERA_TOP_ROTATION];
+  let startValues = [...getCameraPosition(), ...CAMERA_TOP_ROTATION];
   let targetValues = [...CAMERA_PERSPECTIVE_POSITION, ...CAMERA_PERSPECTIVE_ROTATION];
-  animation.go(TRANSITION_DURATION, startValues, targetValues, positionRotateCamera);
+  animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
 }
 
 function toggleTopDownView() {
@@ -150,7 +200,7 @@ function triggerRenderEvent() {
 /* Map Initialization */
 
 function setupMap(properties) {
-  ({renderer, scene, camera, light, world, object} = properties);
+  ({renderer, scene, camera, light, object} = properties);
   width = renderer.domElement.width;
   height = renderer.domElement.height;
   cameraStatus = true;
@@ -172,9 +222,13 @@ exports.render = renderMap;
 exports.rotate = rotateMap;
 exports.rotateCCW = rotateMapCCW;
 exports.rotateCW = rotateMapCW;
-exports.zoom = zoomMap;
+exports.zoom = scaleMap;
 exports.zoomIn = zoomInMap;
 exports.zoomOut = zoomOutMap;
-exports.reset = resetMap;
+exports.pan = panCamera;
+exports.panLeft = panCameraLeft;
+exports.panRight = panCameraRight;
+exports.snapshot = sceneSnapshot;
+exports.reset = resetScene;
 exports.toggleTopView = toggleTopDownView;
 exports.togglePanorama = togglePanoramaView;
