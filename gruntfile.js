@@ -29,7 +29,8 @@ var CONFIG = {
 
   CSS_IMAGES_DIR: 'images',      // CSS Images
   SPRITES: [                     // CSS Images that Should be Compiled into Separate Sprite Sheets
-    'sprites.png'
+    'sprites.png',
+    'helpSprites.png'
   ],
   DATA_URI: [],                  // CSS Images that Should be Converted into DataURI
   DENSITIES: [1, 2, 3],          // Pixel Densities
