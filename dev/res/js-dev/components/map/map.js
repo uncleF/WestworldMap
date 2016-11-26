@@ -186,6 +186,18 @@ function togglePanoramaView() {
   panorama.toggle();
 }
 
+/* UI Events Initialization */
+
+function onResize(event) {
+  requestAnimationFrame(_ => {
+    renderMap();
+  });
+}
+
+function initilizeUIEvents() {
+  eventTool.bind(window, 'resize', onResize);
+}
+
 /* Map Events */
 
 function triggerRenderEvent() {
@@ -204,6 +216,7 @@ function setupMap(properties) {
   width = renderer.domElement.width;
   height = renderer.domElement.height;
   cameraStatus = true;
+  initilizeUIEvents();
   return Promise.resolve();
 }
 

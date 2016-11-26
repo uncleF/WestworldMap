@@ -75,7 +75,7 @@
 
 }
 
-.topDown {
+.showTopDown {
   @extend %control;
   width: txf-sprite-width($spt-topDown) + 4px;
   height: 0;
@@ -114,43 +114,6 @@
   }
 
 }
-
-// .panorama {
-//   @extend %control;
-//   @include tx-sprite-block($spt-panoramaStart, $padding: true);
-
-//   &:before,
-//   &:after {
-//     @extend %controlTransition;
-//     @include tx-pseudo;
-//     left: 0;
-//     transition: $UITransitionDefault;
-//   }
-
-//   &:before {
-//     @include tx-sprite($spt-panoramaStart, $block: true);
-//     top: 0;
-//   }
-
-//   &:after {
-//     @include tx-sprite($spt-panoramaStop, $block: true);
-//     top: 2px;
-//     opacity: 0;
-//   }
-
-//   &-is-active {
-
-//     &:before {
-//       opacity: 0;
-//     }
-
-//     &:after {
-//       opacity: 1;
-//     }
-
-//   }
-
-// }
 
 .rotateCCW {
   @extend %control;
@@ -246,7 +209,7 @@
 
 }
 
-.help {
+.showHelp {
   @include tx-sprite($spt-help, $block: true, $padding: true);
   @include tx-layer(top);
   position: absolute;
@@ -254,6 +217,43 @@
   right: $gap;
   display: block;
 }
+
+// .showPanorama {
+//   @extend %control;
+//   @include tx-sprite-block($spt-panoramaStart, $padding: true);
+
+//   &:before,
+//   &:after {
+//     @extend %controlTransition;
+//     @include tx-pseudo;
+//     left: 0;
+//     transition: $UITransitionDefault;
+//   }
+
+//   &:before {
+//     @include tx-sprite($spt-panoramaStart, $block: true);
+//     top: 0;
+//   }
+
+//   &:after {
+//     @include tx-sprite($spt-panoramaStop, $block: true);
+//     top: 2px;
+//     opacity: 0;
+//   }
+
+//   &-is-active {
+
+//     &:before {
+//       opacity: 0;
+//     }
+
+//     &:after {
+//       opacity: 1;
+//     }
+
+//   }
+
+// }
 
 
 

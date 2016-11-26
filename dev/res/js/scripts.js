@@ -290,6 +290,7 @@ var cameraFar = void 0;
 var light = void 0;
 
 var object = void 0;
+var objectGeometry = void 0;
 
 /* Get */
 
@@ -305,15 +306,23 @@ function getProperties() {
 
 /* Initialization */
 
-function setupCanvas() {
-  holderDOM = document.getElementById(CANVAS_HOLDER_ID);
+function setCanvasSize() {
   width = holderDOM.clientWidth;
   height = holderDOM.clientHeight;
 }
 
+function setupCanvas() {
+  holderDOM = document.getElementById(CANVAS_HOLDER_ID);
+  setCanvasSize();
+}
+
+function setRendererSize(width, height) {
+  renderer.setSize(width, height);
+}
+
 function setupRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
-  renderer.setSize(width, height);
+  setRendererSize(width, height);
 }
 
 function setupScene() {
@@ -353,9 +362,9 @@ function addLocationPoints() {
   locations.forEach(addLocationPoint);
 }
 
-function addObject(geometry) {
+function addObject() {
   object = new THREE.Object3D();
-  object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
+  object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
   addLocationPoints();
   scene.add(object);
 }
@@ -364,7 +373,8 @@ function setupObject() {
   return new Promise(function (resolve, reject) {
     var loader = new THREE.JSONLoader();
     loader.load(SCENE_URL, function (geometry) {
-      addObject(geometry);
+      objectGeometry = geometry;
+      addObject();
       resolve();
     });
   });
@@ -573,6 +583,18 @@ function togglePanoramaView() {
   panorama.toggle();
 }
 
+/* UI Events Initialization */
+
+function onResize(event) {
+  requestAnimationFrame(function (_) {
+    renderMap();
+  });
+}
+
+function initilizeUIEvents() {
+  eventTool.bind(window, 'resize', onResize);
+}
+
 /* Map Events */
 
 function triggerRenderEvent() {
@@ -596,6 +618,7 @@ function setupMap(properties) {
   width = renderer.domElement.width;
   height = renderer.domElement.height;
   cameraStatus = true;
+  initilizeUIEvents();
   return Promise.resolve();
 }
 
@@ -892,6 +915,45 @@ module.exports = function (map) {
 
 'use strict';
 
+var control = require('./control');
+var toggle = require('./toggle');
+
+var LOCATIONS_ID = 'showLocations';
+var TOP_DOWN_ID = 'showTopDown';
+var ROTATE_CCW_ID = 'rotateCCW';
+var ROTATE_CW_ID = 'rotateCW';
+var ZOOM_IN_ID = 'zoomIn';
+var ZOOM_OUT_ID = 'zoomOut';
+var RESET_ID = 'reset';
+var FULL_SCREEN_ID = 'fullScreen';
+var HELP_ID = 'showHelp';
+
+// const WESTWORLD_ID = 'westworld';
+// const PANORAMA_ID = 'showPanorama';
+
+module.exports = function (map, locations, display, help) {
+
+  /* Panel Initialization */
+
+  toggle(LOCATIONS_ID, locations.toggle);
+  toggle(TOP_DOWN_ID, map.toggleTopView);
+  control(ROTATE_CCW_ID, map.rotateCCW);
+  control(ROTATE_CW_ID, map.rotateCW);
+  control(ZOOM_OUT_ID, map.zoomOut);
+  control(ZOOM_IN_ID, map.zoomIn);
+  control(RESET_ID, map.reset);
+  toggle(FULL_SCREEN_ID, display.toggle);
+  control(HELP_ID, help.toggle);
+
+  // toggle(WESTWORLD_ID, _ => {});
+  // toggle(PANORAMA_ID, map.togglePanorama);
+};
+
+},{"./control":9,"./toggle":15}],15:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
 var ACTIVE_CLASS_NAME_SUFFIX = '-is-active';
 
 module.exports = function (id, task) {
@@ -910,7 +972,7 @@ module.exports = function (id, task) {
   dom.addEventListener('click', onClick);
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1013,56 +1075,29 @@ module.exports = function (map) {
   return Promise.resolve();
 };
 
-},{"patterns/tx-event":8}],16:[function(require,module,exports){
+},{"patterns/tx-event":8}],17:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-var control = require('./control');
-var toggle = require('./toggle');
 var display = require('./display');
+var panel = require('./panel');
 var keyboard = require('./keyboard');
 var mouse = require('./mouse');
 var touch = require('./touch');
 var help = require('./help');
 
-// const WESTWORLD_ID = 'westworld';
-var LOCATIONS_ID = 'showLocations';
-var PANORAMA_ID = 'panorama';
-var ROTATE_CCW_ID = 'rotateCCW';
-var ROTATE_CW_ID = 'rotateCW';
-var ZOOM_IN_ID = 'zoomIn';
-var ZOOM_OUT_ID = 'zoomOut';
-var RESET_ID = 'reset';
-var TOP_DOWN_ID = 'topDown';
-var FULL_SCREEN_ID = 'fullScreen';
-var HELP_ID = 'help';
-
 module.exports = function (locations, map) {
-
-  function controlPanel() {
-    // toggle(WESTWORLD_ID, _ => {});
-    toggle(LOCATIONS_ID, locations.toggle);
-    toggle(TOP_DOWN_ID, map.toggleTopView);
-    // toggle(PANORAMA_ID, map.togglePanorama);
-    control(ROTATE_CCW_ID, map.rotateCCW);
-    control(ROTATE_CW_ID, map.rotateCW);
-    control(ZOOM_OUT_ID, map.zoomOut);
-    control(ZOOM_IN_ID, map.zoomIn);
-    control(RESET_ID, map.reset);
-    toggle(FULL_SCREEN_ID, display.toggle);
-    control(HELP_ID, help.toggle);
-  }
 
   /* UI Initialization */
 
-  controlPanel();
+  panel(map, locations, display, help);
   keyboard(map, locations);
   mouse(map);
   touch(map);
 };
 
-},{"./control":9,"./display":10,"./help":11,"./keyboard":12,"./mouse":13,"./toggle":14,"./touch":15}],17:[function(require,module,exports){
+},{"./display":10,"./help":11,"./keyboard":12,"./mouse":13,"./panel":14,"./touch":16}],18:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1075,4 +1110,4 @@ locations.init().then(map.init).then(function (_) {
   return ui(locations, map);
 });
 
-},{"locations/locations":2,"map/map":5,"ui/ui":16}]},{},[17]);
+},{"locations/locations":2,"map/map":5,"ui/ui":17}]},{},[18]);

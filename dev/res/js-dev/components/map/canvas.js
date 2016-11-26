@@ -34,6 +34,7 @@ let cameraFar;
 let light;
 
 let object;
+let objectGeometry;
 
 /* Get */
 
@@ -49,15 +50,23 @@ function getProperties() {
 
 /* Initialization */
 
-function setupCanvas() {
-  holderDOM = document.getElementById(CANVAS_HOLDER_ID);
+function setCanvasSize() {
   width = holderDOM.clientWidth;
   height = holderDOM.clientHeight;
 }
 
+function setupCanvas() {
+  holderDOM = document.getElementById(CANVAS_HOLDER_ID);
+  setCanvasSize();
+}
+
+function setRendererSize(width, height) {
+  renderer.setSize(width, height);
+}
+
 function setupRenderer() {
   renderer = new THREE.WebGLRenderer({antialias: true, castShadows: true});
-  renderer.setSize(width, height);
+  setRendererSize(width, height);
 }
 
 function setupScene() {
@@ -93,9 +102,9 @@ function addLocationPoints() {
   locations.forEach(addLocationPoint);
 }
 
-function addObject(geometry) {
+function addObject() {
   object = new THREE.Object3D();
-  object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
+  object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
   addLocationPoints();
   scene.add(object);
 }
@@ -104,7 +113,8 @@ function setupObject() {
   return new Promise((resolve, reject) => {
     let loader = new THREE.JSONLoader();
     loader.load(SCENE_URL, geometry => {
-      addObject(geometry);
+      objectGeometry = geometry;
+      addObject();
       resolve();
     });
   });

@@ -5,7 +5,7 @@ kbd {
 
 /* Inline-block IE */
 /* Pseudo Element */
-.showLocations:before, .showLocations:after, .topDown:before, .topDown:after {
+.showLocations:before, .showLocations:after, .showTopDown:before, .showTopDown:after {
   position: absolute;
   content: '';
   display: block;
@@ -13,7 +13,7 @@ kbd {
 
 /* Verticla Alignment */
 /* Sprite Block */
-.westworld, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen, .help {
+.westworld, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen, .showHelp {
   overflow: hidden;
   height: 0;
 }
@@ -541,20 +541,20 @@ body {
 }
 
 /* Sprites */
-.westworld, .showLocations, .showLocations:before, .showLocations:after, .topDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .help {
+.westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp {
   background-image: url("../images/sprites.png");
 }
 
 /* HDPI */
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5), only screen and (-webkit-min-device-pixel-ratio: 1.5625), only screen and (min-resolution: 150dpi), only screen and (min-resolution: 1.5dppx) {
-  .westworld, .showLocations, .showLocations:before, .showLocations:after, .topDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .help {
+  .westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp {
     background-image: url("../images/sprites@2x.png");
     background-size: 115px 96px;
   }
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2.5), only screen and (min--moz-device-pixel-ratio: 2.5), only screen and (min-device-pixel-ratio: 2.5), only screen and (-webkit-min-device-pixel-ratio: 2.6041666666666665), only screen and (min-resolution: 250dpi), only screen and (min-resolution: 2.5dppx) {
-  .westworld, .showLocations, .showLocations:before, .showLocations:after, .topDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .help {
+  .westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp {
     background-image: url("../images/sprites@3x.png");
     background-size: 115px 96px;
   }
@@ -607,7 +607,7 @@ body {
   width: auto;
 }
 
-.showLocations, .topDown, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen {
+.showLocations, .showTopDown, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen {
   position: relative;
   display: block;
   height: 0;
@@ -615,7 +615,7 @@ body {
   text-indent: -10000px;
 }
 
-.mdz-touchevents .showLocations, .mdz-touchevents .topDown, .mdz-touchevents .rotateCCW, .mdz-touchevents .rotateCW, .mdz-touchevents .zoomOut, .mdz-touchevents .zoomIn, .mdz-touchevents .reset, .mdz-touchevents .fullScreen {
+.mdz-touchevents .showLocations, .mdz-touchevents .showTopDown, .mdz-touchevents .rotateCCW, .mdz-touchevents .rotateCW, .mdz-touchevents .zoomOut, .mdz-touchevents .zoomIn, .mdz-touchevents .reset, .mdz-touchevents .fullScreen {
   margin: 10px 0;
 }
 
@@ -655,7 +655,7 @@ body {
   opacity: 1;
 }
 
-.topDown {
+.showTopDown {
   width: 26px;
   height: 0;
   padding: 22px 0 0;
@@ -663,12 +663,12 @@ body {
           perspective: 50px;
 }
 
-.topDown:before, .topDown:after {
+.showTopDown:before, .showTopDown:after {
   position: absolute;
   content: '';
 }
 
-.topDown:before {
+.showTopDown:before {
   width: 22px;
   height: 22px;
   background-position: -44px 0;
@@ -679,14 +679,14 @@ body {
   transition: 0.2s;
 }
 
-.topDown:after {
+.showTopDown:after {
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
 }
 
-.topDown-is-active:before {
+.showTopDown-is-active:before {
   -webkit-transform: rotateX(50deg);
           transform: rotateX(50deg);
 }
@@ -775,7 +775,7 @@ body {
   display: block;
 }
 
-.help {
+.showHelp {
   width: 14px;
   padding: 23px 0 0;
   background-position: -99px -27px;
@@ -801,7 +801,7 @@ body {
         justify-content: space-around;
     padding: 0 20px;
   }
-  .mdz-touchevents .showLocations, .mdz-touchevents .topDown, .mdz-touchevents .rotateCCW, .mdz-touchevents .rotateCW, .mdz-touchevents .zoomOut, .mdz-touchevents .zoomIn, .mdz-touchevents .reset, .mdz-touchevents .fullScreen {
+  .mdz-touchevents .showLocations, .mdz-touchevents .showTopDown, .mdz-touchevents .rotateCCW, .mdz-touchevents .rotateCW, .mdz-touchevents .zoomOut, .mdz-touchevents .zoomIn, .mdz-touchevents .reset, .mdz-touchevents .fullScreen {
     margin: 0;
   }
   .rotateCCW, .rotateCW, .zoomOut, .zoomIn {
@@ -910,6 +910,15 @@ body {
   bottom: 0;
   left: 0;
   overflow: hidden;
+}
+
+.map canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* Footer */
