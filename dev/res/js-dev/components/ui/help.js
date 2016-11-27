@@ -2,8 +2,13 @@
 
 'use strict';
 
-function toggleHelp() {
+let eventManager = require('patterns/tx-event');
+let uiEvents = require('ui/uiEvents');
+
+function onUIHelp() {
   console.log('Help');
 }
 
-exports.toggle = toggleHelp;
+module.exports = _ => {
+  eventManager.bind(document, uiEvents.help, onUIHelp);
+};

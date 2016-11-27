@@ -2,20 +2,26 @@
 
 'use strict';
 
+let panel = require('./input/panel');
+let keyboard = require('./input/keyboard');
+let mouse = require('./input/mouse');
+let touch = require('./input/touch');
+
 let display = require('./display');
-let panel = require('./panel');
-let keyboard = require('./keyboard');
-let mouse = require('./mouse');
-let touch = require('./touch');
 let help = require('./help');
 
 module.exports = (locations, map) => {
 
-  /* UI Initialization */
+  /* Input Options */
 
-  panel(map, locations, display, help);
-  keyboard(map, locations);
-  mouse(map);
-  touch(map);
+  panel();
+  keyboard();
+  mouse();
+  touch();
+
+  /* UI */
+
+  display();
+  help();
 
 };

@@ -405,259 +405,229 @@ exports.init = inititalizeCanvas;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+var eventManager = require('patterns/tx-event');
 var canvas = require('./canvas');
 var animation = require('./animation');
-var panorama = require('./panorama');
-var eventTool = require('patterns/tx-event');
+var uiEvents = require('./uiEvents');
 
-var ROTATION_DEFAULT = [0, 0, 0];
-var ROTATION_STEP = Math.PI / 180 * 30;
-var ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
-var ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
+module.exports = function (locationsData) {
 
-var SCALE_DEFAULT = 1;
-var SCALE_STEP = 0.25;
-var SCALE_MAX = 4;
-var SCALE_MIN = 0.25;
+  var ROTATION_DEFAULT = [0, 0, 0];
+  var ROTATION_STEP = Math.PI / 180 * 30;
+  var ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
+  var ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
 
-var TRANSITION_DURATION = 300;
+  var SCALE_DEFAULT = 1;
+  var SCALE_STEP = 0.25;
+  var SCALE_MAX = 4;
+  var SCALE_MIN = 0.25;
 
-var EVENT_RENDER = 'maprender';
+  var TRANSITION_DURATION = 300;
 
-var PAN_STEP = 50;
+  var EVENT_RENDER = 'maprender';
 
-var CAMERA_TOP_POSITION = [0, 500, 0];
-var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
-var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
-var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
+  var PAN_STEP = 50;
 
-var renderer = void 0;
-var width = void 0;
-var height = void 0;
+  var CAMERA_TOP_POSITION = [0, 500, 0];
+  var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
+  var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+  var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
-var scene = void 0;
+  var renderer = void 0;
+  var width = void 0;
+  var height = void 0;
 
-var camera = void 0;
-var cameraStatus = void 0;
-var cameraSnapshotPosition = void 0;
+  var scene = void 0;
 
-var light = void 0;
+  var camera = void 0;
+  var cameraStatus = void 0;
+  var cameraSnapshotPosition = void 0;
 
-var object = void 0;
+  var light = void 0;
 
-/* Get */
+  var object = void 0;
 
-function getMapRotation() {
-  var skipedRotation = object.rotation.y % (Math.PI * 2);
-  return [object.rotation.x, skipedRotation, object.rotation.z];
-}
+  /* Get */
 
-function getMapDefaultRotation() {
-  var skipedDefault = Math.round(object.rotation.y / (Math.PI * 2)) * Math.PI * 2;
-  return [ROTATION_DEFAULT[0], skipedDefault, ROTATION_DEFAULT[2]];
-}
-
-function getMapScale() {
-  return object.scale.x;
-}
-
-function getCameraPosition() {
-  return [camera.position.x, camera.position.y, camera.position.z];
-}
-
-function getCameraDefaultPosition() {
-  return cameraStatus ? CAMERA_PERSPECTIVE_POSITION : CAMERA_TOP_POSITION;
-}
-
-/* Map Actions */
-
-function renderMap() {
-  renderer.render(scene, camera);
-  triggerRenderEvent();
-}
-
-function rotateMap(angles) {
-  var _object$rotation;
-
-  (_object$rotation = object.rotation).set.apply(_object$rotation, _toConsumableArray(angles));
-  renderMap();
-}
-
-function rotateMapCCW() {
-  animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CCW_STEP, rotateMap, true);
-}
-
-function rotateMapCW() {
-  animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CW_STEP, rotateMap, true);
-}
-
-function scaleMap(factor) {
-  factor = factor > SCALE_MAX ? SCALE_MAX : factor;
-  factor = factor < SCALE_MIN ? SCALE_MIN : factor;
-  object.scale.set(factor, factor, factor);
-  renderMap();
-}
-
-function zoomInMap() {
-  animation.go(TRANSITION_DURATION, getMapScale(), SCALE_STEP, scaleMap, true);
-}
-
-function zoomOutMap() {
-  animation.go(TRANSITION_DURATION, getMapScale(), -SCALE_STEP, scaleMap, true);
-}
-
-/* Camera Actions */
-
-function shiftCamera(position) {
-  camera.position.x = position;
-  renderMap();
-}
-
-function panCamera(distance) {
-  var position = cameraSnapshotPosition[0] + distance;
-  shiftCamera(position);
-}
-
-function panCameraLeft() {
-  animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, shiftCamera, true);
-}
-
-function panCameraRight() {
-  animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, shiftCamera, true);
-}
-
-/* Scene Actions */
-
-function sceneSnapshot() {
-  cameraSnapshotPosition = getCameraPosition();
-}
-
-function changeScene(transformation) {
-  var _camera$position, _object$rotation2;
-
-  (_camera$position = camera.position).set.apply(_camera$position, _toConsumableArray(transformation.slice(0, 3)));
-  (_object$rotation2 = object.rotation).set.apply(_object$rotation2, _toConsumableArray(transformation.slice(3, 6)));
-  object.scale.set(transformation[6], transformation[6], transformation[6]);
-  renderMap();
-}
-
-function resetScene() {
-  var startValues = [].concat(_toConsumableArray(getCameraPosition()), _toConsumableArray(getMapRotation()), [getMapScale()]);
-  var targetValues = [].concat(_toConsumableArray(getCameraDefaultPosition()), _toConsumableArray(getMapDefaultRotation()), [SCALE_DEFAULT]);
-  animation.go(TRANSITION_DURATION, startValues, targetValues, changeScene);
-}
-
-/* Views */
-
-function transformCamera(positionRotation) {
-  var _camera$position2, _camera$rotation;
-
-  (_camera$position2 = camera.position).set.apply(_camera$position2, _toConsumableArray(positionRotation.slice(0, 3)));
-  (_camera$rotation = camera.rotation).set.apply(_camera$rotation, _toConsumableArray(positionRotation.slice(3)));
-  renderMap();
-}
-
-function moveCameraTop() {
-  var startValues = [].concat(_toConsumableArray(getCameraPosition()), CAMERA_PERSPECTIVE_ROTATION);
-  var targetValues = [].concat(CAMERA_TOP_POSITION, CAMERA_TOP_ROTATION);
-  animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
-}
-
-function moveCameraPerspective() {
-  var startValues = [].concat(_toConsumableArray(getCameraPosition()), CAMERA_TOP_ROTATION);
-  var targetValues = [].concat(CAMERA_PERSPECTIVE_POSITION, CAMERA_PERSPECTIVE_ROTATION);
-  animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
-}
-
-function toggleTopDownView() {
-  if (cameraStatus) {
-    moveCameraTop();
-    cameraStatus = false;
-  } else {
-    moveCameraPerspective();
-    cameraStatus = true;
+  function getMapRotation() {
+    return [object.rotation.x, object.rotation.y % (Math.PI * 2), object.rotation.z];
   }
-}
 
-function togglePanoramaView() {
-  panorama.toggle();
-}
+  function getMapDefaultRotation() {
+    return [ROTATION_DEFAULT[0], Math.round(object.rotation.y / (Math.PI * 2)) * Math.PI * 2, ROTATION_DEFAULT[2]];
+  }
 
-/* UI Events Initialization */
+  function getMapScale() {
+    return object.scale.x;
+  }
 
-function onResize(event) {
-  requestAnimationFrame(function (_) {
+  function getCameraPosition() {
+    return [camera.position.x, camera.position.y, camera.position.z];
+  }
+
+  function getCameraDefaultPosition() {
+    return cameraStatus ? CAMERA_PERSPECTIVE_POSITION : CAMERA_TOP_POSITION;
+  }
+
+  /* Map Actions */
+
+  function renderMap() {
+    renderer.render(scene, camera);
+    eventManager.trigger(document, EVENT_RENDER, false, 'UIEvent', { camera: camera, width: width, height: height });
+  }
+
+  function rotateMap(angles) {
+    var _object$rotation;
+
+    (_object$rotation = object.rotation).set.apply(_object$rotation, _toConsumableArray(angles));
     renderMap();
-  });
-}
+  }
 
-function initilizeUIEvents() {
-  eventTool.bind(window, 'resize', onResize);
-}
+  function rotateMapCCW() {
+    animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CCW_STEP, rotateMap, true);
+  }
 
-/* Map Events */
+  function rotateMapCW() {
+    animation.go(TRANSITION_DURATION, getMapRotation(), ROTATION_CW_STEP, rotateMap, true);
+  }
 
-function triggerRenderEvent() {
-  var data = {
-    camera: camera,
-    width: width,
-    height: height
-  };
-  eventTool.trigger(document, EVENT_RENDER, false, 'UIEvent', data);
-}
+  function scaleMap(factor) {
+    factor = factor > SCALE_MAX ? SCALE_MAX : factor;
+    factor = factor < SCALE_MIN ? SCALE_MIN : factor;
+    object.scale.set(factor, factor, factor);
+    renderMap();
+  }
 
-/* Map Initialization */
+  function zoomInMap() {
+    animation.go(TRANSITION_DURATION, getMapScale(), SCALE_STEP, scaleMap, true);
+  }
 
-function setupMap(properties) {
-  renderer = properties.renderer;
-  scene = properties.scene;
-  camera = properties.camera;
-  light = properties.light;
-  object = properties.object;
+  function zoomOutMap() {
+    animation.go(TRANSITION_DURATION, getMapScale(), -SCALE_STEP, scaleMap, true);
+  }
 
-  width = renderer.domElement.width;
-  height = renderer.domElement.height;
-  cameraStatus = true;
-  initilizeUIEvents();
-  return Promise.resolve();
-}
+  /* Camera Actions */
 
-function initializeMap(locations) {
-  return canvas.init(locations).then(setupMap).then(renderMap);
-}
+  function shiftCamera(position) {
+    camera.position.x = position;
+    renderMap();
+  }
 
-/* Interface */
+  function panCamera(distance) {
+    var position = cameraSnapshotPosition[0] + distance;
+    shiftCamera(position);
+  }
 
-exports.init = initializeMap;
-exports.getRotation = getMapRotation;
-exports.getScale = getMapScale;
-exports.render = renderMap;
-exports.rotate = rotateMap;
-exports.rotateCCW = rotateMapCCW;
-exports.rotateCW = rotateMapCW;
-exports.zoom = scaleMap;
-exports.zoomIn = zoomInMap;
-exports.zoomOut = zoomOutMap;
-exports.pan = panCamera;
-exports.panLeft = panCameraLeft;
-exports.panRight = panCameraRight;
-exports.snapshot = sceneSnapshot;
-exports.reset = resetScene;
-exports.toggleTopView = toggleTopDownView;
-exports.togglePanorama = togglePanoramaView;
+  function panCameraLeft() {
+    animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, shiftCamera, true);
+  }
 
-},{"./animation":3,"./canvas":4,"./panorama":6,"patterns/tx-event":8}],6:[function(require,module,exports){
+  function panCameraRight() {
+    animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, shiftCamera, true);
+  }
+
+  /* Scene Actions */
+
+  function sceneSnapshot() {
+    cameraSnapshotPosition = getCameraPosition();
+  }
+
+  function changeScene(transformation) {
+    var _camera$position, _object$rotation2;
+
+    (_camera$position = camera.position).set.apply(_camera$position, _toConsumableArray(transformation.slice(0, 3)));
+    (_object$rotation2 = object.rotation).set.apply(_object$rotation2, _toConsumableArray(transformation.slice(3, 6)));
+    object.scale.set(transformation[6], transformation[6], transformation[6]);
+    renderMap();
+  }
+
+  function resetScene() {
+    var startValues = [].concat(_toConsumableArray(getCameraPosition()), _toConsumableArray(getMapRotation()), [getMapScale()]);
+    var targetValues = [].concat(_toConsumableArray(getCameraDefaultPosition()), _toConsumableArray(getMapDefaultRotation()), [SCALE_DEFAULT]);
+    animation.go(TRANSITION_DURATION, startValues, targetValues, changeScene);
+  }
+
+  /* Views */
+
+  function transformCamera(positionRotation) {
+    var _camera$position2, _camera$rotation;
+
+    (_camera$position2 = camera.position).set.apply(_camera$position2, _toConsumableArray(positionRotation.slice(0, 3)));
+    (_camera$rotation = camera.rotation).set.apply(_camera$rotation, _toConsumableArray(positionRotation.slice(3)));
+    renderMap();
+  }
+
+  function moveCameraTop() {
+    var startValues = [].concat(_toConsumableArray(getCameraPosition()), CAMERA_PERSPECTIVE_ROTATION);
+    var targetValues = [].concat(CAMERA_TOP_POSITION, CAMERA_TOP_ROTATION);
+    animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
+  }
+
+  function moveCameraPerspective() {
+    var startValues = [].concat(_toConsumableArray(getCameraPosition()), CAMERA_TOP_ROTATION);
+    var targetValues = [].concat(CAMERA_PERSPECTIVE_POSITION, CAMERA_PERSPECTIVE_ROTATION);
+    animation.go(TRANSITION_DURATION, startValues, targetValues, transformCamera);
+  }
+
+  function toggleTopDownView() {
+    if (cameraStatus) {
+      moveCameraTop();
+      cameraStatus = false;
+    } else {
+      moveCameraPerspective();
+      cameraStatus = true;
+    }
+  }
+
+  /* Map Initialization */
+
+  function setupMap(properties) {
+    renderer = properties.renderer;
+    scene = properties.scene;
+    camera = properties.camera;
+    light = properties.light;
+    object = properties.object;
+    var _renderer$domElement = renderer.domElement;
+    width = _renderer$domElement.width;
+    height = _renderer$domElement.height;
+
+    cameraStatus = true;
+    return Promise.resolve();
+  }
+
+  return canvas.init(locationsData).then(setupMap).then(uiEvents).then(renderMap);
+};
+
+},{"./animation":3,"./canvas":4,"./uiEvents":6,"patterns/tx-event":8}],6:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-function togglePanorama() {
-  console.log('Panorama');
-}
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
 
-exports.toggle = togglePanorama;
+module.exports = function (tasks) {
 
-},{}],7:[function(require,module,exports){
+  /* UI Events */
+
+  eventManager.bind(document, uiEvents.topDown, tasks.topDown);
+  eventManager.bind(document, uiEvents.mapuirotate, tasks.mapuirotate);
+  eventManager.bind(document, uiEvents.mapuiccwrotate, tasks.mapuiccwrotate);
+  eventManager.bind(document, uiEvents.mapuicwrotate, tasks.mapuicwrotate);
+  eventManager.bind(document, uiEvents.mapuipan, tasks.mapuipan);
+  eventManager.bind(document, uiEvents.mapuipanleft, tasks.mapuipanleft);
+  eventManager.bind(document, uiEvents.mapuipanright, tasks.mapuipanright);
+  eventManager.bind(document, uiEvents.mapuizoom, tasks.mapuizoom);
+  eventManager.bind(document, uiEvents.mapuizoomin, tasks.mapuizoomin);
+  eventManager.bind(document, uiEvents.mapuizoomout, tasks.mapuizoomout);
+  eventManager.bind(document, uiEvents.reset, tasks.reset);
+
+  /* Window Events */
+
+  eventManager.bind(window, 'resize', tasks.resize);
+};
+
+},{"patterns/tx-event":8,"ui/uiEvents":18}],7:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -742,23 +712,8 @@ exports.target = target;
 
 'use strict';
 
-module.exports = function (id, task) {
-
-  var dom = void 0;
-
-  function onClick(event) {
-    event.preventDefault();
-    task();
-  }
-
-  dom = document.getElementById(id);
-  dom.addEventListener('click', onClick);
-};
-
-},{}],10:[function(require,module,exports){
-/* jshint browser:true */
-
-'use strict';
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
 
 function enterFullScreen() {
   document.documentElement.webkitRequestFullscreen();
@@ -768,7 +723,7 @@ function exitFullScreen() {
   document.webkitExitFullscreen();
 }
 
-function toggleFullScreen() {
+function onUIFullscreen() {
   if (!document.webkitFullscreenElement) {
     enterFullScreen();
   } else {
@@ -776,147 +731,154 @@ function toggleFullScreen() {
   }
 }
 
-exports.enter = enterFullScreen;
-exports.exit = exitFullScreen;
-exports.toggle = toggleFullScreen;
+module.exports = function (_) {
+  eventManager.bind(document, uiEvents.fullscreen, onUIFullscreen);
+};
 
-},{}],11:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":18}],10:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-function toggleHelp() {
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
+
+function onUIHelp() {
   console.log('Help');
 }
 
-exports.toggle = toggleHelp;
-
-},{}],12:[function(require,module,exports){
-/* jshint browser:true */
-
-'use strict';
-
-var eventTool = require('patterns/tx-event');
-
-module.exports = function (map, locations) {
-
-  var KEY_ACTIONS = {
-    32: locations.toggle,
-    33: map.rotateCCW,
-    34: map.rotateCW,
-    37: map.panLeft,
-    39: map.panRight,
-    38: map.zoomIn,
-    40: map.zoomOut,
-    49: map.toggleTopView,
-    50: map.togglePanorama
-  };
-
-  /* Interactions */
-
-  function onKeyDown(event) {
-    var key = event.keyCode;
-    if (KEY_ACTIONS[key]) {
-      event.preventDefault();
-      event.stopPropagation();
-      KEY_ACTIONS[key]();
-    }
-  }
-
-  /* Initialization */
-
-  eventTool.bind(document, 'keydown', onKeyDown);
+module.exports = function (_) {
+  eventManager.bind(document, uiEvents.help, onUIHelp);
 };
 
-},{"patterns/tx-event":8}],13:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":18}],11:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-var eventTool = require('patterns/tx-event');
+var eventManager = require('patterns/tx-event');
+
+function onClick(event, uiEvent) {
+  event.preventDefault();
+  event.stopPropagation();
+  eventManager.trigger(document, uiEvent, false, 'UIEvent');
+}
+
+module.exports = function (id, uiEvent) {
+  var dom = document.getElementById(id);
+  eventManager.bind(dom, 'click', function (event) {
+    return onClick(event, uiEvent);
+  });
+};
+
+},{"patterns/tx-event":8}],12:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
+
+var KEY_EVENTS = {
+  32: uiEvents.locations,
+  49: uiEvents.topDown,
+  33: uiEvents.rotateCCW,
+  34: uiEvents.rotateCW,
+  37: uiEvents.panLeft,
+  39: uiEvents.panRight,
+  38: uiEvents.zoomIn,
+  40: uiEvents.zoomOut
+};
+
+function onKeyDown(event) {
+  var keyCode = event.keyCode;
+  if (KEY_EVENTS[keyCode]) {
+    event.preventDefault();
+    event.stopPropagation();
+    eventManager.trigger(document, KEY_EVENTS[keyCode], false, 'UIEvent');
+  }
+}
+
+module.exports = function (_) {
+  eventManager.bind(document, 'keydown', onKeyDown);
+};
+
+},{"patterns/tx-event":8,"ui/uiEvents":18}],13:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
 
 var CATCHER_ID = 'locations';
 
-var PAN_STEP = 0.25;
-
-var ROTATION_STEP = -0.005;
-
-var SCALE_STEP = 0.01;
-
-module.exports = function (map) {
-
-  var catcher = void 0;
-
-  var startPosition = void 0;
-  var startRotation = void 0;
-
-  var MOUSE_ACTIONS = {
-    0: onLeftMouseMove,
-    2: onRightMouseMove
-  };
-
-  /* Interactions */
-
-  function onLeftMouseMove(event) {
-    event.preventDefault();
-    requestAnimationFrame(function (_) {
-      var currentPosition = event.clientX;
-      var currentAngle = startRotation[1] + (currentPosition - startPosition) * ROTATION_STEP;
-      var currentRotation = [startRotation[0], currentAngle, startRotation[2]];
-      map.rotate(currentRotation);
-    });
-  }
-
-  function onRightMouseMove(event) {
-    event.preventDefault();
-    requestAnimationFrame(function (_) {
-      var currentDistance = (event.clientX - startPosition) * PAN_STEP;
-
-      map.pan(currentDistance);
-    });
-  }
-
-  function onMouseUp(event) {
-    eventTool.unbind(document, 'mousemove', MOUSE_ACTIONS[event.button]);
-    eventTool.unbind(document, 'mouseup', onMouseUp);
-  }
-
-  function onMouseDown(event) {
-    event.preventDefault();
-    startPosition = event.clientX;
-    startRotation = map.getRotation();
-    map.snapshot();
-    eventTool.bind(document, 'mousemove', MOUSE_ACTIONS[event.button]);
-    eventTool.bind(document, 'mouseup', onMouseUp);
-  }
-
-  function onWheel(event) {
-    event.preventDefault();
-    var startScale = map.getScale();
-    var deltaScale = event.deltaY > 0 ? SCALE_STEP : -SCALE_STEP;
-    map.zoom(startScale + deltaScale * 2);
-  }
-
-  function onContextMenu(event) {
-    event.preventDefault();
-  }
-
-  /* Inititalization */
-
-  catcher = document.getElementById(CATCHER_ID);
-  eventTool.bind(catcher, 'mousedown', onMouseDown);
-  eventTool.bind(catcher, 'wheel', onWheel);
-  eventTool.bind(catcher, 'contextmenu', onContextMenu);
-  return Promise.resolve();
+var MOUSE_EVENTS = {
+  0: uiEvents.rotate,
+  2: uiEvents.pan
 };
 
-},{"patterns/tx-event":8}],14:[function(require,module,exports){
+function onMouseMove(event, position) {
+  requestAnimationFrame(function (_) {
+    var button = event.button;
+    var delta = {
+      x: position.x - event.clientX,
+      y: position.y - event.clientY
+    };
+    event.preventDefault();
+    event.stopPropagation();
+    eventManager.trigger(document, MOUSE_EVENTS[button], false, 'UIEvent', { delta: delta });
+  });
+}
+
+function onMouseUp(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  eventManager.unbind(document, 'mousemove');
+  eventManager.unbind(document, 'mouseup', onMouseUp);
+}
+
+function onMouseDown(event) {
+  var position = {
+    x: event.clientX,
+    y: event.clientY
+  };
+  event.preventDefault();
+  event.stopPropagation();
+  eventManager.bind(document, 'mousemove', function (event) {
+    return onMouseMove(event, position);
+  });
+  eventManager.bind(document, 'mouseup', onMouseUp);
+}
+
+function onWheel(event) {
+  requestAnimationFrame(function (_) {
+    event.preventDefault();
+    event.stopPropagation();
+    eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', { delta: event.deltaY });
+  });
+}
+
+function onContextMenu(event) {
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+module.exports = function (_) {
+  var catcher = document.getElementById(CATCHER_ID);
+  eventManager.bind(catcher, 'mousedown', onMouseDown, false);
+  eventManager.bind(catcher, 'wheel', onWheel, false);
+  eventManager.bind(catcher, 'contextmenu', onContextMenu, false);
+};
+
+},{"patterns/tx-event":8,"ui/uiEvents":18}],14:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
 var control = require('./control');
 var toggle = require('./toggle');
+var uiEvents = require('ui/uiEvents');
 
 var LOCATIONS_ID = 'showLocations';
 var TOP_DOWN_ID = 'showTopDown';
@@ -928,186 +890,172 @@ var RESET_ID = 'reset';
 var FULL_SCREEN_ID = 'fullScreen';
 var HELP_ID = 'showHelp';
 
-// const WESTWORLD_ID = 'westworld';
-// const PANORAMA_ID = 'showPanorama';
-
-module.exports = function (map, locations, display, help) {
+module.exports = function (_) {
 
   /* Panel Initialization */
 
-  toggle(LOCATIONS_ID, locations.toggle);
-  toggle(TOP_DOWN_ID, map.toggleTopView);
-  control(ROTATE_CCW_ID, map.rotateCCW);
-  control(ROTATE_CW_ID, map.rotateCW);
-  control(ZOOM_OUT_ID, map.zoomOut);
-  control(ZOOM_IN_ID, map.zoomIn);
-  control(RESET_ID, map.reset);
-  toggle(FULL_SCREEN_ID, display.toggle);
-  control(HELP_ID, help.toggle);
-
-  // toggle(WESTWORLD_ID, _ => {});
-  // toggle(PANORAMA_ID, map.togglePanorama);
+  toggle(LOCATIONS_ID, uiEvents.locations);
+  toggle(TOP_DOWN_ID, uiEvents.topDown);
+  control(ROTATE_CCW_ID, uiEvents.rotateCCW);
+  control(ROTATE_CW_ID, uiEvents.rotateCW);
+  control(ZOOM_OUT_ID, uiEvents.zoomOut);
+  control(ZOOM_IN_ID, uiEvents.zoomIn);
+  control(RESET_ID, uiEvents.reset);
+  toggle(FULL_SCREEN_ID, uiEvents.fullscreen);
+  control(HELP_ID, uiEvents.help);
 };
 
-},{"./control":9,"./toggle":15}],15:[function(require,module,exports){
+},{"./control":11,"./toggle":15,"ui/uiEvents":18}],15:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
+
+var eventManager = require('patterns/tx-event');
 
 var ACTIVE_CLASS_NAME_SUFFIX = '-is-active';
 
-module.exports = function (id, task) {
+function onClick(event, uiEvent, dom, activeClass) {
+  event.preventDefault();
+  event.stopPropagation();
+  dom.classList.toggle(activeClass);
+  eventManager.trigger(document, uiEvent, false, 'UIEvent');
+}
 
-  var dom = void 0;
-  var activeClass = void 0;
-
-  function onClick(event) {
-    event.preventDefault();
-    dom.classList.toggle(activeClass);
-    task();
-  }
-
-  dom = document.getElementById(id);
-  activeClass = '' + id + ACTIVE_CLASS_NAME_SUFFIX;
-  dom.addEventListener('click', onClick);
+module.exports = function (id, uiEvent) {
+  var dom = document.getElementById(id);
+  var activeClass = '' + id + ACTIVE_CLASS_NAME_SUFFIX;
+  dom.addEventListener('click', function (event) {
+    return onClick(event, uiEvent, dom, activeClass);
+  });
 };
 
-},{}],16:[function(require,module,exports){
+},{"patterns/tx-event":8}],16:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-var eventTool = require('patterns/tx-event');
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
 
 var CATCHER_ID = 'locations';
 
-var PAN_STEP = 0.35;
+var TOUCH_THRESHOLD = 120;
 
-var ROTATION_STEP = -0.005;
+function calculateDeltaPosition(touchesStart, touchesMove) {
+  return touchesStart[0].clientX - touchesMove[0].clientX;
+}
 
-var SCALE_STEP = 0.01;
-var SCALE_THRESHOLD = 120;
+function calculateDistance(touches) {
+  return Math.sqrt(Math.pow(touches[1].clientX - touches[0].clientX, 2) + Math.pow(touches[1].clientY - touches[0].clientY, 2));
+}
 
-module.exports = function (map) {
+function onSingleToucheMove(touchesStart, touchesMove) {
+  var delta = calculateDeltaPosition(touchesStart, touchesMove);
+  eventManager.trigger(document, uiEvents.rotate, false, 'UIEvent', { delta: delta });
+}
 
-  var catcher = void 0;
-
-  var startPosition = void 0;
-  var startRotation = void 0;
-  var startDistance = void 0;
-  var startScale = void 0;
-
-  /* Utilities */
-
-  function calculateDistance(startPosition, currentPosition) {
-    return Math.sqrt(Math.pow(currentPosition.clientX - startPosition.clientX, 2) + Math.pow(currentPosition.clientY - startPosition.clientY, 2));
+function onDoubleTouchMove(touchesStart, touchesMove) {
+  var deltaPosition = calculateDeltaPosition(touchesStart, touchesMove);
+  var distance = calculateDistance(touchesMove);
+  if (distance <= TOUCH_THRESHOLD) {
+    eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', { delta: deltaPosition });
+  } else {
+    eventManager.trigger(document, uiEvents.rotate, false, 'UIEvent', { distance: distance });
   }
+}
 
-  /* Actions */
-
-  function singleTouchMove(event) {
-    requestAnimationFrame(function (_) {
-      var currentPosition = event.touches[0].clientX;
-      var currentAngle = startRotation[1] + (currentPosition - startPosition) * ROTATION_STEP;
-      var currentRotation = [startRotation[0], currentAngle, startRotation[2]];
-      map.rotate(currentRotation);
-    });
-  }
-
-  function doubleTouchScale(currentDistance) {
-    var currentScale = startScale + (currentDistance - startDistance) * SCALE_STEP;
-    map.zoom(currentScale);
-  }
-
-  function doubleTouchPan(event) {
-    var currentDistance = (event.touches[0].clientX - startPosition) * PAN_STEP;
-    map.pan(currentDistance);
-  }
-
-  function doubleTouchMove(event) {
-    requestAnimationFrame(function (_) {
-      var currentDistance = calculateDistance(event.touches[0], event.touches[1]);
-      if (currentDistance > SCALE_THRESHOLD) {
-        doubleTouchScale(currentDistance);
-      } else {
-        doubleTouchPan(event);
-      }
-    });
-  }
-
-  function singleTouchStart(event) {
-    startPosition = event.touches[0].clientX;
-    startRotation = map.getRotation();
-  }
-
-  function doubleTouchStart(event) {
-    map.snapshot();
-    startPosition = event.touches[0].clientX;
-    startDistance = calculateDistance(event.touches[0], event.touches[1]);
-    startScale = map.getScale();
-  }
-
-  /* Interactions */
-
-  function onTouchStart(event) {
-    event.preventDefault();
-    if (event.touches.length > 1) {
-      doubleTouchStart(event);
+function onGesture(event, touches, distance) {
+  requestAnimationFrame(function (_) {
+    if (touches.length === 1) {
+      onSingleToucheMove();
     } else {
-      singleTouchStart(event);
+      onDoubleTouchMove();
     }
-  }
+  });
+}
 
-  function onTouchMove(event) {
-    event.preventDefault();
-    if (event.touches.length > 1) {
-      doubleTouchMove(event);
-    } else {
-      singleTouchMove(event);
-    }
-  }
+function onTouchEnd(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  eventManager.unbind(document, 'touchmove');
+  eventManager.unbind(document, 'touchend', onTouchEnd);
+}
 
-  /* Inititalization */
+function onTouchStart(event) {
+  var touches = event.touches;
+  var distance = calculateDistance(touches);
+  event.preventDefault();
+  event.stopPropagation();
+  eventManager.bind(document, 'touchmove', function (event) {
+    return onGesture(event, touches, distance);
+  });
+  eventManager.bind(document, 'touchend', onTouchEnd);
+}
 
-  catcher = document.getElementById(CATCHER_ID);
-  eventTool.bind(catcher, 'touchstart', onTouchStart, true);
-  eventTool.bind(catcher, 'touchmove', onTouchMove, true);
-  return Promise.resolve();
+module.exports = function (_) {
+  var catcher = document.getElementById(CATCHER_ID);
+  eventManager.bind(catcher, 'touchstart', onTouchStart, false);
 };
 
-},{"patterns/tx-event":8}],17:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":18}],17:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
+var panel = require('./input/panel');
+var keyboard = require('./input/keyboard');
+var mouse = require('./input/mouse');
+var touch = require('./input/touch');
+
 var display = require('./display');
-var panel = require('./panel');
-var keyboard = require('./keyboard');
-var mouse = require('./mouse');
-var touch = require('./touch');
 var help = require('./help');
 
 module.exports = function (locations, map) {
 
-  /* UI Initialization */
+  /* Input Options */
 
-  panel(map, locations, display, help);
-  keyboard(map, locations);
-  mouse(map);
-  touch(map);
+  panel();
+  keyboard();
+  mouse();
+  touch();
+
+  /* UI */
+
+  display();
+  help();
 };
 
-},{"./display":10,"./help":11,"./keyboard":12,"./mouse":13,"./panel":14,"./touch":16}],18:[function(require,module,exports){
+},{"./display":9,"./help":10,"./input/keyboard":12,"./input/mouse":13,"./input/panel":14,"./input/touch":16}],18:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-var map = require('map/map');
+module.exports = {
+  locations: 'locationsuichange',
+  topDown: 'mapuitopdown',
+  rotate: 'mapuirotate',
+  rotateCCW: 'mapuiccwrotate',
+  rotateCW: 'mapuicwrotate',
+  pan: 'mapuipan',
+  panLeft: 'mapuipanleft',
+  panRight: 'mapuipanright',
+  zoom: 'mapuizoom',
+  zoomIn: 'mapuizoomin',
+  zoomOut: 'mapuizoomout',
+  reset: 'mapuireset',
+  fullscreen: 'fullscreenuichange',
+  help: 'helpuichange'
+};
+
+},{}],19:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
 var locations = require('locations/locations');
+var map = require('map/map');
 var ui = require('ui/ui');
 
-locations.init().then(map.init).then(function (_) {
-  return ui(locations, map);
-});
+locations().then(map).then(ui);
 
-},{"locations/locations":2,"map/map":5,"ui/ui":17}]},{},[18]);
+},{"locations/locations":2,"map/map":5,"ui/ui":17}]},{},[19]);
