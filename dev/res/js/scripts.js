@@ -1,177 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /* jshint browser:true */
-/* global THREE */
-
-'use strict';
-
-var createNode = require('patterns/tx-createNode');
-
-module.exports = function (locationData) {
-
-  var TEMPLATE_NAME_PHOLDER = '{{ NAME }}';
-  var TEMPLATE_DESC_PHOLDER = '{{ DESC }}';
-  var TEMPLATE = '<a href="#" class="location">\n                      <span class="locationInfo">\n                        <span class="locationName">' + TEMPLATE_NAME_PHOLDER + '</span>\n                        <span class="locationDescription">' + TEMPLATE_DESC_PHOLDER + '</span>\n                      </span>\n                    </a>';
-
-  var name = void 0;
-  var description = void 0;
-  var picture = void 0;
-  var position = void 0;
-  var vector = void 0;
-  var dom = void 0;
-
-  function getLocation() {
-    return {
-      name: getLocationName(),
-      description: getLocationDescription(),
-      picture: getLocationPicture()
-    };
-  }
-
-  function getLocationName() {
-    return name;
-  }
-
-  function getLocationDescription() {
-    return description;
-  }
-
-  function getLocationPicture() {
-    return picture;
-  }
-
-  function getLocationPosition() {
-    return position;
-  }
-
-  function getLocationVector() {
-    return vector;
-  }
-
-  function getLocationDOM() {
-    return dom;
-  }
-
-  function createLocationDOM() {
-    var html = TEMPLATE.replace(TEMPLATE_NAME_PHOLDER, getLocationName()).replace(TEMPLATE_DESC_PHOLDER, getLocationDescription());
-    dom = createNode(html);
-  }
-
-  function normalizeProjection(projection, data) {
-    return {
-      x: Math.round((projection.x + 1) * data.width / 2),
-      y: Math.round((-projection.y + 1) * data.height / 2)
-    };
-  }
-
-  function translateLocation(newPosition) {
-    getLocationDOM().style.transform = 'translateY(50%) translateX(' + newPosition.x + 'px) translateY(' + newPosition.y + 'px)';
-  }
-
-  function projectLocation(data) {
-    var projectionVector = new THREE.Vector3().setFromMatrixPosition(getLocationVector().matrixWorld).project(data.camera);
-    translateLocation(normalizeProjection(projectionVector, data));
-  }
-
-  function pointLocation(locationVector) {
-    vector = locationVector;
-  }
-
-  name = locationData.name;
-  description = locationData.description;
-  picture = locationData.picture;
-  position = locationData.position;
-
-  createLocationDOM();
-
-  return {
-    info: getLocation,
-    name: getLocationName,
-    picture: getLocationPicture,
-    position: getLocationPosition,
-    vector: getLocationVector,
-    dom: getLocationDOM,
-    project: projectLocation,
-    point: pointLocation
-  };
-};
-
-},{"patterns/tx-createNode":7}],2:[function(require,module,exports){
-/* jshint browser:true */
-
-'use strict';
-
-var location = require('./location');
-var eventTool = require('patterns/tx-event');
-
-var LOCATIONS_ID = 'locations';
-var ACTIVE_CLASS_NAME = 'locations-is-active';
-
-var locations = void 0;
-var dom = void 0;
-
-/* Mock Locations */
-
-var locationsData = [{
-  name: 'Sweetwater',
-  description: 'Has a train station',
-  picture: '#',
-  position: { x: 0, y: 30, z: 20 }
-}, {
-  name: 'Pariah',
-  description: 'One giant brothel',
-  picture: '#',
-  position: { x: 60, y: 15, z: 15 }
-}];
-
-/* Actions */
-
-function toggleLocations() {
-  dom.classList.toggle(ACTIVE_CLASS_NAME);
-}
-
-function translateLocations(event) {
-  locations.forEach(function (currentLocation) {
-    currentLocation.project(event.data);
-  });
-}
-
-/* Events */
-
-function initializeEvents() {
-  eventTool.bind(document, 'maprender', translateLocations);
-}
-
-/* Initialization */
-
-function appendLocations() {
-  var container = document.createDocumentFragment();
-  locations.forEach(function (currentLocation) {
-    container.appendChild(currentLocation.dom());
-  });
-  dom.appendChild(container);
-}
-
-function setupLocations() {
-  locations = locationsData.map(function (locationData) {
-    return location(locationData);
-  });
-  appendLocations();
-}
-
-function initializeLocations() {
-  dom = document.getElementById(LOCATIONS_ID);
-  setupLocations();
-  initializeEvents();
-  return Promise.resolve(locations);
-}
-
-/* Interface */
-
-exports.init = initializeLocations;
-exports.toggle = toggleLocations;
-
-},{"./location":1,"patterns/tx-event":8}],3:[function(require,module,exports){
-/* jshint browser:true */
 
 'use strict';
 
@@ -253,7 +81,7 @@ function go(duration, startValues, targetValues, task, relative) {
 exports.stop = stop;
 exports.go = go;
 
-},{}],4:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /* jshint browser:true */
 /* global THREE */
 
@@ -398,7 +226,7 @@ function inititalizeCanvas(locationData) {
 
 exports.init = inititalizeCanvas;
 
-},{}],5:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -598,7 +426,7 @@ module.exports = function (locationsData) {
   return canvas.init(locationsData).then(setupMap).then(uiEvents).then(renderMap);
 };
 
-},{"./animation":3,"./canvas":4,"./uiEvents":6,"patterns/tx-event":8}],6:[function(require,module,exports){
+},{"./animation":1,"./canvas":2,"./uiEvents":4,"patterns/tx-event":8}],4:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -627,7 +455,175 @@ module.exports = function (tasks) {
   eventManager.bind(window, 'resize', tasks.resize);
 };
 
-},{"patterns/tx-event":8,"ui/uiEvents":18}],7:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":18}],5:[function(require,module,exports){
+/* jshint browser:true */
+/* global THREE */
+
+'use strict';
+
+var createNode = require('patterns/tx-createNode');
+
+module.exports = function (locationData) {
+
+  var TEMPLATE_NAME_PHOLDER = '{{ NAME }}';
+  var TEMPLATE_DESC_PHOLDER = '{{ DESC }}';
+  var TEMPLATE = '<a href="#" class="location">\n                      <span class="locationInfo">\n                        <span class="locationName">' + TEMPLATE_NAME_PHOLDER + '</span>\n                        <span class="locationDescription">' + TEMPLATE_DESC_PHOLDER + '</span>\n                      </span>\n                    </a>';
+
+  var name = void 0;
+  var description = void 0;
+  var picture = void 0;
+  var position = void 0;
+  var vector = void 0;
+  var dom = void 0;
+
+  function getLocation() {
+    return {
+      name: getLocationName(),
+      description: getLocationDescription(),
+      picture: getLocationPicture()
+    };
+  }
+
+  function getLocationName() {
+    return name;
+  }
+
+  function getLocationDescription() {
+    return description;
+  }
+
+  function getLocationPicture() {
+    return picture;
+  }
+
+  function getLocationPosition() {
+    return position;
+  }
+
+  function getLocationVector() {
+    return vector;
+  }
+
+  function getLocationDOM() {
+    return dom;
+  }
+
+  function createLocationDOM() {
+    var html = TEMPLATE.replace(TEMPLATE_NAME_PHOLDER, getLocationName()).replace(TEMPLATE_DESC_PHOLDER, getLocationDescription());
+    dom = createNode(html);
+  }
+
+  function normalizeProjection(projection, data) {
+    return {
+      x: Math.round((projection.x + 1) * data.width / 2),
+      y: Math.round((-projection.y + 1) * data.height / 2)
+    };
+  }
+
+  function translateLocation(newPosition) {
+    getLocationDOM().style.transform = 'translateY(50%) translateX(' + newPosition.x + 'px) translateY(' + newPosition.y + 'px)';
+  }
+
+  function projectLocation(data) {
+    var projectionVector = new THREE.Vector3().setFromMatrixPosition(getLocationVector().matrixWorld).project(data.camera);
+    translateLocation(normalizeProjection(projectionVector, data));
+  }
+
+  function pointLocation(locationVector) {
+    vector = locationVector;
+  }
+
+  name = locationData.name;
+  description = locationData.description;
+  picture = locationData.picture;
+  position = locationData.position;
+
+  createLocationDOM();
+
+  return {
+    info: getLocation,
+    name: getLocationName,
+    picture: getLocationPicture,
+    position: getLocationPosition,
+    vector: getLocationVector,
+    dom: getLocationDOM,
+    project: projectLocation,
+    point: pointLocation
+  };
+};
+
+},{"patterns/tx-createNode":7}],6:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+var mapLocation = require('./mapLocation');
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
+
+var LOCATIONS_ID = 'locations';
+var ACTIVE_CLASS_NAME = 'locations-is-active';
+
+/* Mock Locations */
+
+var locationsData = [{
+  name: 'Sweetwater',
+  description: 'Has a train station',
+  picture: '#',
+  position: { x: 0, y: 30, z: 20 }
+}, {
+  name: 'Pariah',
+  description: 'One giant brothel',
+  picture: '#',
+  position: { x: 60, y: 15, z: 15 }
+}];
+
+/* Actions */
+
+module.exports = function (_) {
+
+  var dom = void 0;
+  var locations = void 0;
+
+  function toggleLocations() {
+    dom.classList.toggle(ACTIVE_CLASS_NAME);
+  }
+
+  function translateLocations(event) {
+    locations.forEach(function (currentLocation) {
+      currentLocation.project(event.data);
+    });
+  }
+
+  function appendLocations() {
+    var container = document.createDocumentFragment();
+    locations.forEach(function (currentLocation) {
+      container.appendChild(currentLocation.dom());
+    });
+    dom.appendChild(container);
+  }
+
+  function generateMapLocations() {}
+
+  function initializeEvents() {
+    eventManager.bind(document, 'maprender', translateLocations);
+    eventManager.bind(document, uiEvents.locations, toggleLocations);
+  }
+
+  function initilizeLocations() {
+    dom = document.getElementById(LOCATIONS_ID);
+    locations = locationsData.map(function (locationData) {
+      return mapLocation(locationData);
+    });
+  }
+
+  initilizeLocations();
+  appendLocations();
+  initializeEvents();
+  return Promise.resolve(generateMapLocations());
+};
+
+},{"./mapLocation":5,"patterns/tx-event":8,"ui/uiEvents":18}],7:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1052,10 +1048,10 @@ module.exports = {
 
 'use strict';
 
-var locations = require('locations/locations');
+var mapLocations = require('mapLocations/mapLocations');
 var map = require('map/map');
 var ui = require('ui/ui');
 
-locations().then(map).then(ui);
+mapLocations().then(map).then(ui);
 
-},{"locations/locations":2,"map/map":5,"ui/ui":17}]},{},[19]);
+},{"map/map":3,"mapLocations/mapLocations":6,"ui/ui":17}]},{},[19]);

@@ -2,10 +2,10 @@
 
 'use strict';
 
-let locations = require('locations/locations');
+let mapLocations = require('mapLocations/mapLocations');
 let map = require('map/map');
 let ui = require('ui/ui');
 
-locations()
+mapLocations()
   .then(map)
   .then(ui);
