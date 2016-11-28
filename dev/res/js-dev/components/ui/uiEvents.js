@@ -15,6 +15,7 @@ module.exports = {
   zoomIn: 'mapuizoomin',
   zoomOut: 'mapuizoomout',
   reset: 'mapuireset',
+  snap: 'sceneuisnap',
   fullscreen: 'fullscreenuichange',
   help: 'helpuichange'
 };

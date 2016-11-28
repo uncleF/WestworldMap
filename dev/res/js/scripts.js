@@ -228,17 +228,20 @@ module.exports = function (locationsData) {
   var ROTATION_STEP = Math.PI / 180 * 30;
   var ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
   var ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
+  var ROTATION_RATIO = 0.01;
 
   var SCALE_DEFAULT = 1;
   var SCALE_STEP = 0.25;
   var SCALE_MAX = 4;
   var SCALE_MIN = 0.25;
+  var SCALE_RATIO = 0.01;
 
   var TRANSITION_DURATION = 300;
 
   var EVENT_RENDER = 'maprender';
 
   var PAN_STEP = 50;
+  var PAN_RATIO = 0.25;
 
   var CAMERA_TOP_POSITION = [0, 500, 0];
   var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
@@ -250,6 +253,7 @@ module.exports = function (locationsData) {
   var height = void 0;
 
   var scene = void 0;
+  var snap = void 0;
 
   var camera = void 0;
 
@@ -281,10 +285,22 @@ module.exports = function (locationsData) {
     return view ? CAMERA_TOP_POSITION : CAMERA_PERSPECTIVE_POSITION;
   }
 
+  function getSnap() {
+    return snap;
+  }
+
   /* Utilities */
 
   function calculateRotationFromDelta(delta) {
-    var curre = void 0;
+    var rotation = getSnap().mapRotation.slice(0);
+    rotation[1] += delta.x * ROTATION_RATIO;
+    return rotation;
+  }
+
+  function calculatePositionFromDelta(delta) {
+    var position = getSnap().cameraPosition.slice(0);
+    position[0] += delta.x * -PAN_RATIO;
+    return position;
   }
 
   /* Map Actions */
@@ -326,30 +342,27 @@ module.exports = function (locationsData) {
 
   /* Camera Actions */
 
-  function shiftCamera(position) {
-    camera.position.x = position;
+  function panCamera(position) {
+    var _camera$position;
+
+    (_camera$position = camera.position).set.apply(_camera$position, _toConsumableArray(position));
     renderMap();
   }
 
-  function panCamera(distance) {
-    var position = getCameraPosition().x + distance;
-    shiftCamera(position);
-  }
-
   function panCameraLeft() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, shiftCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, panCamera, true);
   }
 
   function panCameraRight() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, shiftCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, panCamera, true);
   }
 
   /* Scene Actions */
 
   function transformScene(transformation) {
-    var _camera$position, _object$rotation2;
+    var _camera$position2, _object$rotation2;
 
-    (_camera$position = camera.position).set.apply(_camera$position, _toConsumableArray(transformation.slice(0, 3)));
+    (_camera$position2 = camera.position).set.apply(_camera$position2, _toConsumableArray(transformation.slice(0, 3)));
     (_object$rotation2 = object.rotation).set.apply(_object$rotation2, _toConsumableArray(transformation.slice(3, 6)));
     object.scale.set(transformation[6], transformation[6], transformation[6]);
     renderMap();
@@ -361,12 +374,20 @@ module.exports = function (locationsData) {
     animation.go(TRANSITION_DURATION, startValues, targetValues, transformScene);
   }
 
+  function snapScene() {
+    snap = {
+      mapRotation: getMapRotation(),
+      mapScale: getMapScale(),
+      cameraPosition: getCameraPosition()
+    };
+  }
+
   /* Views */
 
   function transformCamera(positionRotation) {
-    var _camera$position2, _camera$rotation;
+    var _camera$position3, _camera$rotation;
 
-    (_camera$position2 = camera.position).set.apply(_camera$position2, _toConsumableArray(positionRotation.slice(0, 3)));
+    (_camera$position3 = camera.position).set.apply(_camera$position3, _toConsumableArray(positionRotation.slice(0, 3)));
     (_camera$rotation = camera.rotation).set.apply(_camera$rotation, _toConsumableArray(positionRotation.slice(3)));
     renderMap();
   }
@@ -412,7 +433,8 @@ module.exports = function (locationsData) {
   }
 
   function onPan(event) {
-    console.log(event.data);
+    var position = calculatePositionFromDelta(event.data.delta);
+    panCamera(position);
   }
 
   function onPanLeft() {
@@ -424,7 +446,7 @@ module.exports = function (locationsData) {
   }
 
   function onZoom(event) {
-    console.log(event.data);
+    console.log('Free zoom');
   }
 
   function onZoomIn(event) {
@@ -437,6 +459,10 @@ module.exports = function (locationsData) {
 
   function onReset() {
     resetScene();
+  }
+
+  function onSnap() {
+    snapScene();
   }
 
   function onResize(event) {
@@ -454,6 +480,7 @@ module.exports = function (locationsData) {
     eventManager.bind(document, uiEvents.zoom, onZoom);
     eventManager.bind(document, uiEvents.zoomIn, onZoomIn);
     eventManager.bind(document, uiEvents.zoomOut, onZoomOut);
+    eventManager.bind(document, uiEvents.snap, onSnap);
     eventManager.bind(document, uiEvents.reset, onReset);
     eventManager.bind(window, 'resize', onResize);
   }
@@ -867,7 +894,7 @@ function onMouseMove(event) {
 function onMouseUp(event) {
   event.preventDefault();
   event.stopPropagation();
-  eventManager.unbind(document, 'mousemove');
+  eventManager.unbind(document, 'mousemove', onMouseMove);
   eventManager.unbind(document, 'mouseup', onMouseUp);
 }
 
@@ -878,6 +905,7 @@ function onMouseDown(event) {
     clientX: event.clientX,
     clientY: event.clientY
   };
+  eventManager.trigger(document, uiEvents.snap, false, 'UIEvent');
   eventManager.bind(document, 'mousemove', onMouseMove);
   eventManager.bind(document, 'mouseup', onMouseUp);
 }
@@ -886,7 +914,11 @@ function onWheel(event) {
   requestAnimationFrame(function (_) {
     event.preventDefault();
     event.stopPropagation();
-    eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', { delta: event.deltaY });
+    if (event.deltaY > 0) {
+      eventManager.trigger(document, uiEvents.zoomOut, false, 'UIEvent');
+    } else if (event.deltaY < 0) {
+      eventManager.trigger(document, uiEvents.zoomIn, false, 'UIEvent');
+    }
   });
 }
 
@@ -972,21 +1004,24 @@ var CATCHER_ID = 'locations';
 
 var TOUCH_THRESHOLD = 120;
 
-function calculateDeltaPosition(touchesStart, touchesMove) {
-  return touchesStart[0].clientX - touchesMove[0].clientX;
+var downTouches = void 0;
+var downDistance = void 0;
+
+function calculateDeltaPosition(touchesMove) {
+  return downTouches[0].clientX - touchesMove[0].clientX;
 }
 
 function calculateDistance(touches) {
   return Math.sqrt(Math.pow(touches[1].clientX - touches[0].clientX, 2) + Math.pow(touches[1].clientY - touches[0].clientY, 2));
 }
 
-function onSingleToucheMove(touchesStart, touchesMove) {
-  var delta = calculateDeltaPosition(touchesStart, touchesMove);
+function onSingleToucheMove(touchesMove) {
+  var delta = calculateDeltaPosition(touchesMove);
   eventManager.trigger(document, uiEvents.rotate, false, 'UIEvent', { delta: delta });
 }
 
-function onDoubleTouchMove(touchesStart, touchesMove) {
-  var deltaPosition = calculateDeltaPosition(touchesStart, touchesMove);
+function onDoubleTouchMove(touchesMove) {
+  var deltaPosition = calculateDeltaPosition(touchesMove);
   var distance = calculateDistance(touchesMove);
   if (distance <= TOUCH_THRESHOLD) {
     eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', { delta: deltaPosition });
@@ -995,12 +1030,12 @@ function onDoubleTouchMove(touchesStart, touchesMove) {
   }
 }
 
-function onGesture(event, touches, distance) {
+function onGesture(event) {
   requestAnimationFrame(function (_) {
-    if (touches.length === 1) {
-      onSingleToucheMove();
+    if (downTouches.length === 1) {
+      onSingleToucheMove(event.touches);
     } else {
-      onDoubleTouchMove();
+      onDoubleTouchMove(event.touches);
     }
   });
 }
@@ -1008,18 +1043,17 @@ function onGesture(event, touches, distance) {
 function onTouchEnd(event) {
   event.preventDefault();
   event.stopPropagation();
-  eventManager.unbind(document, 'touchmove');
+  eventManager.unbind(document, 'touchmove', onGesture);
   eventManager.unbind(document, 'touchend', onTouchEnd);
 }
 
 function onTouchStart(event) {
-  var touches = event.touches;
-  var distance = calculateDistance(touches);
+  downTouches = event.touches;
+  downDistance = calculateDistance(event.touches);
   event.preventDefault();
   event.stopPropagation();
-  eventManager.bind(document, 'touchmove', function (event) {
-    return onGesture(event, touches, distance);
-  });
+  eventManager.trigger(document, uiEvents.snap, false, 'UIEvent');
+  eventManager.bind(document, 'touchmove', onGesture);
   eventManager.bind(document, 'touchend', onTouchEnd);
 }
 
@@ -1074,6 +1108,7 @@ module.exports = {
   zoomIn: 'mapuizoomin',
   zoomOut: 'mapuizoomout',
   reset: 'mapuireset',
+  snap: 'sceneuisnap',
   fullscreen: 'fullscreenuichange',
   help: 'helpuichange'
 };

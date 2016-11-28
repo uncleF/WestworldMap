@@ -13,17 +13,20 @@ module.exports = locationsData => {
   const ROTATION_STEP = Math.PI / 180 * 30;
   const ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
   const ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
+  const ROTATION_RATIO = 0.01;
 
   const SCALE_DEFAULT = 1;
   const SCALE_STEP = 0.25;
   const SCALE_MAX = 4;
   const SCALE_MIN = 0.25;
+  const SCALE_RATIO = 0.01;
 
   const TRANSITION_DURATION = 300;
 
   const EVENT_RENDER = 'maprender';
 
   const PAN_STEP = 50;
+  const PAN_RATIO = 0.25;
 
   const CAMERA_TOP_POSITION = [0, 500, 0];
   const CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
@@ -35,6 +38,7 @@ module.exports = locationsData => {
   let height;
 
   let scene;
+  let snap;
 
   let camera;
 
@@ -78,10 +82,22 @@ module.exports = locationsData => {
     return view ? CAMERA_TOP_POSITION : CAMERA_PERSPECTIVE_POSITION;
   }
 
+  function getSnap() {
+    return snap;
+  }
+
   /* Utilities */
 
   function calculateRotationFromDelta(delta) {
-    let curre
+    let rotation = getSnap().mapRotation.slice(0);
+    rotation[1] += delta.x * ROTATION_RATIO;
+    return rotation;
+  }
+
+  function calculatePositionFromDelta(delta) {
+    let position = getSnap().cameraPosition.slice(0);
+    position[0] += delta.x * -PAN_RATIO;
+    return position;
   }
 
   /* Map Actions */
@@ -121,22 +137,17 @@ module.exports = locationsData => {
 
   /* Camera Actions */
 
-  function shiftCamera(position) {
-    camera.position.x = position;
+  function panCamera(position) {
+    camera.position.set(...position);
     renderMap();
   }
 
-  function panCamera(distance) {
-    let position = getCameraPosition().x + distance;
-    shiftCamera(position);
-  }
-
   function panCameraLeft() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, shiftCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, panCamera, true);
   }
 
   function panCameraRight() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, shiftCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, panCamera, true);
   }
 
   /* Scene Actions */
@@ -152,6 +163,14 @@ module.exports = locationsData => {
     let startValues = [...getCameraPosition(), ...getMapRotation(), getMapScale()];
     let targetValues = [...getCameraDefaultPosition(), ...getMapDefaultRotation(), SCALE_DEFAULT];
     animation.go(TRANSITION_DURATION, startValues, targetValues, transformScene);
+  }
+
+  function snapScene() {
+    snap = {
+      mapRotation: getMapRotation(),
+      mapScale: getMapScale(),
+      cameraPosition: getCameraPosition()
+    };
   }
 
   /* Views */
@@ -203,7 +222,8 @@ module.exports = locationsData => {
   }
 
   function onPan(event) {
-    console.log(event.data);
+    let position = calculatePositionFromDelta(event.data.delta);
+    panCamera(position);
   }
 
   function onPanLeft() {
@@ -215,7 +235,7 @@ module.exports = locationsData => {
   }
 
   function onZoom(event) {
-    console.log(event.data);
+    console.log('Free zoom');
   }
 
   function onZoomIn(event) {
@@ -228,6 +248,10 @@ module.exports = locationsData => {
 
   function onReset() {
     resetScene();
+  }
+
+  function onSnap() {
+    snapScene();
   }
 
   function onResize(event) {
@@ -245,6 +269,7 @@ module.exports = locationsData => {
     eventManager.bind(document, uiEvents.zoom, onZoom);
     eventManager.bind(document, uiEvents.zoomIn, onZoomIn);
     eventManager.bind(document, uiEvents.zoomOut, onZoomOut);
+    eventManager.bind(document, uiEvents.snap, onSnap);
     eventManager.bind(document, uiEvents.reset, onReset);
     eventManager.bind(window, 'resize', onResize);
   }

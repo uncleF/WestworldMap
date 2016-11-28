@@ -30,7 +30,7 @@ function onMouseMove(event) {
 function onMouseUp(event) {
   event.preventDefault();
   event.stopPropagation();
-  eventManager.unbind(document, 'mousemove');
+  eventManager.unbind(document, 'mousemove', onMouseMove);
   eventManager.unbind(document, 'mouseup', onMouseUp);
 }
 
@@ -41,6 +41,7 @@ function onMouseDown(event) {
     clientX: event.clientX,
     clientY: event.clientY
   };
+  eventManager.trigger(document, uiEvents.snap, false, 'UIEvent');
   eventManager.bind(document, 'mousemove', onMouseMove);
   eventManager.bind(document, 'mouseup', onMouseUp);
 }
@@ -49,7 +50,11 @@ function onWheel(event) {
   requestAnimationFrame(_ => {
     event.preventDefault();
     event.stopPropagation();
-    eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', {delta: event.deltaY});
+    if (event.deltaY > 0) {
+      eventManager.trigger(document, uiEvents.zoomOut, false, 'UIEvent');
+    } else if (event.deltaY < 0) {
+      eventManager.trigger(document, uiEvents.zoomIn, false, 'UIEvent');
+    }
   });
 }
 
