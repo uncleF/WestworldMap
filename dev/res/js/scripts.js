@@ -87,9 +87,9 @@ exports.go = go;
 
 'use strict';
 
-var CANVAS_HOLDER_ID = 'map';
+var GEOMETRY_URL = '/res/models/placeholder.json';
 
-var SCENE_URL = '/res/models/placeholder.json';
+var CANVAS_HOLDER_ID = 'map';
 
 var CAMERA_POSITION = [0, 200, -350];
 var CAMERA_ANGLE = 45;
@@ -99,132 +99,116 @@ var CAMERA_FAR = 1000;
 var LIGHT_POSITION = [0, 150, 500];
 var LIGHT_COLOR = 0xFFFFFF;
 
-var holderDOM = void 0;
-var width = void 0;
-var height = void 0;
+module.exports = function (locationsData) {
 
-var locations = void 0;
+  var width = void 0;
+  var height = void 0;
 
-var renderer = void 0;
+  var dom = void 0;
 
-var scene = void 0;
+  var renderer = void 0;
 
-var camera = void 0;
-var cameraAngle = void 0;
-var cameraAspect = void 0;
-var cameraNear = void 0;
-var cameraFar = void 0;
+  var scene = void 0;
 
-var light = void 0;
+  var camera = void 0;
+  var cameraAngle = void 0;
+  var cameraAspect = void 0;
+  var cameraNear = void 0;
+  var cameraFar = void 0;
 
-var object = void 0;
-var objectGeometry = void 0;
+  var light = void 0;
 
-/* Get */
+  var object = void 0;
+  var objectGeometry = void 0;
 
-function getProperties() {
-  return {
-    renderer: renderer,
-    scene: scene,
-    camera: camera,
-    light: light,
-    object: object
-  };
-}
+  /* Initialization */
 
-/* Initialization */
+  function setupCanvas() {
+    dom = document.getElementById(CANVAS_HOLDER_ID);
+    width = dom.clientWidth;
+    height = dom.clientHeight;
+  }
 
-function setCanvasSize() {
-  width = holderDOM.clientWidth;
-  height = holderDOM.clientHeight;
-}
+  function setupRenderer() {
+    renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
+    renderer.setSize(width, height);
+  }
 
-function setupCanvas() {
-  holderDOM = document.getElementById(CANVAS_HOLDER_ID);
-  setCanvasSize();
-}
+  function setupScene() {
+    scene = new THREE.Scene();
+  }
 
-function setRendererSize(width, height) {
-  renderer.setSize(width, height);
-}
+  function setupCamera() {
+    var _camera$position;
 
-function setupRenderer() {
-  renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
-  setRendererSize(width, height);
-}
+    cameraAngle = CAMERA_ANGLE;
+    cameraAspect = width / height;
+    cameraNear = CAMERA_NEAR;
+    cameraFar = CAMERA_FAR;
+    camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
+    (_camera$position = camera.position).set.apply(_camera$position, CAMERA_POSITION);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    scene.add(camera);
+  }
 
-function setupScene() {
-  scene = new THREE.Scene();
-}
+  function setupLights() {
+    var _light$position;
 
-function setupCamera() {
-  var _camera$position;
+    light = new THREE.PointLight(LIGHT_COLOR);
+    (_light$position = light.position).set.apply(_light$position, LIGHT_POSITION);
+    scene.add(light);
+  }
 
-  cameraAngle = CAMERA_ANGLE;
-  cameraAspect = width / height;
-  cameraNear = CAMERA_NEAR;
-  cameraFar = CAMERA_FAR;
-  camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
-  (_camera$position = camera.position).set.apply(_camera$position, CAMERA_POSITION);
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
-  scene.add(camera);
-}
+  function addLocationPoint(position) {
+    var point = new THREE.Object3D();
+    point.position.set(position.x, position.y, position.z);
+    // currentLocation.point(point);
+    object.add(point);
+  }
 
-function setupLights() {
-  var _light$position;
+  function addLocationPoints() {
+    locationsData.forEach(addLocationPoint);
+  }
 
-  light = new THREE.PointLight(LIGHT_COLOR);
-  (_light$position = light.position).set.apply(_light$position, LIGHT_POSITION);
-  scene.add(light);
-}
+  function addObject() {
+    object = new THREE.Object3D();
+    object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
+    addLocationPoints();
+    scene.add(object);
+  }
 
-function addLocationPoint(currentLocation) {
-  var position = currentLocation.position();
-  var point = new THREE.Object3D();
-  point.position.set(position.x, position.y, position.z);
-  currentLocation.point(point);
-  object.add(point);
-}
-
-function addLocationPoints() {
-  locations.forEach(addLocationPoint);
-}
-
-function addObject() {
-  object = new THREE.Object3D();
-  object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
-  addLocationPoints();
-  scene.add(object);
-}
-
-function setupObject() {
-  return new Promise(function (resolve, reject) {
-    var loader = new THREE.JSONLoader();
-    loader.load(SCENE_URL, function (geometry) {
-      objectGeometry = geometry;
-      addObject();
-      resolve();
+  function setupObject() {
+    return new Promise(function (resolve, reject) {
+      var loader = new THREE.JSONLoader();
+      loader.load(GEOMETRY_URL, function (geometry) {
+        objectGeometry = geometry;
+        addObject();
+        resolve();
+      });
     });
-  });
-}
+  }
 
-function setupDOM() {
-  holderDOM.appendChild(renderer.domElement);
-}
+  function setupDOM() {
+    dom.appendChild(renderer.domElement);
+  }
 
-function inititalizeCanvas(locationData) {
-  locations = locationData;
+  function returnCanvasInterface() {
+    return {
+      renderer: renderer,
+      scene: scene,
+      camera: camera,
+      light: light,
+      object: object
+    };
+  }
+
   setupCanvas();
   setupRenderer();
   setupScene();
   setupCamera();
   setupLights();
-  return setupObject().then(setupDOM).then(getProperties);
-}
-
-/* Interface */
-
-exports.init = inititalizeCanvas;
+  return setupObject().then(setupDOM).then(returnCanvasInterface);
+};
 
 },{}],3:[function(require,module,exports){
 /* jshint browser:true */
@@ -236,7 +220,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var eventManager = require('patterns/tx-event');
 var canvas = require('./canvas');
 var animation = require('./animation');
-var uiEvents = require('./uiEvents');
+var uiEvents = require('ui/uiEvents');
 
 module.exports = function (locationsData) {
 
@@ -268,12 +252,12 @@ module.exports = function (locationsData) {
   var scene = void 0;
 
   var camera = void 0;
-  var cameraStatus = void 0;
-  var cameraSnapshotPosition = void 0;
 
   var light = void 0;
 
   var object = void 0;
+
+  var view = void 0;
 
   /* Get */
 
@@ -294,7 +278,13 @@ module.exports = function (locationsData) {
   }
 
   function getCameraDefaultPosition() {
-    return cameraStatus ? CAMERA_PERSPECTIVE_POSITION : CAMERA_TOP_POSITION;
+    return view ? CAMERA_TOP_POSITION : CAMERA_PERSPECTIVE_POSITION;
+  }
+
+  /* Utilities */
+
+  function calculateRotationFromDelta(delta) {
+    var curre = void 0;
   }
 
   /* Map Actions */
@@ -342,7 +332,7 @@ module.exports = function (locationsData) {
   }
 
   function panCamera(distance) {
-    var position = cameraSnapshotPosition[0] + distance;
+    var position = getCameraPosition().x + distance;
     shiftCamera(position);
   }
 
@@ -356,11 +346,7 @@ module.exports = function (locationsData) {
 
   /* Scene Actions */
 
-  function sceneSnapshot() {
-    cameraSnapshotPosition = getCameraPosition();
-  }
-
-  function changeScene(transformation) {
+  function transformScene(transformation) {
     var _camera$position, _object$rotation2;
 
     (_camera$position = camera.position).set.apply(_camera$position, _toConsumableArray(transformation.slice(0, 3)));
@@ -372,7 +358,7 @@ module.exports = function (locationsData) {
   function resetScene() {
     var startValues = [].concat(_toConsumableArray(getCameraPosition()), _toConsumableArray(getMapRotation()), [getMapScale()]);
     var targetValues = [].concat(_toConsumableArray(getCameraDefaultPosition()), _toConsumableArray(getMapDefaultRotation()), [SCALE_DEFAULT]);
-    animation.go(TRANSITION_DURATION, startValues, targetValues, changeScene);
+    animation.go(TRANSITION_DURATION, startValues, targetValues, transformScene);
   }
 
   /* Views */
@@ -398,16 +384,79 @@ module.exports = function (locationsData) {
   }
 
   function toggleTopDownView() {
-    if (cameraStatus) {
+    if (!view) {
       moveCameraTop();
-      cameraStatus = false;
     } else {
       moveCameraPerspective();
-      cameraStatus = true;
     }
+    view = !view;
   }
 
   /* Map Initialization */
+
+  function onTopDown() {
+    toggleTopDownView();
+  }
+
+  function onRotate(event) {
+    var rotation = calculateRotationFromDelta(event.data.delta);
+    rotateMap(rotation);
+  }
+
+  function onRotateCCW(event) {
+    rotateMapCCW();
+  }
+
+  function onRotateCW(event) {
+    rotateMapCW();
+  }
+
+  function onPan(event) {
+    console.log(event.data);
+  }
+
+  function onPanLeft() {
+    panCameraLeft();
+  }
+
+  function onPanRight() {
+    panCameraRight();
+  }
+
+  function onZoom(event) {
+    console.log(event.data);
+  }
+
+  function onZoomIn(event) {
+    zoomInMap();
+  }
+
+  function onZoomOut(event) {
+    zoomOutMap();
+  }
+
+  function onReset() {
+    resetScene();
+  }
+
+  function onResize(event) {
+    console.log('resize');
+  }
+
+  function initializeEvents() {
+    eventManager.bind(document, uiEvents.topDown, onTopDown);
+    eventManager.bind(document, uiEvents.rotate, onRotate);
+    eventManager.bind(document, uiEvents.rotateCCW, onRotateCCW);
+    eventManager.bind(document, uiEvents.rotateCW, onRotateCW);
+    eventManager.bind(document, uiEvents.pan, onPan);
+    eventManager.bind(document, uiEvents.panLeft, onPanLeft);
+    eventManager.bind(document, uiEvents.panRight, onPanRight);
+    eventManager.bind(document, uiEvents.zoom, onZoom);
+    eventManager.bind(document, uiEvents.zoomIn, onZoomIn);
+    eventManager.bind(document, uiEvents.zoomOut, onZoomOut);
+    eventManager.bind(document, uiEvents.reset, onReset);
+    eventManager.bind(window, 'resize', onResize);
+  }
 
   function setupMap(properties) {
     renderer = properties.renderer;
@@ -419,70 +468,34 @@ module.exports = function (locationsData) {
     width = _renderer$domElement.width;
     height = _renderer$domElement.height;
 
-    cameraStatus = true;
-    return Promise.resolve();
+    view = false;
+    initializeEvents();
+    renderMap();
   }
 
-  return canvas.init(locationsData).then(setupMap).then(uiEvents).then(renderMap);
+  return canvas(locationsData).then(setupMap);
 };
 
-},{"./animation":1,"./canvas":2,"./uiEvents":4,"patterns/tx-event":8}],4:[function(require,module,exports){
+},{"./animation":1,"./canvas":2,"patterns/tx-event":7,"ui/uiEvents":17}],4:[function(require,module,exports){
 /* jshint browser:true */
-
-'use strict';
-
-var eventManager = require('patterns/tx-event');
-var uiEvents = require('ui/uiEvents');
-
-module.exports = function (tasks) {
-
-  /* UI Events */
-
-  eventManager.bind(document, uiEvents.topDown, tasks.topDown);
-  eventManager.bind(document, uiEvents.mapuirotate, tasks.mapuirotate);
-  eventManager.bind(document, uiEvents.mapuiccwrotate, tasks.mapuiccwrotate);
-  eventManager.bind(document, uiEvents.mapuicwrotate, tasks.mapuicwrotate);
-  eventManager.bind(document, uiEvents.mapuipan, tasks.mapuipan);
-  eventManager.bind(document, uiEvents.mapuipanleft, tasks.mapuipanleft);
-  eventManager.bind(document, uiEvents.mapuipanright, tasks.mapuipanright);
-  eventManager.bind(document, uiEvents.mapuizoom, tasks.mapuizoom);
-  eventManager.bind(document, uiEvents.mapuizoomin, tasks.mapuizoomin);
-  eventManager.bind(document, uiEvents.mapuizoomout, tasks.mapuizoomout);
-  eventManager.bind(document, uiEvents.reset, tasks.reset);
-
-  /* Window Events */
-
-  eventManager.bind(window, 'resize', tasks.resize);
-};
-
-},{"patterns/tx-event":8,"ui/uiEvents":18}],5:[function(require,module,exports){
-/* jshint browser:true */
-/* global THREE */
 
 'use strict';
 
 var createNode = require('patterns/tx-createNode');
 
-module.exports = function (locationData) {
+var TEMPLATE_NAME_PHOLDER = '{{ NAME }}';
+var TEMPLATE_DESC_PHOLDER = '{{ DESC }}';
+var TEMPLATE = '<a href="#" class="location">\n                    <span class="locationInfo">\n                      <span class="locationName">' + TEMPLATE_NAME_PHOLDER + '</span>\n                      <span class="locationDescription">' + TEMPLATE_DESC_PHOLDER + '</span>\n                    </span>\n                  </a>';
 
-  var TEMPLATE_NAME_PHOLDER = '{{ NAME }}';
-  var TEMPLATE_DESC_PHOLDER = '{{ DESC }}';
-  var TEMPLATE = '<a href="#" class="location">\n                      <span class="locationInfo">\n                        <span class="locationName">' + TEMPLATE_NAME_PHOLDER + '</span>\n                        <span class="locationDescription">' + TEMPLATE_DESC_PHOLDER + '</span>\n                      </span>\n                    </a>';
+module.exports = function (locationData) {
 
   var name = void 0;
   var description = void 0;
   var picture = void 0;
   var position = void 0;
-  var vector = void 0;
   var dom = void 0;
 
-  function getLocation() {
-    return {
-      name: getLocationName(),
-      description: getLocationDescription(),
-      picture: getLocationPicture()
-    };
-  }
+  /* Get */
 
   function getLocationName() {
     return name;
@@ -500,37 +513,43 @@ module.exports = function (locationData) {
     return position;
   }
 
-  function getLocationVector() {
-    return vector;
-  }
-
   function getLocationDOM() {
     return dom;
   }
 
-  function createLocationDOM() {
-    var html = TEMPLATE.replace(TEMPLATE_NAME_PHOLDER, getLocationName()).replace(TEMPLATE_DESC_PHOLDER, getLocationDescription());
-    dom = createNode(html);
-  }
-
-  function normalizeProjection(projection, data) {
+  function getLocation() {
     return {
-      x: Math.round((projection.x + 1) * data.width / 2),
-      y: Math.round((-projection.y + 1) * data.height / 2)
+      name: getLocationName(),
+      description: getLocationDescription(),
+      picture: getLocationPicture()
     };
   }
 
-  function translateLocation(newPosition) {
+  /* Actions */
+
+  // function normalizeProjection(data) {
+  //   return {
+  //     x: Math.round((data.projection.x + 1) * data.width  / 2),
+  //     y: Math.round((-data.projection.y + 1) * data.height / 2)
+  //   };
+  // }
+
+  function projectLocation(newPosition) {
     getLocationDOM().style.transform = 'translateY(50%) translateX(' + newPosition.x + 'px) translateY(' + newPosition.y + 'px)';
   }
 
-  function projectLocation(data) {
-    var projectionVector = new THREE.Vector3().setFromMatrixPosition(getLocationVector().matrixWorld).project(data.camera);
-    translateLocation(normalizeProjection(projectionVector, data));
-  }
+  // function projectLocation(data) {
+  //   let projectionVector = new THREE.Vector3()
+  //     .setFromMatrixPosition(getLocationVector().matrixWorld)
+  //     .project(data.camera);
+  //   translateLocation(normalizeProjection(data));
+  // }
 
-  function pointLocation(locationVector) {
-    vector = locationVector;
+  /* Initialization */
+
+  function createLocationDOM() {
+    var html = TEMPLATE.replace(TEMPLATE_NAME_PHOLDER, getLocationName()).replace(TEMPLATE_DESC_PHOLDER, getLocationDescription());
+    dom = createNode(html);
   }
 
   name = locationData.name;
@@ -540,19 +559,19 @@ module.exports = function (locationData) {
 
   createLocationDOM();
 
+  /* Interface */
+
   return {
     info: getLocation,
     name: getLocationName,
     picture: getLocationPicture,
     position: getLocationPosition,
-    vector: getLocationVector,
     dom: getLocationDOM,
-    project: projectLocation,
-    point: pointLocation
+    project: projectLocation
   };
 };
 
-},{"patterns/tx-createNode":7}],6:[function(require,module,exports){
+},{"patterns/tx-createNode":6}],5:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -578,35 +597,51 @@ var locationsData = [{
   position: { x: 60, y: 15, z: 15 }
 }];
 
-/* Actions */
-
 module.exports = function (_) {
 
   var dom = void 0;
   var locations = void 0;
 
-  function toggleLocations() {
-    dom.classList.toggle(ACTIVE_CLASS_NAME);
+  /* Get */
+
+  function getDOM() {
+    return dom;
   }
 
-  function translateLocations(event) {
+  function getLocations() {
+    return locations;
+  }
+
+  /* Actions */
+
+  function toggleLocations() {
+    getDOM().classList.toggle(ACTIVE_CLASS_NAME);
+  }
+
+  function projectLocations(event) {
     locations.forEach(function (currentLocation) {
       currentLocation.project(event.data);
     });
   }
 
-  function appendLocations() {
-    var container = document.createDocumentFragment();
-    locations.forEach(function (currentLocation) {
-      container.appendChild(currentLocation.dom());
+  function generateMapLocations() {
+    return getLocations().map(function (mapLocation) {
+      return mapLocation.position();
     });
-    dom.appendChild(container);
   }
 
-  function generateMapLocations() {}
+  /* Inititalization */
+
+  function appendLocations() {
+    var container = document.createDocumentFragment();
+    getLocations().forEach(function (currentLocation) {
+      container.appendChild(currentLocation.dom());
+    });
+    getDOM().appendChild(container);
+  }
 
   function initializeEvents() {
-    eventManager.bind(document, 'maprender', translateLocations);
+    eventManager.bind(document, 'maprender', projectLocations);
     eventManager.bind(document, uiEvents.locations, toggleLocations);
   }
 
@@ -623,7 +658,7 @@ module.exports = function (_) {
   return Promise.resolve(generateMapLocations());
 };
 
-},{"./mapLocation":5,"patterns/tx-event":8,"ui/uiEvents":18}],7:[function(require,module,exports){
+},{"./mapLocation":4,"patterns/tx-event":7,"ui/uiEvents":17}],6:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -634,7 +669,7 @@ module.exports = function (html) {
   return element.firstChild;
 };
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -703,7 +738,7 @@ exports.unbind = unbind;
 exports.trigger = trigger;
 exports.target = target;
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -731,7 +766,7 @@ module.exports = function (_) {
   eventManager.bind(document, uiEvents.fullscreen, onUIFullscreen);
 };
 
-},{"patterns/tx-event":8,"ui/uiEvents":18}],10:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":17}],9:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -747,7 +782,7 @@ module.exports = function (_) {
   eventManager.bind(document, uiEvents.help, onUIHelp);
 };
 
-},{"patterns/tx-event":8,"ui/uiEvents":18}],11:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":17}],10:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -767,7 +802,7 @@ module.exports = function (id, uiEvent) {
   });
 };
 
-},{"patterns/tx-event":8}],12:[function(require,module,exports){
+},{"patterns/tx-event":7}],11:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -799,7 +834,7 @@ module.exports = function (_) {
   eventManager.bind(document, 'keydown', onKeyDown);
 };
 
-},{"patterns/tx-event":8,"ui/uiEvents":18}],13:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":17}],12:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -814,12 +849,14 @@ var MOUSE_EVENTS = {
   2: uiEvents.pan
 };
 
-function onMouseMove(event, position) {
+var downPosition = void 0;
+
+function onMouseMove(event) {
   requestAnimationFrame(function (_) {
     var button = event.button;
     var delta = {
-      x: position.x - event.clientX,
-      y: position.y - event.clientY
+      x: downPosition.clientX - event.clientX,
+      y: downPosition.clientY - event.clientY
     };
     event.preventDefault();
     event.stopPropagation();
@@ -835,15 +872,13 @@ function onMouseUp(event) {
 }
 
 function onMouseDown(event) {
-  var position = {
-    x: event.clientX,
-    y: event.clientY
-  };
   event.preventDefault();
   event.stopPropagation();
-  eventManager.bind(document, 'mousemove', function (event) {
-    return onMouseMove(event, position);
-  });
+  downPosition = {
+    clientX: event.clientX,
+    clientY: event.clientY
+  };
+  eventManager.bind(document, 'mousemove', onMouseMove);
   eventManager.bind(document, 'mouseup', onMouseUp);
 }
 
@@ -867,7 +902,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'contextmenu', onContextMenu, false);
 };
 
-},{"patterns/tx-event":8,"ui/uiEvents":18}],14:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":17}],13:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -901,7 +936,7 @@ module.exports = function (_) {
   control(HELP_ID, uiEvents.help);
 };
 
-},{"./control":11,"./toggle":15,"ui/uiEvents":18}],15:[function(require,module,exports){
+},{"./control":10,"./toggle":14,"ui/uiEvents":17}],14:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -925,7 +960,7 @@ module.exports = function (id, uiEvent) {
   });
 };
 
-},{"patterns/tx-event":8}],16:[function(require,module,exports){
+},{"patterns/tx-event":7}],15:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -993,7 +1028,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'touchstart', onTouchStart, false);
 };
 
-},{"patterns/tx-event":8,"ui/uiEvents":18}],17:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":17}],16:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1021,7 +1056,7 @@ module.exports = function (locations, map) {
   help();
 };
 
-},{"./display":9,"./help":10,"./input/keyboard":12,"./input/mouse":13,"./input/panel":14,"./input/touch":16}],18:[function(require,module,exports){
+},{"./display":8,"./help":9,"./input/keyboard":11,"./input/mouse":12,"./input/panel":13,"./input/touch":15}],17:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1043,7 +1078,7 @@ module.exports = {
   help: 'helpuichange'
 };
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1054,4 +1089,4 @@ var ui = require('ui/ui');
 
 mapLocations().then(map).then(ui);
 
-},{"map/map":3,"mapLocations/mapLocations":6,"ui/ui":17}]},{},[19]);
+},{"map/map":3,"mapLocations/mapLocations":5,"ui/ui":16}]},{},[18]);

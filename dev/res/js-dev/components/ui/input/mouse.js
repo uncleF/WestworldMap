@@ -12,12 +12,14 @@ const MOUSE_EVENTS = {
   2: uiEvents.pan
 };
 
-function onMouseMove(event, position) {
+let downPosition;
+
+function onMouseMove(event) {
   requestAnimationFrame(_ => {
     let button = event.button;
     let delta = {
-      x: position.x - event.clientX,
-      y: position.y - event.clientY
+      x: downPosition.clientX - event.clientX,
+      y: downPosition.clientY - event.clientY
     };
     event.preventDefault();
     event.stopPropagation();
@@ -33,13 +35,13 @@ function onMouseUp(event) {
 }
 
 function onMouseDown(event) {
-  let position = {
-    x: event.clientX,
-    y: event.clientY
-  };
   event.preventDefault();
   event.stopPropagation();
-  eventManager.bind(document, 'mousemove', event => onMouseMove(event, position));
+  downPosition = {
+    clientX: event.clientX,
+    clientY: event.clientY
+  };
+  eventManager.bind(document, 'mousemove', onMouseMove);
   eventManager.bind(document, 'mouseup', onMouseUp);
 }
 

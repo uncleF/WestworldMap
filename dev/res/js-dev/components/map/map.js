@@ -5,7 +5,7 @@
 let eventManager = require('patterns/tx-event');
 let canvas = require('./canvas');
 let animation = require('./animation');
-let uiEvents = require('./uiEvents');
+let uiEvents = require('ui/uiEvents');
 
 module.exports = locationsData => {
 
@@ -37,12 +37,12 @@ module.exports = locationsData => {
   let scene;
 
   let camera;
-  let cameraStatus;
-  let cameraSnapshotPosition;
 
   let light;
 
   let object;
+
+  let view;
 
   /* Get */
 
@@ -75,7 +75,13 @@ module.exports = locationsData => {
   }
 
   function getCameraDefaultPosition() {
-    return cameraStatus ? CAMERA_PERSPECTIVE_POSITION : CAMERA_TOP_POSITION;
+    return view ? CAMERA_TOP_POSITION : CAMERA_PERSPECTIVE_POSITION;
+  }
+
+  /* Utilities */
+
+  function calculateRotationFromDelta(delta) {
+    let curre
   }
 
   /* Map Actions */
@@ -121,7 +127,7 @@ module.exports = locationsData => {
   }
 
   function panCamera(distance) {
-    let position = cameraSnapshotPosition[0] + distance;
+    let position = getCameraPosition().x + distance;
     shiftCamera(position);
   }
 
@@ -135,11 +141,7 @@ module.exports = locationsData => {
 
   /* Scene Actions */
 
-  function sceneSnapshot() {
-    cameraSnapshotPosition = getCameraPosition();
-  }
-
-  function changeScene(transformation) {
+  function transformScene(transformation) {
     camera.position.set(...transformation.slice(0, 3));
     object.rotation.set(...transformation.slice(3, 6));
     object.scale.set(transformation[6], transformation[6], transformation[6]);
@@ -149,7 +151,7 @@ module.exports = locationsData => {
   function resetScene() {
     let startValues = [...getCameraPosition(), ...getMapRotation(), getMapScale()];
     let targetValues = [...getCameraDefaultPosition(), ...getMapDefaultRotation(), SCALE_DEFAULT];
-    animation.go(TRANSITION_DURATION, startValues, targetValues, changeScene);
+    animation.go(TRANSITION_DURATION, startValues, targetValues, transformScene);
   }
 
   /* Views */
@@ -173,28 +175,90 @@ module.exports = locationsData => {
   }
 
   function toggleTopDownView() {
-    if (cameraStatus) {
+    if (!view) {
       moveCameraTop();
-      cameraStatus = false;
     } else {
       moveCameraPerspective();
-      cameraStatus = true;
     }
+    view = !view;
   }
 
   /* Map Initialization */
 
+  function onTopDown() {
+    toggleTopDownView();
+  }
+
+  function onRotate(event) {
+    let rotation = calculateRotationFromDelta(event.data.delta);
+    rotateMap(rotation);
+  }
+
+  function onRotateCCW(event) {
+    rotateMapCCW();
+  }
+
+  function onRotateCW(event) {
+    rotateMapCW();
+  }
+
+  function onPan(event) {
+    console.log(event.data);
+  }
+
+  function onPanLeft() {
+    panCameraLeft();
+  }
+
+  function onPanRight() {
+    panCameraRight();
+  }
+
+  function onZoom(event) {
+    console.log(event.data);
+  }
+
+  function onZoomIn(event) {
+    zoomInMap();
+  }
+
+  function onZoomOut(event) {
+    zoomOutMap();
+  }
+
+  function onReset() {
+    resetScene();
+  }
+
+  function onResize(event) {
+    console.log('resize');
+  }
+
+  function initializeEvents() {
+    eventManager.bind(document, uiEvents.topDown, onTopDown);
+    eventManager.bind(document, uiEvents.rotate, onRotate);
+    eventManager.bind(document, uiEvents.rotateCCW, onRotateCCW);
+    eventManager.bind(document, uiEvents.rotateCW, onRotateCW);
+    eventManager.bind(document, uiEvents.pan, onPan);
+    eventManager.bind(document, uiEvents.panLeft, onPanLeft);
+    eventManager.bind(document, uiEvents.panRight, onPanRight);
+    eventManager.bind(document, uiEvents.zoom, onZoom);
+    eventManager.bind(document, uiEvents.zoomIn, onZoomIn);
+    eventManager.bind(document, uiEvents.zoomOut, onZoomOut);
+    eventManager.bind(document, uiEvents.reset, onReset);
+    eventManager.bind(window, 'resize', onResize);
+  }
+
   function setupMap(properties) {
     ({renderer, scene, camera, light, object} = properties);
     ({width, height} = renderer.domElement);
-    cameraStatus = true;
-    return Promise.resolve();
+    view = false;
+    initializeEvents();
+    renderMap();
   }
 
-  return canvas.init(locationsData)
-    .then(setupMap)
-    .then(uiEvents)
-    .then(renderMap);
+  return canvas(locationsData)
+    .then(setupMap);
 
 };
 

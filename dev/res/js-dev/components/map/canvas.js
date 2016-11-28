@@ -3,9 +3,9 @@
 
 'use strict';
 
-const CANVAS_HOLDER_ID = 'map';
+const GEOMETRY_URL = '/res/models/placeholder.json';
 
-const SCENE_URL = '/res/models/placeholder.json';
+const CANVAS_HOLDER_ID = 'map';
 
 const CAMERA_POSITION = [0, 200, -350];
 const CAMERA_ANGLE = 45;
@@ -15,117 +15,105 @@ const CAMERA_FAR = 1000;
 const LIGHT_POSITION = [0, 150, 500];
 const LIGHT_COLOR = 0xFFFFFF;
 
-let holderDOM;
-let width;
-let height;
+module.exports = locationsData => {
 
-let locations;
+  let width;
+  let height;
 
-let renderer;
+  let dom;
 
-let scene;
+  let renderer;
 
-let camera;
-let cameraAngle;
-let cameraAspect;
-let cameraNear;
-let cameraFar;
+  let scene;
 
-let light;
+  let camera;
+  let cameraAngle;
+  let cameraAspect;
+  let cameraNear;
+  let cameraFar;
 
-let object;
-let objectGeometry;
+  let light;
 
-/* Get */
+  let object;
+  let objectGeometry;
 
-function getProperties() {
-  return {
-    renderer: renderer,
-    scene: scene,
-    camera: camera,
-    light: light,
-    object: object
-  };
-}
+  /* Initialization */
 
-/* Initialization */
+  function setupCanvas() {
+    dom = document.getElementById(CANVAS_HOLDER_ID);
+    width = dom.clientWidth;
+    height = dom.clientHeight;
+  }
 
-function setCanvasSize() {
-  width = holderDOM.clientWidth;
-  height = holderDOM.clientHeight;
-}
+  function setupRenderer() {
+    renderer = new THREE.WebGLRenderer({antialias: true, castShadows: true});
+    renderer.setSize(width, height);
+  }
 
-function setupCanvas() {
-  holderDOM = document.getElementById(CANVAS_HOLDER_ID);
-  setCanvasSize();
-}
+  function setupScene() {
+    scene = new THREE.Scene();
+  }
 
-function setRendererSize(width, height) {
-  renderer.setSize(width, height);
-}
+  function setupCamera() {
+    cameraAngle = CAMERA_ANGLE;
+    cameraAspect = width / height;
+    cameraNear = CAMERA_NEAR;
+    cameraFar = CAMERA_FAR;
+    camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
+    camera.position.set(...CAMERA_POSITION);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    scene.add(camera);
+  }
 
-function setupRenderer() {
-  renderer = new THREE.WebGLRenderer({antialias: true, castShadows: true});
-  setRendererSize(width, height);
-}
+  function setupLights() {
+    light = new THREE.PointLight(LIGHT_COLOR);
+    light.position.set(...LIGHT_POSITION);
+    scene.add(light);
+  }
 
-function setupScene() {
-  scene = new THREE.Scene();
-}
+  function addLocationPoint(position) {
+    let point = new THREE.Object3D();
+    point.position.set(position.x, position.y, position.z);
+    // currentLocation.point(point);
+    object.add(point);
+  }
 
-function setupCamera() {
-  cameraAngle = CAMERA_ANGLE;
-  cameraAspect = width / height;
-  cameraNear = CAMERA_NEAR;
-  cameraFar = CAMERA_FAR;
-  camera = new THREE.PerspectiveCamera(cameraAngle, cameraAspect, cameraNear, cameraFar);
-  camera.position.set(...CAMERA_POSITION);
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
-  scene.add(camera);
-}
+  function addLocationPoints() {
+    locationsData.forEach(addLocationPoint);
+  }
 
-function setupLights() {
-  light = new THREE.PointLight(LIGHT_COLOR);
-  light.position.set(...LIGHT_POSITION);
-  scene.add(light);
-}
+  function addObject() {
+    object = new THREE.Object3D();
+    object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
+    addLocationPoints();
+    scene.add(object);
+  }
 
-function addLocationPoint(currentLocation) {
-  let position = currentLocation.position();
-  let point = new THREE.Object3D();
-  point.position.set(position.x, position.y, position.z);
-  currentLocation.point(point);
-  object.add(point);
-}
-
-function addLocationPoints() {
-  locations.forEach(addLocationPoint);
-}
-
-function addObject() {
-  object = new THREE.Object3D();
-  object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
-  addLocationPoints();
-  scene.add(object);
-}
-
-function setupObject() {
-  return new Promise((resolve, reject) => {
-    let loader = new THREE.JSONLoader();
-    loader.load(SCENE_URL, geometry => {
-      objectGeometry = geometry;
-      addObject();
-      resolve();
+  function setupObject() {
+    return new Promise((resolve, reject) => {
+      let loader = new THREE.JSONLoader();
+      loader.load(GEOMETRY_URL, geometry => {
+        objectGeometry = geometry;
+        addObject();
+        resolve();
+      });
     });
-  });
-}
+  }
 
-function setupDOM() {
-  holderDOM.appendChild(renderer.domElement);
-}
+  function setupDOM() {
+    dom.appendChild(renderer.domElement);
+  }
 
-function inititalizeCanvas(locationData) {
-  locations = locationData;
+  function returnCanvasInterface() {
+    return {
+      renderer: renderer,
+      scene: scene,
+      camera: camera,
+      light: light,
+      object: object
+    };
+  }
+
   setupCanvas();
   setupRenderer();
   setupScene();
@@ -133,9 +121,6 @@ function inititalizeCanvas(locationData) {
   setupLights();
   return setupObject()
     .then(setupDOM)
-    .then(getProperties);
-}
+    .then(returnCanvasInterface);
 
-/* Interface */
-
-exports.init = inititalizeCanvas;
+};

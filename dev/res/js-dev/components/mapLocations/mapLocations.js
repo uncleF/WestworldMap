@@ -25,33 +25,45 @@ let locationsData = [
   }
 ];
 
-/* Actions */
-
 module.exports = _ => {
 
   let dom;
   let locations;
 
-  function toggleLocations() {
-    dom.classList.toggle(ACTIVE_CLASS_NAME);
+  /* Get */
+
+  function getDOM() {
+    return dom;
   }
 
-  function translateLocations(event) {
+  function getLocations() {
+    return locations;
+  }
+
+  /* Actions */
+
+  function toggleLocations() {
+    getDOM().classList.toggle(ACTIVE_CLASS_NAME);
+  }
+
+  function projectLocations(event) {
     locations.forEach(currentLocation => {currentLocation.project(event.data);});
   }
 
-  function appendLocations() {
-    let container = document.createDocumentFragment();
-    locations.forEach(currentLocation => {container.appendChild(currentLocation.dom());});
-    dom.appendChild(container);
+  function generateMapLocations() {
+    return getLocations().map(mapLocation => mapLocation.position());
   }
 
-  function generateMapLocations() {
+  /* Inititalization */
 
+  function appendLocations() {
+    let container = document.createDocumentFragment();
+    getLocations().forEach(currentLocation => {container.appendChild(currentLocation.dom());});
+    getDOM().appendChild(container);
   }
 
   function initializeEvents() {
-    eventManager.bind(document, 'maprender', translateLocations);
+    eventManager.bind(document, 'maprender', projectLocations);
     eventManager.bind(document, uiEvents.locations, toggleLocations);
   }
 
