@@ -87,6 +87,8 @@ exports.go = go;
 
 'use strict';
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var GEOMETRY_URL = '/res/models/placeholder.json';
 
 var CANVAS_HOLDER_ID = 'map';
@@ -118,8 +120,11 @@ module.exports = function (locationsData) {
 
   var light = void 0;
 
+  var raycaster = void 0;
+
   var object = void 0;
-  var objectGeometry = void 0;
+
+  var points = void 0;
 
   /* Initialization */
 
@@ -159,20 +164,28 @@ module.exports = function (locationsData) {
     scene.add(light);
   }
 
+  function setupRaycaster() {
+    raycaster = new THREE.Raycaster();
+  }
+
   function addLocationPoint(position) {
-    var point = new THREE.Object3D();
-    point.position.set(position.x, position.y, position.z);
-    // currentLocation.point(point);
+    var _point$position;
+
+    var locationGeometry = new THREE.BoxGeometry(5, 5, 5);
+    var locationMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff, transparent: true, opacity: 0 });
+    var point = new THREE.Mesh(locationGeometry, locationMaterial);
+    (_point$position = point.position).set.apply(_point$position, _toConsumableArray(position));
     object.add(point);
+    return point;
   }
 
   function addLocationPoints() {
-    locationsData.forEach(addLocationPoint);
+    points = locationsData.map(addLocationPoint);
   }
 
-  function addObject() {
+  function addObject(geometry) {
     object = new THREE.Object3D();
-    object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
+    object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
     addLocationPoints();
     scene.add(object);
   }
@@ -181,8 +194,7 @@ module.exports = function (locationsData) {
     return new Promise(function (resolve, reject) {
       var loader = new THREE.JSONLoader();
       loader.load(GEOMETRY_URL, function (geometry) {
-        objectGeometry = geometry;
-        addObject();
+        addObject(geometry);
         resolve();
       });
     });
@@ -198,7 +210,9 @@ module.exports = function (locationsData) {
       scene: scene,
       camera: camera,
       light: light,
-      object: object
+      raycaster: raycaster,
+      object: object,
+      points: points
     };
   }
 
@@ -207,11 +221,13 @@ module.exports = function (locationsData) {
   setupScene();
   setupCamera();
   setupLights();
+  setupRaycaster();
   return setupObject().then(setupDOM).then(returnCanvasInterface);
 };
 
 },{}],3:[function(require,module,exports){
 /* jshint browser:true */
+/* global THREE */
 
 'use strict';
 
@@ -222,35 +238,37 @@ var canvas = require('./canvas');
 var animation = require('./animation');
 var uiEvents = require('ui/uiEvents');
 
+var RENDER_EVENT = 'maprender';
+
+var TRANSITION_DURATION = 300;
+
+var CAMERA_TOP_POSITION = [0, 500, 0];
+var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
+var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
+
+var PAN_STEP = 50;
+var PAN_RATIO = 0.25;
+
+var ROTATION_DEFAULT = [0, 0, 0];
+var ROTATION_STEP = Math.PI / 180 * 30;
+var ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
+var ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
+
+var SCALE_DEFAULT = 1;
+var SCALE_STEP = 0.25;
+var SCALE_MAX = 4;
+var SCALE_MIN = 0.25;
+var SCALE_RATIO = 0.001;
+
 module.exports = function (locationsData) {
 
-  var ROTATION_DEFAULT = [0, 0, 0];
-  var ROTATION_STEP = Math.PI / 180 * 30;
-  var ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
-  var ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
-  var ROTATION_RATIO = 0.01;
-
-  var SCALE_DEFAULT = 1;
-  var SCALE_STEP = 0.25;
-  var SCALE_MAX = 4;
-  var SCALE_MIN = 0.25;
-  var SCALE_RATIO = 0.01;
-
-  var TRANSITION_DURATION = 300;
-
-  var EVENT_RENDER = 'maprender';
-
-  var PAN_STEP = 50;
-  var PAN_RATIO = 0.25;
-
-  var CAMERA_TOP_POSITION = [0, 500, 0];
-  var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
-  var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
-  var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
-
-  var renderer = void 0;
   var width = void 0;
   var height = void 0;
+  var halfWidth = void 0;
+  var halfHeight = void 0;
+
+  var renderer = void 0;
 
   var scene = void 0;
   var snap = void 0;
@@ -259,7 +277,11 @@ module.exports = function (locationsData) {
 
   var light = void 0;
 
+  var raycaster = void 0;
+
   var object = void 0;
+
+  var points = void 0;
 
   var view = void 0;
 
@@ -291,9 +313,17 @@ module.exports = function (locationsData) {
 
   /* Utilities */
 
-  function calculateRotationFromDelta(delta) {
+  function calculateRotationFromDelta(data) {
     var rotation = getSnap().mapRotation.slice(0);
-    rotation[1] += delta.x * ROTATION_RATIO;
+    var startVector = {
+      x: data.startPosition.clientX - halfWidth,
+      y: halfHeight - data.startPosition.clientY
+    };
+    var currentVector = {
+      x: data.currentPosition.clientX - halfWidth,
+      y: halfHeight - data.currentPosition.clientY
+    };
+    rotation[1] -= Math.atan2(currentVector.x, currentVector.y) - Math.atan2(startVector.x, startVector.y);
     return rotation;
   }
 
@@ -303,11 +333,44 @@ module.exports = function (locationsData) {
     return position;
   }
 
+  function calculateScaleFromDistance(delta) {
+    return getSnap().mapScale + delta * SCALE_RATIO;
+  }
+
+  function calculatePointProjection(point) {
+    var projection = new THREE.Vector3();
+    projection.setFromMatrixPosition(point.matrixWorld).project(camera);
+    return projection;
+  }
+
+  function calculateLocationPosition(point) {
+    var projection = calculatePointProjection(point);
+    var position = {
+      x: Math.round((projection.x + 1) * halfWidth),
+      y: Math.round((-projection.y + 1) * halfHeight)
+    };
+    var positionNDC = new THREE.Vector2(position.x / width * 2 - 1, -position.y / height * 2 + 1);
+    raycaster.setFromCamera(positionNDC, camera);
+    return {
+      position: position,
+      visibility: raycaster.intersectObjects(object.children)[0].object === point
+    };
+  }
+
+  function calculateLocationsPositions() {
+    return points.map(calculateLocationPosition);
+  }
+
+  function calculateHalves() {
+    halfWidth = width / 2;
+    halfHeight = height / 2;
+  }
+
   /* Map Actions */
 
   function renderMap() {
     renderer.render(scene, camera);
-    eventManager.trigger(document, EVENT_RENDER, false, 'UIEvent', { camera: camera, width: width, height: height });
+    eventManager.trigger(document, RENDER_EVENT, false, 'UIEvent', { newPositions: calculateLocationsPositions() });
   }
 
   function rotateMap(angles) {
@@ -382,6 +445,15 @@ module.exports = function (locationsData) {
     };
   }
 
+  function resizeScene() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    calculateHalves();
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+  }
+
   /* Views */
 
   function transformCamera(positionRotation) {
@@ -420,7 +492,7 @@ module.exports = function (locationsData) {
   }
 
   function onRotate(event) {
-    var rotation = calculateRotationFromDelta(event.data.delta);
+    var rotation = calculateRotationFromDelta(event.data);
     rotateMap(rotation);
   }
 
@@ -446,7 +518,8 @@ module.exports = function (locationsData) {
   }
 
   function onZoom(event) {
-    console.log('Free zoom');
+    var scale = calculateScaleFromDistance(event.data.delta);
+    scaleMap(scale);
   }
 
   function onZoomIn(event) {
@@ -466,7 +539,10 @@ module.exports = function (locationsData) {
   }
 
   function onResize(event) {
-    console.log('resize');
+    requestAnimationFrame(function (_) {
+      resizeScene();
+      renderMap();
+    });
   }
 
   function initializeEvents() {
@@ -490,12 +566,15 @@ module.exports = function (locationsData) {
     scene = properties.scene;
     camera = properties.camera;
     light = properties.light;
+    raycaster = properties.raycaster;
     object = properties.object;
+    points = properties.points;
     var _renderer$domElement = renderer.domElement;
     width = _renderer$domElement.width;
     height = _renderer$domElement.height;
 
     view = false;
+    calculateHalves();
     initializeEvents();
     renderMap();
   }
@@ -514,13 +593,15 @@ var TEMPLATE_NAME_PHOLDER = '{{ NAME }}';
 var TEMPLATE_DESC_PHOLDER = '{{ DESC }}';
 var TEMPLATE = '<a href="#" class="location">\n                    <span class="locationInfo">\n                      <span class="locationName">' + TEMPLATE_NAME_PHOLDER + '</span>\n                      <span class="locationDescription">' + TEMPLATE_DESC_PHOLDER + '</span>\n                    </span>\n                  </a>';
 
+var LOCATION_HIDDEN_CLASS = 'location-is-hidden';
+
 module.exports = function (locationData) {
 
+  var dom = void 0;
   var name = void 0;
   var description = void 0;
   var picture = void 0;
   var position = void 0;
-  var dom = void 0;
 
   /* Get */
 
@@ -554,23 +635,22 @@ module.exports = function (locationData) {
 
   /* Actions */
 
-  // function normalizeProjection(data) {
-  //   return {
-  //     x: Math.round((data.projection.x + 1) * data.width  / 2),
-  //     y: Math.round((-data.projection.y + 1) * data.height / 2)
-  //   };
-  // }
-
-  function projectLocation(newPosition) {
-    getLocationDOM().style.transform = 'translateY(50%) translateX(' + newPosition.x + 'px) translateY(' + newPosition.y + 'px)';
+  function hideLocation() {
+    getLocationDOM().classList.add(LOCATION_HIDDEN_CLASS);
   }
 
-  // function projectLocation(data) {
-  //   let projectionVector = new THREE.Vector3()
-  //     .setFromMatrixPosition(getLocationVector().matrixWorld)
-  //     .project(data.camera);
-  //   translateLocation(normalizeProjection(data));
-  // }
+  function showLocation() {
+    getLocationDOM().classList.remove(LOCATION_HIDDEN_CLASS);
+  }
+
+  function projectLocation(newPosition) {
+    if (newPosition.visibility) {
+      showLocation();
+    } else {
+      hideLocation();
+    }
+    getLocationDOM().style.transform = 'translateY(50%) translateX(' + newPosition.position.x + 'px) translateY(' + newPosition.position.y + 'px)';
+  }
 
   /* Initialization */
 
@@ -616,12 +696,12 @@ var locationsData = [{
   name: 'Sweetwater',
   description: 'Has a train station',
   picture: '#',
-  position: { x: 0, y: 30, z: 20 }
+  position: [0, 30, 20]
 }, {
   name: 'Pariah',
-  description: 'One giant brothel',
+  description: 'A really nice place',
   picture: '#',
-  position: { x: 60, y: 15, z: 15 }
+  position: [60, 15, 15]
 }];
 
 module.exports = function (_) {
@@ -646,8 +726,8 @@ module.exports = function (_) {
   }
 
   function projectLocations(event) {
-    locations.forEach(function (currentLocation) {
-      currentLocation.project(event.data);
+    locations.forEach(function (currentLocation, index) {
+      return currentLocation.project(event.data.newPositions[index]);
     });
   }
 
@@ -659,17 +739,27 @@ module.exports = function (_) {
 
   /* Inititalization */
 
-  function appendLocations() {
-    var container = document.createDocumentFragment();
-    getLocations().forEach(function (currentLocation) {
-      container.appendChild(currentLocation.dom());
+  function onMapRender(event) {
+    requestAnimationFrame(function (_) {
+      projectLocations(event);
     });
-    getDOM().appendChild(container);
+  }
+
+  function onLocationsChange() {
+    toggleLocations();
   }
 
   function initializeEvents() {
-    eventManager.bind(document, 'maprender', projectLocations);
-    eventManager.bind(document, uiEvents.locations, toggleLocations);
+    eventManager.bind(document, 'maprender', onMapRender);
+    eventManager.bind(document, uiEvents.locations, onLocationsChange);
+  }
+
+  function appendLocations() {
+    var container = document.createDocumentFragment();
+    getLocations().forEach(function (currentLocation) {
+      return container.appendChild(currentLocation.dom());
+    });
+    getDOM().appendChild(container);
   }
 
   function initilizeLocations() {
@@ -882,12 +972,16 @@ function onMouseMove(event) {
   requestAnimationFrame(function (_) {
     var button = event.button;
     var delta = {
-      x: downPosition.clientX - event.clientX,
-      y: downPosition.clientY - event.clientY
+      x: event.clientX - downPosition.clientX,
+      y: event.clientY - downPosition.clientY
+    };
+    var position = {
+      clientX: event.clientX,
+      clientY: event.clientY
     };
     event.preventDefault();
     event.stopPropagation();
-    eventManager.trigger(document, MOUSE_EVENTS[button], false, 'UIEvent', { delta: delta });
+    eventManager.trigger(document, MOUSE_EVENTS[button], false, 'UIEvent', { delta: delta, startPosition: downPosition, currentPosition: position });
   });
 }
 
@@ -1007,35 +1101,27 @@ var TOUCH_THRESHOLD = 120;
 var downTouches = void 0;
 var downDistance = void 0;
 
-function calculateDeltaPosition(touchesMove) {
-  return downTouches[0].clientX - touchesMove[0].clientX;
-}
-
 function calculateDistance(touches) {
   return Math.sqrt(Math.pow(touches[1].clientX - touches[0].clientX, 2) + Math.pow(touches[1].clientY - touches[0].clientY, 2));
 }
 
-function onSingleToucheMove(touchesMove) {
-  var delta = calculateDeltaPosition(touchesMove);
-  eventManager.trigger(document, uiEvents.rotate, false, 'UIEvent', { delta: delta });
-}
-
-function onDoubleTouchMove(touchesMove) {
-  var deltaPosition = calculateDeltaPosition(touchesMove);
-  var distance = calculateDistance(touchesMove);
-  if (distance <= TOUCH_THRESHOLD) {
-    eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', { delta: deltaPosition });
-  } else {
-    eventManager.trigger(document, uiEvents.rotate, false, 'UIEvent', { distance: distance });
-  }
+function onSingleToucheMove(event) {
+  requestAnimationFrame(function (_) {
+    return eventManager.trigger(document, uiEvents.rotate, false, 'UIEvent', { startPosition: downTouches[0], currentPosition: event.touches[0] });
+  });
 }
 
 function onGesture(event) {
   requestAnimationFrame(function (_) {
-    if (downTouches.length === 1) {
-      onSingleToucheMove(event.touches);
+    var deltaDistance = calculateDistance(event.touches) - downDistance;
+    if (deltaDistance <= TOUCH_THRESHOLD) {
+      var position = {
+        x: downTouches[0].clientX - event.touches[0].clientX,
+        y: downTouches[0].clientY - event.touches[0].clientY
+      };
+      eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', { delta: position });
     } else {
-      onDoubleTouchMove(event.touches);
+      eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', { delta: deltaDistance });
     }
   });
 }
@@ -1043,17 +1129,22 @@ function onGesture(event) {
 function onTouchEnd(event) {
   event.preventDefault();
   event.stopPropagation();
+  eventManager.unbind(document, 'touchmove', onSingleToucheMove);
   eventManager.unbind(document, 'touchmove', onGesture);
   eventManager.unbind(document, 'touchend', onTouchEnd);
 }
 
 function onTouchStart(event) {
   downTouches = event.touches;
-  downDistance = calculateDistance(event.touches);
   event.preventDefault();
   event.stopPropagation();
   eventManager.trigger(document, uiEvents.snap, false, 'UIEvent');
-  eventManager.bind(document, 'touchmove', onGesture);
+  if (event.touches.length === 1) {
+    eventManager.bind(document, 'touchmove', onSingleToucheMove);
+  } else {
+    downDistance = calculateDistance(event.touches);
+    eventManager.bind(document, 'touchmove', onGesture);
+  }
   eventManager.bind(document, 'touchend', onTouchEnd);
 }
 

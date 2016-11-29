@@ -16,12 +16,12 @@ let locationsData = [
     name: 'Sweetwater',
     description: 'Has a train station',
     picture: '#',
-    position: {x: 0, y: 30, z: 20}
+    position: [0, 30, 20]
   }, {
     name: 'Pariah',
-    description: 'One giant brothel',
+    description: 'A really nice place',
     picture: '#',
-    position: {x: 60, y: 15, z: 15}
+    position: [60, 15, 15]
   }
 ];
 
@@ -47,7 +47,7 @@ module.exports = _ => {
   }
 
   function projectLocations(event) {
-    locations.forEach(currentLocation => {currentLocation.project(event.data);});
+    locations.forEach((currentLocation, index) => currentLocation.project(event.data.newPositions[index]));
   }
 
   function generateMapLocations() {
@@ -56,15 +56,25 @@ module.exports = _ => {
 
   /* Inititalization */
 
-  function appendLocations() {
-    let container = document.createDocumentFragment();
-    getLocations().forEach(currentLocation => {container.appendChild(currentLocation.dom());});
-    getDOM().appendChild(container);
+  function onMapRender(event) {
+    requestAnimationFrame(_ => {
+      projectLocations(event);
+    });
+  }
+
+  function onLocationsChange() {
+    toggleLocations();
   }
 
   function initializeEvents() {
-    eventManager.bind(document, 'maprender', projectLocations);
-    eventManager.bind(document, uiEvents.locations, toggleLocations);
+    eventManager.bind(document, 'maprender', onMapRender);
+    eventManager.bind(document, uiEvents.locations, onLocationsChange);
+  }
+
+  function appendLocations() {
+    let container = document.createDocumentFragment();
+    getLocations().forEach(currentLocation => container.appendChild(currentLocation.dom()));
+    getDOM().appendChild(container);
   }
 
   function initilizeLocations() {

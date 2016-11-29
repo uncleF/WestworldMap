@@ -13,13 +13,15 @@ const TEMPLATE = `<a href="#" class="location">
                     </span>
                   </a>`;
 
+const LOCATION_HIDDEN_CLASS = 'location-is-hidden';
+
 module.exports = locationData => {
 
+  let dom;
   let name;
   let description;
   let picture;
   let position;
-  let dom;
 
   /* Get */
 
@@ -53,23 +55,22 @@ module.exports = locationData => {
 
   /* Actions */
 
-  // function normalizeProjection(data) {
-  //   return {
-  //     x: Math.round((data.projection.x + 1) * data.width  / 2),
-  //     y: Math.round((-data.projection.y + 1) * data.height / 2)
-  //   };
-  // }
-
-  function projectLocation(newPosition) {
-    getLocationDOM().style.transform = `translateY(50%) translateX(${newPosition.x}px) translateY(${newPosition.y}px)`;
+  function hideLocation() {
+    getLocationDOM().classList.add(LOCATION_HIDDEN_CLASS);
   }
 
-  // function projectLocation(data) {
-  //   let projectionVector = new THREE.Vector3()
-  //     .setFromMatrixPosition(getLocationVector().matrixWorld)
-  //     .project(data.camera);
-  //   translateLocation(normalizeProjection(data));
-  // }
+  function showLocation() {
+    getLocationDOM().classList.remove(LOCATION_HIDDEN_CLASS);
+  }
+
+  function projectLocation(newPosition) {
+    if (newPosition.visibility) {
+      showLocation();
+    } else {
+      hideLocation();
+    }
+    getLocationDOM().style.transform = `translateY(50%) translateX(${newPosition.position.x}px) translateY(${newPosition.position.y}px)`;
+  }
 
   /* Initialization */
 

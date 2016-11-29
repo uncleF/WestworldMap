@@ -36,6 +36,7 @@ $locationMarker-borderColor: $white;
   text-decoration: none;
   white-space: nowrap;
   transform-origin: 0 100%;
+  transition: opacity $UITransitionDefault;
 
   &:before {
     @include tx-pseudo(relative);
@@ -45,6 +46,10 @@ $locationMarker-borderColor: $white;
     border: 2px solid $locationMarker-borderColor;
     border-radius: 50%;
     vertical-align: middle;
+  }
+
+  &-is-hidden {
+    opacity: 0;
   }
 
 }

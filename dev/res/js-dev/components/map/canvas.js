@@ -34,8 +34,11 @@ module.exports = locationsData => {
 
   let light;
 
+  let raycaster;
+
   let object;
-  let objectGeometry;
+
+  let points;
 
   /* Initialization */
 
@@ -71,20 +74,26 @@ module.exports = locationsData => {
     scene.add(light);
   }
 
+  function setupRaycaster() {
+    raycaster = new THREE.Raycaster();
+  }
+
   function addLocationPoint(position) {
-    let point = new THREE.Object3D();
-    point.position.set(position.x, position.y, position.z);
-    // currentLocation.point(point);
+    let locationGeometry = new THREE.BoxGeometry(5, 5, 5);
+    let locationMaterial = new THREE.MeshLambertMaterial({color: 0x0000ff, transparent: true, opacity: 0});
+    let point = new THREE.Mesh(locationGeometry, locationMaterial);
+    point.position.set(...position);
     object.add(point);
+    return point;
   }
 
   function addLocationPoints() {
-    locationsData.forEach(addLocationPoint);
+    points = locationsData.map(addLocationPoint);
   }
 
-  function addObject() {
+  function addObject(geometry) {
     object = new THREE.Object3D();
-    object.add(new THREE.Mesh(objectGeometry, new THREE.MeshNormalMaterial()));
+    object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
     addLocationPoints();
     scene.add(object);
   }
@@ -93,8 +102,7 @@ module.exports = locationsData => {
     return new Promise((resolve, reject) => {
       let loader = new THREE.JSONLoader();
       loader.load(GEOMETRY_URL, geometry => {
-        objectGeometry = geometry;
-        addObject();
+        addObject(geometry);
         resolve();
       });
     });
@@ -110,7 +118,9 @@ module.exports = locationsData => {
       scene: scene,
       camera: camera,
       light: light,
-      object: object
+      raycaster: raycaster,
+      object: object,
+      points: points
     };
   }
 
@@ -119,6 +129,7 @@ module.exports = locationsData => {
   setupScene();
   setupCamera();
   setupLights();
+  setupRaycaster();
   return setupObject()
     .then(setupDOM)
     .then(returnCanvasInterface);

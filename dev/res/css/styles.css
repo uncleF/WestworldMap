@@ -193,8 +193,8 @@ acronym, abbr {
 }
 
 sup, sub, small {
-  font-size: 12px;
-  font-size: 0.75rem;
+  font-size: 13.6px;
+  font-size: 0.85rem;
   line-height: 0;
 }
 
@@ -853,6 +853,8 @@ body {
   -webkit-transform-origin: 0 100%;
       -ms-transform-origin: 0 100%;
           transform-origin: 0 100%;
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
 }
 
 .location:before {
@@ -867,6 +869,10 @@ body {
   vertical-align: middle;
 }
 
+.location-is-hidden {
+  opacity: 0;
+}
+
 .locationInfo {
   margin: 0 0 0 10px;
   vertical-align: middle;
@@ -879,9 +885,9 @@ body {
 }
 
 .locationDescription {
-  font-size: 12px;
-  font-size: 0.75rem;
-  line-height: 1.5;
+  font-size: 13.6px;
+  font-size: 0.85rem;
+  line-height: 1.32353;
   display: block;
 }
 
@@ -892,9 +898,9 @@ body {
     height: 12px;
   }
   .locationName {
-    font-size: 12px;
-    font-size: 0.75rem;
-    line-height: 1.5;
+    font-size: 13.6px;
+    font-size: 0.85rem;
+    line-height: 1.32353;
   }
   .locationDescription {
     display: none;
@@ -923,9 +929,9 @@ body {
 
 /* Footer */
 .footer {
-  font-size: 12px;
-  font-size: 0.75rem;
-  line-height: 2;
+  font-size: 13.6px;
+  font-size: 0.85rem;
+  line-height: 1.76471;
   z-index: 100;
   position: absolute;
   right: 10px;

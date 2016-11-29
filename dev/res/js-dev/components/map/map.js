@@ -1,4 +1,5 @@
 /* jshint browser:true */
+/* global THREE */
 
 'use strict';
 
@@ -7,35 +8,37 @@ let canvas = require('./canvas');
 let animation = require('./animation');
 let uiEvents = require('ui/uiEvents');
 
+const RENDER_EVENT = 'maprender';
+
+const TRANSITION_DURATION = 300;
+
+const CAMERA_TOP_POSITION = [0, 500, 0];
+const CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
+const CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+const CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
+
+const PAN_STEP = 50;
+const PAN_RATIO = 0.25;
+
+const ROTATION_DEFAULT = [0, 0, 0];
+const ROTATION_STEP = Math.PI / 180 * 30;
+const ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
+const ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
+
+const SCALE_DEFAULT = 1;
+const SCALE_STEP = 0.25;
+const SCALE_MAX = 4;
+const SCALE_MIN = 0.25;
+const SCALE_RATIO = 0.001;
+
 module.exports = locationsData => {
 
-  const ROTATION_DEFAULT = [0, 0, 0];
-  const ROTATION_STEP = Math.PI / 180 * 30;
-  const ROTATION_CCW_STEP = [0, ROTATION_STEP, 0];
-  const ROTATION_CW_STEP = [0, -ROTATION_STEP, 0];
-  const ROTATION_RATIO = 0.01;
-
-  const SCALE_DEFAULT = 1;
-  const SCALE_STEP = 0.25;
-  const SCALE_MAX = 4;
-  const SCALE_MIN = 0.25;
-  const SCALE_RATIO = 0.01;
-
-  const TRANSITION_DURATION = 300;
-
-  const EVENT_RENDER = 'maprender';
-
-  const PAN_STEP = 50;
-  const PAN_RATIO = 0.25;
-
-  const CAMERA_TOP_POSITION = [0, 500, 0];
-  const CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
-  const CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
-  const CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
-
-  let renderer;
   let width;
   let height;
+  let halfWidth;
+  let halfHeight;
+
+  let renderer;
 
   let scene;
   let snap;
@@ -44,7 +47,11 @@ module.exports = locationsData => {
 
   let light;
 
+  let raycaster;
+
   let object;
+
+  let points;
 
   let view;
 
@@ -88,9 +95,17 @@ module.exports = locationsData => {
 
   /* Utilities */
 
-  function calculateRotationFromDelta(delta) {
+  function calculateRotationFromDelta(data) {
     let rotation = getSnap().mapRotation.slice(0);
-    rotation[1] += delta.x * ROTATION_RATIO;
+    let startVector = {
+      x: data.startPosition.clientX - halfWidth,
+      y: halfHeight - data.startPosition.clientY
+    };
+    let currentVector = {
+      x: data.currentPosition.clientX - halfWidth,
+      y: halfHeight - data.currentPosition.clientY
+    };
+    rotation[1] -= Math.atan2(currentVector.x, currentVector.y) - Math.atan2(startVector.x, startVector.y);
     return rotation;
   }
 
@@ -100,11 +115,44 @@ module.exports = locationsData => {
     return position;
   }
 
+  function calculateScaleFromDistance(delta) {
+    return getSnap().mapScale + delta * SCALE_RATIO;
+  }
+
+  function calculatePointProjection(point) {
+    let projection = new THREE.Vector3();
+    projection.setFromMatrixPosition(point.matrixWorld).project(camera);
+    return projection;
+  }
+
+  function calculateLocationPosition(point) {
+    let projection = calculatePointProjection(point);
+    let position = {
+      x: Math.round((projection.x + 1) * halfWidth),
+      y: Math.round((-projection.y + 1) * halfHeight)
+    };
+    let positionNDC = new THREE.Vector2((position.x / width) * 2 - 1, (-position.y / height) * 2 + 1);
+    raycaster.setFromCamera(positionNDC, camera);
+    return {
+      position: position,
+      visibility: (raycaster.intersectObjects(object.children)[0].object === point)
+    };
+  }
+
+  function calculateLocationsPositions() {
+    return points.map(calculateLocationPosition);
+  }
+
+  function calculateHalves() {
+    halfWidth = width / 2;
+    halfHeight = height / 2;
+  }
+
   /* Map Actions */
 
   function renderMap() {
     renderer.render(scene, camera);
-    eventManager.trigger(document, EVENT_RENDER, false, 'UIEvent', {camera: camera, width: width, height: height});
+    eventManager.trigger(document, RENDER_EVENT, false, 'UIEvent', {newPositions: calculateLocationsPositions()});
   }
 
   function rotateMap(angles) {
@@ -173,6 +221,15 @@ module.exports = locationsData => {
     };
   }
 
+  function resizeScene() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    calculateHalves();
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+  }
+
   /* Views */
 
   function transformCamera(positionRotation) {
@@ -209,7 +266,7 @@ module.exports = locationsData => {
   }
 
   function onRotate(event) {
-    let rotation = calculateRotationFromDelta(event.data.delta);
+    let rotation = calculateRotationFromDelta(event.data);
     rotateMap(rotation);
   }
 
@@ -235,7 +292,8 @@ module.exports = locationsData => {
   }
 
   function onZoom(event) {
-    console.log('Free zoom');
+    let scale = calculateScaleFromDistance(event.data.delta);
+    scaleMap(scale);
   }
 
   function onZoomIn(event) {
@@ -255,7 +313,10 @@ module.exports = locationsData => {
   }
 
   function onResize(event) {
-    console.log('resize');
+    requestAnimationFrame(_ => {
+      resizeScene();
+      renderMap();
+    });
   }
 
   function initializeEvents() {
@@ -275,9 +336,10 @@ module.exports = locationsData => {
   }
 
   function setupMap(properties) {
-    ({renderer, scene, camera, light, object} = properties);
+    ({renderer, scene, camera, light, raycaster, object, points} = properties);
     ({width, height} = renderer.domElement);
     view = false;
+    calculateHalves();
     initializeEvents();
     renderMap();
   }

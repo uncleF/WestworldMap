@@ -18,12 +18,16 @@ function onMouseMove(event) {
   requestAnimationFrame(_ => {
     let button = event.button;
     let delta = {
-      x: downPosition.clientX - event.clientX,
-      y: downPosition.clientY - event.clientY
+      x: event.clientX - downPosition.clientX,
+      y: event.clientY - downPosition.clientY
+    };
+    let position = {
+      clientX: event.clientX,
+      clientY: event.clientY
     };
     event.preventDefault();
     event.stopPropagation();
-    eventManager.trigger(document, MOUSE_EVENTS[button], false, 'UIEvent', {delta: delta});
+    eventManager.trigger(document, MOUSE_EVENTS[button], false, 'UIEvent', {delta: delta, startPosition: downPosition, currentPosition: position});
   });
 }
 
