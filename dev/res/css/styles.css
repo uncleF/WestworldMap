@@ -5,7 +5,7 @@ kbd {
 
 /* Inline-block IE */
 /* Pseudo Element */
-.showLocations:before, .showLocations:after, .showTopDown:before, .showTopDown:after {
+.showLocations:before, .showLocations:after, .showTopDown:before, .showTopDown:after, .loader:before {
   position: absolute;
   content: '';
   display: block;
@@ -853,8 +853,8 @@ body {
   -webkit-transform-origin: 0 100%;
       -ms-transform-origin: 0 100%;
           transform-origin: 0 100%;
-  -webkit-transition: opacity 0.2s;
-  transition: opacity 0.2s;
+  -webkit-transition: opacity 0.1s;
+  transition: opacity 0.1s;
 }
 
 .location:before {
@@ -955,5 +955,38 @@ body {
   .gitHub {
     display: none;
   }
+}
+
+/* Loader */
+.loader {
+  z-index: 200;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #000;
+  -webkit-transition: opacity 0.2s, visibility 0.2s step-start, -webkit-transform 0.2s step-start;
+  transition: opacity 0.2s, visibility 0.2s step-start, -webkit-transform 0.2s step-start;
+  transition: opacity 0.2s, visibility 0.2s step-start, transform 0.2s step-start;
+  transition: opacity 0.2s, visibility 0.2s step-start, transform 0.2s step-start, -webkit-transform 0.2s step-start;
+}
+
+.loader:before {
+  top: 50%;
+  left: 50%;
+  width: 104px;
+  height: 42px;
+  margin: -21px 0 0 -52px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="102" height="42" viewBox="0 0 104 44"><path d="M22,42a20,20,0,0,1,0,-40c20,0,40,40,60,40a20,20,0,0,0,0,-40c-20,0,-40,40,-60,40a20,20,0,0,1,0,-40" class="loaderSpinner" /><defs><style>.loaderSpinner {stroke: white;stroke-width: 2;animation: spin 1s infinite linear;stroke-dasharray: 0 0 65 272;}@keyframes spin {from {stroke-dasharray: 0 0 65 272;}to {stroke-dasharray: 0 272 65 0;}}</style></defs></svg>');
+}
+
+.loader-is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: opacity 0.2s, visibility 0.2s step-end, -webkit-transform 0.2s step-end;
+  transition: opacity 0.2s, visibility 0.2s step-end, -webkit-transform 0.2s step-end;
+  transition: opacity 0.2s, visibility 0.2s step-end, transform 0.2s step-end;
+  transition: opacity 0.2s, visibility 0.2s step-end, transform 0.2s step-end, -webkit-transform 0.2s step-end;
 }
 /*# sourceMappingURL=styles.css.map */

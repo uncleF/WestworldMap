@@ -20,18 +20,20 @@ function onSingleToucheMove(event) {
   requestAnimationFrame(_ => eventManager.trigger(document, uiEvents.rotate, false, 'UIEvent', {startPosition: downTouches[0], currentPosition: event.touches[0]}));
 }
 
-function onGesture(event) {
+function onDoubleToucheMove(event) {
   requestAnimationFrame(_ => {
-    let deltaDistance = calculateDistance(event.touches) - downDistance;
-    if (deltaDistance <= TOUCH_THRESHOLD) {
-      let position = {
-        x: downTouches[0].clientX - event.touches[0].clientX,
-        y: downTouches[0].clientY - event.touches[0].clientY
-      };
-      eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', {delta: position});
-    } else {
-      eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', {delta: deltaDistance});
-    }
+    let delta = {
+      x: downTouches[0].clientX - event.touches[0].clientX,
+      y: downTouches[0].clientY - event.touches[0].clientY
+    };
+    eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', {delta: delta});
+  });
+}
+
+function onPinch(event) {
+  requestAnimationFrame(_ => {
+    let delta = calculateDistance(event.touches) - downDistance;
+    eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', {delta: delta});
   });
 }
 
@@ -39,7 +41,8 @@ function onTouchEnd(event) {
   event.preventDefault();
   event.stopPropagation();
   eventManager.unbind(document, 'touchmove', onSingleToucheMove);
-  eventManager.unbind(document, 'touchmove', onGesture);
+  eventManager.unbind(document, 'touchmove', onDoubleToucheMove);
+  eventManager.unbind(document, 'touchmove', onPinch);
   eventManager.unbind(document, 'touchend', onTouchEnd);
 }
 
@@ -52,7 +55,11 @@ function onTouchStart(event) {
     eventManager.bind(document, 'touchmove', onSingleToucheMove);
   } else {
     downDistance = calculateDistance(event.touches);
-    eventManager.bind(document, 'touchmove', onGesture);
+    if (downDistance <= TOUCH_THRESHOLD) {
+      eventManager.bind(document, 'touchmove', onDoubleToucheMove);
+    } else {
+      eventManager.bind(document, 'touchmove', onPinch);
+    }
   }
   eventManager.bind(document, 'touchend', onTouchEnd);
 }

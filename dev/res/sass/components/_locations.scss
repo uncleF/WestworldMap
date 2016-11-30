@@ -36,7 +36,7 @@ $locationMarker-borderColor: $white;
   text-decoration: none;
   white-space: nowrap;
   transform-origin: 0 100%;
-  transition: opacity $UITransitionDefault;
+  transition: opacity $UITransitionFast;
 
   &:before {
     @include tx-pseudo(relative);

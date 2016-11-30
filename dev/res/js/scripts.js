@@ -582,7 +582,7 @@ module.exports = function (locationsData) {
   return canvas(locationsData).then(setupMap);
 };
 
-},{"./animation":1,"./canvas":2,"patterns/tx-event":7,"ui/uiEvents":17}],4:[function(require,module,exports){
+},{"./animation":1,"./canvas":2,"patterns/tx-event":7,"ui/uiEvents":18}],4:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -775,7 +775,7 @@ module.exports = function (_) {
   return Promise.resolve(generateMapLocations());
 };
 
-},{"./mapLocation":4,"patterns/tx-event":7,"ui/uiEvents":17}],6:[function(require,module,exports){
+},{"./mapLocation":4,"patterns/tx-event":7,"ui/uiEvents":18}],6:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -883,7 +883,7 @@ module.exports = function (_) {
   eventManager.bind(document, uiEvents.fullscreen, onUIFullscreen);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":17}],9:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],9:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -899,7 +899,7 @@ module.exports = function (_) {
   eventManager.bind(document, uiEvents.help, onUIHelp);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":17}],10:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],10:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -951,7 +951,7 @@ module.exports = function (_) {
   eventManager.bind(document, 'keydown', onKeyDown);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":17}],12:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],12:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1028,7 +1028,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'contextmenu', onContextMenu, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":17}],13:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],13:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1062,7 +1062,7 @@ module.exports = function (_) {
   control(HELP_ID, uiEvents.help);
 };
 
-},{"./control":10,"./toggle":14,"ui/uiEvents":17}],14:[function(require,module,exports){
+},{"./control":10,"./toggle":14,"ui/uiEvents":18}],14:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1111,18 +1111,20 @@ function onSingleToucheMove(event) {
   });
 }
 
-function onGesture(event) {
+function onDoubleToucheMove(event) {
   requestAnimationFrame(function (_) {
-    var deltaDistance = calculateDistance(event.touches) - downDistance;
-    if (deltaDistance <= TOUCH_THRESHOLD) {
-      var position = {
-        x: downTouches[0].clientX - event.touches[0].clientX,
-        y: downTouches[0].clientY - event.touches[0].clientY
-      };
-      eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', { delta: position });
-    } else {
-      eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', { delta: deltaDistance });
-    }
+    var delta = {
+      x: downTouches[0].clientX - event.touches[0].clientX,
+      y: downTouches[0].clientY - event.touches[0].clientY
+    };
+    eventManager.trigger(document, uiEvents.pan, false, 'UIEvent', { delta: delta });
+  });
+}
+
+function onPinch(event) {
+  requestAnimationFrame(function (_) {
+    var delta = calculateDistance(event.touches) - downDistance;
+    eventManager.trigger(document, uiEvents.zoom, false, 'UIEvent', { delta: delta });
   });
 }
 
@@ -1130,7 +1132,8 @@ function onTouchEnd(event) {
   event.preventDefault();
   event.stopPropagation();
   eventManager.unbind(document, 'touchmove', onSingleToucheMove);
-  eventManager.unbind(document, 'touchmove', onGesture);
+  eventManager.unbind(document, 'touchmove', onDoubleToucheMove);
+  eventManager.unbind(document, 'touchmove', onPinch);
   eventManager.unbind(document, 'touchend', onTouchEnd);
 }
 
@@ -1143,7 +1146,11 @@ function onTouchStart(event) {
     eventManager.bind(document, 'touchmove', onSingleToucheMove);
   } else {
     downDistance = calculateDistance(event.touches);
-    eventManager.bind(document, 'touchmove', onGesture);
+    if (downDistance <= TOUCH_THRESHOLD) {
+      eventManager.bind(document, 'touchmove', onDoubleToucheMove);
+    } else {
+      eventManager.bind(document, 'touchmove', onPinch);
+    }
   }
   eventManager.bind(document, 'touchend', onTouchEnd);
 }
@@ -1153,7 +1160,26 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'touchstart', onTouchStart, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":17}],16:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],16:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+var LOADER_ID = 'loader';
+var LOADER_HIDDEN_CLASS = LOADER_ID + '-is-hidden';
+
+function removeLoader() {
+  document.getElementById(LOADER_ID).classList.add(LOADER_HIDDEN_CLASS);
+}
+
+function showLoader() {
+  document.getElementById(LOADER_ID).classList.remove(LOADER_HIDDEN_CLASS);
+}
+
+exports.show = showLoader();
+exports.remove = removeLoader();
+
+},{}],17:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1162,9 +1188,9 @@ var panel = require('./input/panel');
 var keyboard = require('./input/keyboard');
 var mouse = require('./input/mouse');
 var touch = require('./input/touch');
-
 var display = require('./display');
 var help = require('./help');
+var loader = require('./loader');
 
 module.exports = function (locations, map) {
 
@@ -1179,9 +1205,11 @@ module.exports = function (locations, map) {
 
   display();
   help();
+  console.log(loader);
+  loader.remove();
 };
 
-},{"./display":8,"./help":9,"./input/keyboard":11,"./input/mouse":12,"./input/panel":13,"./input/touch":15}],17:[function(require,module,exports){
+},{"./display":8,"./help":9,"./input/keyboard":11,"./input/mouse":12,"./input/panel":13,"./input/touch":15,"./loader":16}],18:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1204,7 +1232,7 @@ module.exports = {
   help: 'helpuichange'
 };
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1215,4 +1243,4 @@ var ui = require('ui/ui');
 
 mapLocations().then(map).then(ui);
 
-},{"map/map":3,"mapLocations/mapLocations":5,"ui/ui":16}]},{},[18]);
+},{"map/map":3,"mapLocations/mapLocations":5,"ui/ui":17}]},{},[19]);
