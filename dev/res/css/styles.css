@@ -988,5 +988,7 @@ body {
   transition: opacity 0.2s, visibility 0.2s step-end, -webkit-transform 0.2s step-end;
   transition: opacity 0.2s, visibility 0.2s step-end, transform 0.2s step-end;
   transition: opacity 0.2s, visibility 0.2s step-end, transform 0.2s step-end, -webkit-transform 0.2s step-end;
+  -webkit-transition-delay: 1s;
+          transition-delay: 1s;
 }
 /*# sourceMappingURL=styles.css.map */

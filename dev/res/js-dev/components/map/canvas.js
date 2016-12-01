@@ -3,7 +3,7 @@
 
 'use strict';
 
-const GEOMETRY_URL = '/res/models/placeholder.json';
+const GEOMETRY_URL = '/models/placeholder.json';
 
 const CANVAS_HOLDER_ID = 'map';
 

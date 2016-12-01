@@ -2,28 +2,15 @@
 
 'use strict';
 
-let mapLocation = require('./mapLocation');
+let mapLocation = require('./location');
 let eventManager = require('patterns/tx-event');
+let download = require('utilities/download');
 let uiEvents = require('ui/uiEvents');
+
+const LOCATIONS_DATA_URL = '//localhost:8000/data/locations.json';
 
 const LOCATIONS_ID = 'locations';
 const ACTIVE_CLASS_NAME = 'locations-is-active';
-
-/* Mock Locations */
-
-let locationsData = [
-  {
-    name: 'Sweetwater',
-    description: 'Has a train station',
-    picture: '#',
-    position: [0, 30, 20]
-  }, {
-    name: 'Pariah',
-    description: 'A really nice place',
-    picture: '#',
-    position: [60, 15, 15]
-  }
-];
 
 module.exports = _ => {
 
@@ -77,14 +64,19 @@ module.exports = _ => {
     getDOM().appendChild(container);
   }
 
-  function initilizeLocations() {
+  function initilizeLocations(data) {
     dom = document.getElementById(LOCATIONS_ID);
-    locations = locationsData.map(locationData => mapLocation(locationData));
+    locations = data.map(locationData => mapLocation(locationData));
   }
 
-  initilizeLocations();
-  appendLocations();
-  initializeEvents();
-  return Promise.resolve(generateMapLocations());
+  function initialization(data) {
+    initilizeLocations(data);
+    appendLocations();
+    initializeEvents();
+    return generateMapLocations();
+  }
+
+  return download(LOCATIONS_DATA_URL)
+    .then(initialization);
 
 };

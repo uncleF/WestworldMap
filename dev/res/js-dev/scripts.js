@@ -2,10 +2,13 @@
 
 'use strict';
 
-let mapLocations = require('mapLocations/mapLocations');
+let locations = require('locations/locations');
 let map = require('map/map');
 let ui = require('ui/ui');
+let cache = require('utilities/cache');
 
-mapLocations()
+cache();
+locations()
   .then(map)
-  .then(ui);
+  .then(ui)
+  .catch();

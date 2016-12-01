@@ -18,6 +18,8 @@ const CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
 const CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
 const PAN_STEP = 50;
+const PAN_LEFT_STEP = [-PAN_STEP, 0, 0];
+const PAN_RIGHT_STEP = [PAN_STEP, 0, 0];
 const PAN_RATIO = 0.25;
 
 const ROTATION_DEFAULT = [0, 0, 0];
@@ -191,11 +193,11 @@ module.exports = locationsData => {
   }
 
   function panCameraLeft() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, panCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition(), PAN_LEFT_STEP, panCamera, true);
   }
 
   function panCameraRight() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, panCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition(), PAN_RIGHT_STEP, panCamera, true);
   }
 
   /* Scene Actions */

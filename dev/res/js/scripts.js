@@ -3,6 +3,192 @@
 
 'use strict';
 
+var createNode = require('patterns/tx-createNode');
+
+var TEMPLATE_NAME_PHOLDER = '{{ NAME }}';
+var TEMPLATE_DESC_PHOLDER = '{{ DESC }}';
+var TEMPLATE = '<a href="#" class="location">\n                    <span class="locationInfo">\n                      <span class="locationName">' + TEMPLATE_NAME_PHOLDER + '</span>\n                      <span class="locationDescription">' + TEMPLATE_DESC_PHOLDER + '</span>\n                    </span>\n                  </a>';
+
+var LOCATION_HIDDEN_CLASS = 'location-is-hidden';
+
+module.exports = function (locationData) {
+
+  var dom = void 0;
+  var name = void 0;
+  var description = void 0;
+  var picture = void 0;
+  var position = void 0;
+
+  /* Get */
+
+  function getLocationName() {
+    return name;
+  }
+
+  function getLocationDescription() {
+    return description;
+  }
+
+  function getLocationPicture() {
+    return picture;
+  }
+
+  function getLocationPosition() {
+    return position;
+  }
+
+  function getLocationDOM() {
+    return dom;
+  }
+
+  function getLocation() {
+    return {
+      name: getLocationName(),
+      description: getLocationDescription(),
+      picture: getLocationPicture()
+    };
+  }
+
+  /* Actions */
+
+  function hideLocation() {
+    getLocationDOM().classList.add(LOCATION_HIDDEN_CLASS);
+  }
+
+  function showLocation() {
+    getLocationDOM().classList.remove(LOCATION_HIDDEN_CLASS);
+  }
+
+  function projectLocation(newPosition) {
+    if (newPosition.visibility) {
+      showLocation();
+    } else {
+      hideLocation();
+    }
+    getLocationDOM().style.transform = 'translateY(50%) translateX(' + newPosition.position.x + 'px) translateY(' + newPosition.position.y + 'px) translateZ(0)';
+  }
+
+  /* Initialization */
+
+  function createLocationDOM() {
+    var html = TEMPLATE.replace(TEMPLATE_NAME_PHOLDER, getLocationName()).replace(TEMPLATE_DESC_PHOLDER, getLocationDescription());
+    dom = createNode(html);
+  }
+
+  name = locationData.name;
+  description = locationData.description;
+  picture = locationData.picture;
+  position = locationData.position;
+
+  createLocationDOM();
+
+  /* Interface */
+
+  return {
+    info: getLocation,
+    name: getLocationName,
+    picture: getLocationPicture,
+    position: getLocationPosition,
+    dom: getLocationDOM,
+    project: projectLocation
+  };
+};
+
+},{"patterns/tx-createNode":6}],2:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+var mapLocation = require('./location');
+var eventManager = require('patterns/tx-event');
+var download = require('utilities/download');
+var uiEvents = require('ui/uiEvents');
+
+var LOCATIONS_DATA_URL = '//localhost:8000/data/locations.json';
+
+var LOCATIONS_ID = 'locations';
+var ACTIVE_CLASS_NAME = 'locations-is-active';
+
+module.exports = function (_) {
+
+  var dom = void 0;
+  var locations = void 0;
+
+  /* Get */
+
+  function getDOM() {
+    return dom;
+  }
+
+  function getLocations() {
+    return locations;
+  }
+
+  /* Actions */
+
+  function toggleLocations() {
+    getDOM().classList.toggle(ACTIVE_CLASS_NAME);
+  }
+
+  function projectLocations(event) {
+    locations.forEach(function (currentLocation, index) {
+      return currentLocation.project(event.data.newPositions[index]);
+    });
+  }
+
+  function generateMapLocations() {
+    return getLocations().map(function (mapLocation) {
+      return mapLocation.position();
+    });
+  }
+
+  /* Inititalization */
+
+  function onMapRender(event) {
+    requestAnimationFrame(function (_) {
+      projectLocations(event);
+    });
+  }
+
+  function onLocationsChange() {
+    toggleLocations();
+  }
+
+  function initializeEvents() {
+    eventManager.bind(document, 'maprender', onMapRender);
+    eventManager.bind(document, uiEvents.locations, onLocationsChange);
+  }
+
+  function appendLocations() {
+    var container = document.createDocumentFragment();
+    getLocations().forEach(function (currentLocation) {
+      return container.appendChild(currentLocation.dom());
+    });
+    getDOM().appendChild(container);
+  }
+
+  function initilizeLocations(data) {
+    dom = document.getElementById(LOCATIONS_ID);
+    locations = data.map(function (locationData) {
+      return mapLocation(locationData);
+    });
+  }
+
+  function initialization(data) {
+    initilizeLocations(data);
+    appendLocations();
+    initializeEvents();
+    return generateMapLocations();
+  }
+
+  return download(LOCATIONS_DATA_URL).then(initialization);
+};
+
+},{"./location":1,"patterns/tx-event":7,"ui/uiEvents":18,"utilities/download":20}],3:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
 var animation = void 0;
 
 /* Easing */
@@ -81,7 +267,7 @@ function go(duration, startValues, targetValues, task, relative) {
 exports.stop = stop;
 exports.go = go;
 
-},{}],2:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /* jshint browser:true */
 /* global THREE */
 
@@ -89,7 +275,7 @@ exports.go = go;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var GEOMETRY_URL = '/res/models/placeholder.json';
+var GEOMETRY_URL = '/models/placeholder.json';
 
 var CANVAS_HOLDER_ID = 'map';
 
@@ -225,7 +411,7 @@ module.exports = function (locationsData) {
   return setupObject().then(setupDOM).then(returnCanvasInterface);
 };
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* jshint browser:true */
 /* global THREE */
 
@@ -248,6 +434,8 @@ var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
 var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
 var PAN_STEP = 50;
+var PAN_LEFT_STEP = [-PAN_STEP, 0, 0];
+var PAN_RIGHT_STEP = [PAN_STEP, 0, 0];
 var PAN_RATIO = 0.25;
 
 var ROTATION_DEFAULT = [0, 0, 0];
@@ -413,11 +601,11 @@ module.exports = function (locationsData) {
   }
 
   function panCameraLeft() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], -PAN_STEP, panCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition(), PAN_LEFT_STEP, panCamera, true);
   }
 
   function panCameraRight() {
-    animation.go(TRANSITION_DURATION, getCameraPosition()[0], PAN_STEP, panCamera, true);
+    animation.go(TRANSITION_DURATION, getCameraPosition(), PAN_RIGHT_STEP, panCamera, true);
   }
 
   /* Scene Actions */
@@ -582,200 +770,7 @@ module.exports = function (locationsData) {
   return canvas(locationsData).then(setupMap);
 };
 
-},{"./animation":1,"./canvas":2,"patterns/tx-event":7,"ui/uiEvents":18}],4:[function(require,module,exports){
-/* jshint browser:true */
-
-'use strict';
-
-var createNode = require('patterns/tx-createNode');
-
-var TEMPLATE_NAME_PHOLDER = '{{ NAME }}';
-var TEMPLATE_DESC_PHOLDER = '{{ DESC }}';
-var TEMPLATE = '<a href="#" class="location">\n                    <span class="locationInfo">\n                      <span class="locationName">' + TEMPLATE_NAME_PHOLDER + '</span>\n                      <span class="locationDescription">' + TEMPLATE_DESC_PHOLDER + '</span>\n                    </span>\n                  </a>';
-
-var LOCATION_HIDDEN_CLASS = 'location-is-hidden';
-
-module.exports = function (locationData) {
-
-  var dom = void 0;
-  var name = void 0;
-  var description = void 0;
-  var picture = void 0;
-  var position = void 0;
-
-  /* Get */
-
-  function getLocationName() {
-    return name;
-  }
-
-  function getLocationDescription() {
-    return description;
-  }
-
-  function getLocationPicture() {
-    return picture;
-  }
-
-  function getLocationPosition() {
-    return position;
-  }
-
-  function getLocationDOM() {
-    return dom;
-  }
-
-  function getLocation() {
-    return {
-      name: getLocationName(),
-      description: getLocationDescription(),
-      picture: getLocationPicture()
-    };
-  }
-
-  /* Actions */
-
-  function hideLocation() {
-    getLocationDOM().classList.add(LOCATION_HIDDEN_CLASS);
-  }
-
-  function showLocation() {
-    getLocationDOM().classList.remove(LOCATION_HIDDEN_CLASS);
-  }
-
-  function projectLocation(newPosition) {
-    if (newPosition.visibility) {
-      showLocation();
-    } else {
-      hideLocation();
-    }
-    getLocationDOM().style.transform = 'translateY(50%) translateX(' + newPosition.position.x + 'px) translateY(' + newPosition.position.y + 'px)';
-  }
-
-  /* Initialization */
-
-  function createLocationDOM() {
-    var html = TEMPLATE.replace(TEMPLATE_NAME_PHOLDER, getLocationName()).replace(TEMPLATE_DESC_PHOLDER, getLocationDescription());
-    dom = createNode(html);
-  }
-
-  name = locationData.name;
-  description = locationData.description;
-  picture = locationData.picture;
-  position = locationData.position;
-
-  createLocationDOM();
-
-  /* Interface */
-
-  return {
-    info: getLocation,
-    name: getLocationName,
-    picture: getLocationPicture,
-    position: getLocationPosition,
-    dom: getLocationDOM,
-    project: projectLocation
-  };
-};
-
-},{"patterns/tx-createNode":6}],5:[function(require,module,exports){
-/* jshint browser:true */
-
-'use strict';
-
-var mapLocation = require('./mapLocation');
-var eventManager = require('patterns/tx-event');
-var uiEvents = require('ui/uiEvents');
-
-var LOCATIONS_ID = 'locations';
-var ACTIVE_CLASS_NAME = 'locations-is-active';
-
-/* Mock Locations */
-
-var locationsData = [{
-  name: 'Sweetwater',
-  description: 'Has a train station',
-  picture: '#',
-  position: [0, 30, 20]
-}, {
-  name: 'Pariah',
-  description: 'A really nice place',
-  picture: '#',
-  position: [60, 15, 15]
-}];
-
-module.exports = function (_) {
-
-  var dom = void 0;
-  var locations = void 0;
-
-  /* Get */
-
-  function getDOM() {
-    return dom;
-  }
-
-  function getLocations() {
-    return locations;
-  }
-
-  /* Actions */
-
-  function toggleLocations() {
-    getDOM().classList.toggle(ACTIVE_CLASS_NAME);
-  }
-
-  function projectLocations(event) {
-    locations.forEach(function (currentLocation, index) {
-      return currentLocation.project(event.data.newPositions[index]);
-    });
-  }
-
-  function generateMapLocations() {
-    return getLocations().map(function (mapLocation) {
-      return mapLocation.position();
-    });
-  }
-
-  /* Inititalization */
-
-  function onMapRender(event) {
-    requestAnimationFrame(function (_) {
-      projectLocations(event);
-    });
-  }
-
-  function onLocationsChange() {
-    toggleLocations();
-  }
-
-  function initializeEvents() {
-    eventManager.bind(document, 'maprender', onMapRender);
-    eventManager.bind(document, uiEvents.locations, onLocationsChange);
-  }
-
-  function appendLocations() {
-    var container = document.createDocumentFragment();
-    getLocations().forEach(function (currentLocation) {
-      return container.appendChild(currentLocation.dom());
-    });
-    getDOM().appendChild(container);
-  }
-
-  function initilizeLocations() {
-    dom = document.getElementById(LOCATIONS_ID);
-    locations = locationsData.map(function (locationData) {
-      return mapLocation(locationData);
-    });
-  }
-
-  initilizeLocations();
-  appendLocations();
-  initializeEvents();
-  return Promise.resolve(generateMapLocations());
-};
-
-},{"./mapLocation":4,"patterns/tx-event":7,"ui/uiEvents":18}],6:[function(require,module,exports){
+},{"./animation":3,"./canvas":4,"patterns/tx-event":7,"ui/uiEvents":18}],6:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -904,6 +899,25 @@ module.exports = function (_) {
 
 'use strict';
 
+var LOADER_ID = 'loader';
+var LOADER_HIDDEN_CLASS = LOADER_ID + '-is-hidden';
+
+function removeLoader() {
+  document.getElementById(LOADER_ID).classList.add(LOADER_HIDDEN_CLASS);
+}
+
+function showLoader() {
+  document.getElementById(LOADER_ID).classList.remove(LOADER_HIDDEN_CLASS);
+}
+
+exports.show = showLoader;
+exports.remove = removeLoader;
+
+},{}],11:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
 var eventManager = require('patterns/tx-event');
 
 function onClick(event, uiEvent) {
@@ -919,7 +933,7 @@ module.exports = function (id, uiEvent) {
   });
 };
 
-},{"patterns/tx-event":7}],11:[function(require,module,exports){
+},{"patterns/tx-event":7}],12:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -951,7 +965,7 @@ module.exports = function (_) {
   eventManager.bind(document, 'keydown', onKeyDown);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],12:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],13:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -972,8 +986,8 @@ function onMouseMove(event) {
   requestAnimationFrame(function (_) {
     var button = event.button;
     var delta = {
-      x: event.clientX - downPosition.clientX,
-      y: event.clientY - downPosition.clientY
+      x: downPosition.clientX - event.clientX,
+      y: downPosition.clientY - event.clientY
     };
     var position = {
       clientX: event.clientX,
@@ -1028,7 +1042,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'contextmenu', onContextMenu, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],13:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],14:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1062,7 +1076,7 @@ module.exports = function (_) {
   control(HELP_ID, uiEvents.help);
 };
 
-},{"./control":10,"./toggle":14,"ui/uiEvents":18}],14:[function(require,module,exports){
+},{"./control":11,"./toggle":15,"ui/uiEvents":18}],15:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1086,7 +1100,7 @@ module.exports = function (id, uiEvent) {
   });
 };
 
-},{"patterns/tx-event":7}],15:[function(require,module,exports){
+},{"patterns/tx-event":7}],16:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1160,26 +1174,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'touchstart', onTouchStart, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],16:[function(require,module,exports){
-/* jshint browser:true */
-
-'use strict';
-
-var LOADER_ID = 'loader';
-var LOADER_HIDDEN_CLASS = LOADER_ID + '-is-hidden';
-
-function removeLoader() {
-  document.getElementById(LOADER_ID).classList.add(LOADER_HIDDEN_CLASS);
-}
-
-function showLoader() {
-  document.getElementById(LOADER_ID).classList.remove(LOADER_HIDDEN_CLASS);
-}
-
-exports.show = showLoader();
-exports.remove = removeLoader();
-
-},{}],17:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":18}],17:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1188,9 +1183,10 @@ var panel = require('./input/panel');
 var keyboard = require('./input/keyboard');
 var mouse = require('./input/mouse');
 var touch = require('./input/touch');
-var display = require('./display');
-var help = require('./help');
-var loader = require('./loader');
+
+var display = require('./elements/display');
+var help = require('./elements/help');
+var loader = require('./elements/loader');
 
 module.exports = function (locations, map) {
 
@@ -1205,11 +1201,10 @@ module.exports = function (locations, map) {
 
   display();
   help();
-  console.log(loader);
   loader.remove();
 };
 
-},{"./display":8,"./help":9,"./input/keyboard":11,"./input/mouse":12,"./input/panel":13,"./input/touch":15,"./loader":16}],18:[function(require,module,exports){
+},{"./elements/display":8,"./elements/help":9,"./elements/loader":10,"./input/keyboard":12,"./input/mouse":13,"./input/panel":14,"./input/touch":16}],18:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1233,14 +1228,56 @@ module.exports = {
 };
 
 },{}],19:[function(require,module,exports){
+/* jshint browser: true */
+/* global Modernizr */
+
+'use strict';
+
+function onSuccess(worker) {
+  console.log('Service worker successfully installed with the scope of: ' + worker.scope);
+}
+
+function onFailure(error) {
+  console.log('Failed to install service worker. ' + error);
+}
+
+module.exports = function (_) {
+  if (Modernizr.serviceworker) {
+    navigator.serviceWorker.register('/service.js').then(onSuccess).catch(onFailure);
+  }
+};
+
+},{}],20:[function(require,module,exports){
+/* jshint browser: true */
+
+'use strict';
+
+module.exports = function (url) {
+  return new Promise(function (resolve, reject) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', function (event) {
+      var data = JSON.parse(event.target.responseText);
+      resolve(data);
+    });
+    request.addEventListener('error', function (_) {
+      reject();
+    });
+    request.open('GET', url);
+    request.send();
+  });
+};
+
+},{}],21:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-var mapLocations = require('mapLocations/mapLocations');
+var locations = require('locations/locations');
 var map = require('map/map');
 var ui = require('ui/ui');
+var cache = require('utilities/cache');
 
-mapLocations().then(map).then(ui);
+cache();
+locations().then(map).then(ui).catch();
 
-},{"map/map":3,"mapLocations/mapLocations":5,"ui/ui":17}]},{},[19]);
+},{"locations/locations":2,"map/map":5,"ui/ui":17,"utilities/cache":19}]},{},[21]);

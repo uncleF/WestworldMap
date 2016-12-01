@@ -18,8 +18,8 @@ function onMouseMove(event) {
   requestAnimationFrame(_ => {
     let button = event.button;
     let delta = {
-      x: event.clientX - downPosition.clientX,
-      y: event.clientY - downPosition.clientY
+      x: downPosition.clientX - event.clientX,
+      y: downPosition.clientY - event.clientY
     };
     let position = {
       clientX: event.clientX,

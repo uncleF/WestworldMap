@@ -1,0 +1,11 @@
+[{
+  "name": "Sweetwater",
+  "description": "Has a train station",
+  "picture": "#",
+  "position": [0, 30, 20]
+}, {
+  "name": "Pariah",
+  "description": "A really nice place",
+  "picture": "#",
+  "position": [60, 15, 15]
+}]

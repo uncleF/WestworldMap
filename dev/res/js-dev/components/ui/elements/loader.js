@@ -13,5 +13,5 @@ function showLoader() {
   document.getElementById(LOADER_ID).classList.remove(LOADER_HIDDEN_CLASS);
 }
 
-exports.show = showLoader();
-exports.remove = removeLoader();
+exports.show = showLoader;
+exports.remove = removeLoader;

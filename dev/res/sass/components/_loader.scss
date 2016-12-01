@@ -27,6 +27,7 @@ $loader-height: 42px;
     opacity: 0;
     pointer-events: none;
     transition: opacity $UITransitionDefault, visibility $UITransitionDefault step-end, transform $UITransitionDefault step-end;
+    transition-delay: 1s;
   }
 
 }

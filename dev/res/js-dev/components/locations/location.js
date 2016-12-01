@@ -69,7 +69,7 @@ module.exports = locationData => {
     } else {
       hideLocation();
     }
-    getLocationDOM().style.transform = `translateY(50%) translateX(${newPosition.position.x}px) translateY(${newPosition.position.y}px)`;
+    getLocationDOM().style.transform = `translateY(50%) translateX(${newPosition.position.x}px) translateY(${newPosition.position.y}px) translateZ(0)`;
   }
 
   /* Initialization */

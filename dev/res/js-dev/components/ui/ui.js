@@ -6,9 +6,10 @@ let panel = require('./input/panel');
 let keyboard = require('./input/keyboard');
 let mouse = require('./input/mouse');
 let touch = require('./input/touch');
-let display = require('./display');
-let help = require('./help');
-let loader = require('./loader');
+
+let display = require('./elements/display');
+let help = require('./elements/help');
+let loader = require('./elements/loader');
 
 module.exports = (locations, map) => {
 
@@ -23,7 +24,6 @@ module.exports = (locations, map) => {
 
   display();
   help();
-  console.log(loader);
   loader.remove();
 
 };
