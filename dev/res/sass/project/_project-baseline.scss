@@ -37,7 +37,7 @@ $fontSizes: (
   h4: $fontSize * txf-pow($fontRatio, 2),
   h5: $fontSize * $fontRatio,
   h6: $fontSize,
-  small: $fontSize * .85,
+  small: $fontSize * .75,
   tiny: $fontSize * .65,
   large: $fontSize * 2.25
 );

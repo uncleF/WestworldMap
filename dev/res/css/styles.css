@@ -193,8 +193,8 @@ acronym, abbr {
 }
 
 sup, sub, small {
-  font-size: 13.6px;
-  font-size: 0.85rem;
+  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 0;
 }
 
@@ -885,9 +885,9 @@ body {
 }
 
 .locationDescription {
-  font-size: 13.6px;
-  font-size: 0.85rem;
-  line-height: 1.32353;
+  font-size: 12px;
+  font-size: 0.75rem;
+  line-height: 1.5;
   display: block;
 }
 
@@ -898,9 +898,9 @@ body {
     height: 12px;
   }
   .locationName {
-    font-size: 13.6px;
-    font-size: 0.85rem;
-    line-height: 1.32353;
+    font-size: 12px;
+    font-size: 0.75rem;
+    line-height: 1.5;
   }
   .locationDescription {
     display: none;
@@ -929,9 +929,9 @@ body {
 
 /* Footer */
 .footer {
-  font-size: 13.6px;
-  font-size: 0.85rem;
-  line-height: 1.76471;
+  font-size: 12px;
+  font-size: 0.75rem;
+  line-height: 2;
   z-index: 100;
   position: absolute;
   right: 10px;
@@ -940,6 +940,11 @@ body {
   color: #666;
   background: 10px;
   text-align: right;
+  line-height: 1.75;
+}
+
+.gitHub {
+  display: block;
 }
 
 /* Phone */
