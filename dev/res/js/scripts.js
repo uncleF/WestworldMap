@@ -393,7 +393,7 @@ module.exports = function (locationsData) {
         addObject(geometry);
         resolve();
       }, function (request) {
-        eventManager(document, uiEvents.progress, { total: request.total, loaded: request.loaded });
+        eventManager.trigger(document, uiEvents.progress, false, 'UIEvent', { total: request.total, loaded: request.loaded });
       }, function (error) {
         reject(error);
       });
@@ -780,6 +780,7 @@ module.exports = function (locationsData) {
     view = false;
     calculateHalves();
     initializeEvents();
+    console.log(object);
     renderMap();
   }
 

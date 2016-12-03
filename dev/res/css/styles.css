@@ -557,7 +557,7 @@ body {
   }
   .helpTouchSingle, .helpTouchDouble, .helpTouchPinch, .helpMouseLeft, .helpMouseRight, .helpMouseWheel, .helpKeyboardKey1, .helpKeyboardKey2, .helpKeyboardKeySpace, .helpKeyboardKeyUp, .helpKeyboardKeyLeft, .helpKeyboardKeyDown, .helpKeyboardKeyRight, .helpKeyboardKeyPgUp, .helpKeyboardKeyPgDown {
     background-image: url("../images/helpSprites@2x.png");
-    background-size: 241px 239px;
+    background-size: 238px 231px;
   }
 }
 
@@ -568,7 +568,7 @@ body {
   }
   .helpTouchSingle, .helpTouchDouble, .helpTouchPinch, .helpMouseLeft, .helpMouseRight, .helpMouseWheel, .helpKeyboardKey1, .helpKeyboardKey2, .helpKeyboardKeySpace, .helpKeyboardKeyUp, .helpKeyboardKeyLeft, .helpKeyboardKeyDown, .helpKeyboardKeyRight, .helpKeyboardKeyPgUp, .helpKeyboardKeyPgDown {
     background-image: url("../images/helpSprites@3x.png");
-    background-size: 241px 239px;
+    background-size: 238px 231px;
   }
 }
 
@@ -605,6 +605,10 @@ body {
       -ms-flex-align: center;
           align-items: center;
   width: 100%;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .mdz-touchevents .controls {
@@ -804,8 +808,8 @@ body {
   background-position: -99px -27px;
   z-index: 100;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px;
+  right: 13px;
   display: block;
 }
 
@@ -814,7 +818,7 @@ body {
   .mdz-touchevents .controls {
     top: auto;
     right: 0;
-    bottom: 40px;
+    bottom: 50px;
     left: 0;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
@@ -872,7 +876,8 @@ body {
       -ms-flex-align: center;
           align-items: center;
   text-decoration: none;
-  text-shadow: 0 0 2px #000;
+  text-shadow: 0 0 1px #000;
+  line-height: 1em;
   white-space: nowrap;
   -webkit-transform-origin: 0 100%;
       -ms-transform-origin: 0 100%;
@@ -921,6 +926,9 @@ body {
   .location:before {
     width: 12px;
     height: 12px;
+  }
+  .locationInfo {
+    margin: 0 0 0 5px;
   }
   .locationName {
     font-size: 12px;
@@ -978,9 +986,12 @@ body {
     font-size: 10.4px;
     font-size: 0.65rem;
     line-height: 2.30769;
+    right: 5px;
     bottom: 5px;
+    left: 5px;
+    width: auto;
     text-align: center;
-    line-height: 1;
+    line-height: 1.25;
   }
   .gitHub {
     display: none;
@@ -1017,6 +1028,10 @@ body {
   transition: opacity 0.25s, visibility 0.25s step-end, -webkit-transform 0.25s step-end;
   transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end;
   transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end, -webkit-transform 0.25s step-end;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .help-is-active {
@@ -1051,37 +1066,38 @@ body {
 .helpTouchSingle {
   width: 59px;
   height: 61px;
-  background-position: -182px 0;
+  background-position: 0 -133px;
 }
 
 .helpTouchDouble {
   width: 77px;
   height: 61px;
-  background-position: 0 -67px;
+  background-position: 0 0;
 }
 
 .helpTouchPinch {
   width: 62px;
   height: 60px;
-  background-position: -82px -67px;
+  background-position: -132px -66px;
 }
 
 .helpMouseLeft {
-  width: 86px;
+  width: 61px;
   height: 62px;
-  background-position: -91px 0;
+  background-position: 0 -66px;
 }
 
 .helpMouseRight {
-  width: 86px;
+  width: 61px;
   height: 62px;
-  background-position: 0 0;
+  background-position: -66px -66px;
+  margin: 0 20px 0 0;
 }
 
 .helpMouseWheel {
   width: 36px;
-  height: 72px;
-  background-position: -182px -66px;
+  height: 62px;
+  background-position: -202px 0;
   margin: 0 7px 0 0;
 }
 
@@ -1099,7 +1115,7 @@ body {
 .helpKeyboardKey1 {
   width: 32px;
   height: 32px;
-  background-position: -185px -170px;
+  background-position: 0 -199px;
   top: 0;
   left: 0;
 }
@@ -1107,7 +1123,7 @@ body {
 .helpKeyboardKey2 {
   width: 32px;
   height: 32px;
-  background-position: -74px -170px;
+  background-position: -202px -141px;
   top: 0;
   left: 42px;
 }
@@ -1115,7 +1131,7 @@ body {
 .helpKeyboardKeySpace {
   width: 115px;
   height: 32px;
-  background-position: 0 -133px;
+  background-position: -82px 0;
   top: 42px;
   left: 0;
 }
@@ -1123,7 +1139,7 @@ body {
 .helpKeyboardKeyUp {
   width: 32px;
   height: 32px;
-  background-position: 0 -170px;
+  background-position: -202px -67px;
   top: 0;
   left: 167px;
 }
@@ -1131,7 +1147,7 @@ body {
 .helpKeyboardKeyLeft {
   width: 32px;
   height: 32px;
-  background-position: -111px -170px;
+  background-position: -64px -133px;
   top: 42px;
   left: 125px;
 }
@@ -1139,7 +1155,7 @@ body {
 .helpKeyboardKeyDown {
   width: 32px;
   height: 32px;
-  background-position: -120px -133px;
+  background-position: -202px -104px;
   top: 42px;
   left: 167px;
 }
@@ -1147,7 +1163,7 @@ body {
 .helpKeyboardKeyRight {
   width: 32px;
   height: 32px;
-  background-position: 0 -207px;
+  background-position: -37px -199px;
   top: 42px;
   left: 209px;
 }
@@ -1155,7 +1171,7 @@ body {
 .helpKeyboardKeyPgUp {
   width: 32px;
   height: 32px;
-  background-position: -148px -170px;
+  background-position: -138px -133px;
   top: 0;
   left: 125px;
 }
@@ -1163,7 +1179,7 @@ body {
 .helpKeyboardKeyPgDown {
   width: 32px;
   height: 32px;
-  background-position: -37px -170px;
+  background-position: -101px -133px;
   top: 0;
   left: 209px;
 }
@@ -1175,6 +1191,14 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+/* Phone */
+@media only screen and (max-width: 45em) {
+  .helpContent {
+    position: relative;
+    width: 90%;
+  }
 }
 
 /* Error */
@@ -1247,7 +1271,7 @@ body {
   width: 100%;
   background: #000;
   visibility: visible;
-  opacity: 1;
+  opacity: .95;
   -webkit-transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start;
@@ -1279,7 +1303,9 @@ body {
   -webkit-animation: progress 1s linear infinite;
           animation: progress 1s linear infinite;
   stroke: #fff;
-  stroke-width: 4px;
+  stroke-width: 4;
+  stroke-dasharray: 0 0 154px 616px;
+  stroke-dashoffset: -10;
   fill: none;
 }
 

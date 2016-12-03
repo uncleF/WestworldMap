@@ -25,9 +25,12 @@
 
   .footer {
     @include tx-font-size(tiny);
+    right: $gap-phone;
     bottom: $gap-phone;
+    left: $gap-phone;
+    width: auto;
     text-align: center;
-    line-height: 1;
+    line-height: 1.25;
   }
 
   .gitHub {

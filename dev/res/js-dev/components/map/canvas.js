@@ -116,7 +116,7 @@ module.exports = locationsData => {
         addObject(geometry);
         resolve();
       }, request => {
-        eventManager(document, uiEvents.progress, {total: request.total, loaded: request.loaded});
+        eventManager.trigger(document, uiEvents.progress, false, 'UIEvent', {total: request.total, loaded: request.loaded});
       }, error => {
         reject(error);
       });

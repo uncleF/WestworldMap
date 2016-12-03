@@ -16,7 +16,7 @@ $loader-transition: 1s;
   width: 100%;
   background: $background;
   visibility: visible;
-  opacity: 1;
+  opacity: .95;
   transition: opacity $UITransitionDefault, visibility $UITransitionDefault step-start, transform $UITransitionDefault step-start;
 
   &-is-hidden {
@@ -42,7 +42,9 @@ $loader-transition: 1s;
 .loaderProgress {
   animation: progress $loader-transition linear infinite;
   stroke: $loader-color;
-  stroke-width: 4px;
+  stroke-width: 4;
+  stroke-dasharray: 0 0 $loader-part ($loader-length - $loader-part);
+  stroke-dashoffset: -10;
   fill: none;
 }
 

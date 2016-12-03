@@ -343,6 +343,7 @@ module.exports = locationsData => {
     view = false;
     calculateHalves();
     initializeEvents();
+    console.log(object);
     renderMap();
   }
 

@@ -35,7 +35,8 @@ $locationMarker-shadowColor: $black;
   display: flex;
   align-items: center;
   text-decoration: none;
-  text-shadow: 0 0 2px $locationMarker-shadowColor;
+  text-shadow: 0 0 1px $locationMarker-shadowColor;
+  line-height: 1em;
   white-space: nowrap;
   transform-origin: 0 100%;
   transition: opacity $UITransitionFast;
@@ -88,6 +89,10 @@ $locationMarker-shadowColor: $black;
       height: $locationMarker-phone-size;
     }
 
+  }
+
+  .locationInfo {
+    margin: 0 0 0 $gap-phone;
   }
 
   .locationName {
