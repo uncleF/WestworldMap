@@ -7,7 +7,7 @@ let uiEvents = require('ui/uiEvents');
 
 const CATCHER_ID = 'locations';
 
-const TOUCH_THRESHOLD = 120;
+const TOUCH_THRESHOLD = 100;
 
 let downTouches;
 let downDistance;
@@ -55,6 +55,7 @@ function onTouchStart(event) {
     eventManager.bind(document, 'touchmove', onSingleToucheMove);
   } else {
     downDistance = calculateDistance(event.touches);
+    eventManager.unbind(document, 'touchmove', onSingleToucheMove);
     if (downDistance <= TOUCH_THRESHOLD) {
       eventManager.bind(document, 'touchmove', onDoubleToucheMove);
     } else {

@@ -1,0 +1,155 @@
+/* Help */
+
+.help {
+  @include tx-layer(over);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: $background;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(-100%) translateZ(0);
+  transition: opacity $UITransitionDefault, visibility $UITransitionDefault step-end, transform $UITransitionDefault step-end;
+
+  &-is-active {
+    visibility: visible;
+    opacity: 1;
+    transform: translateZ(0);
+    transition: opacity $UITransitionDefault, visibility $UITransitionDefault step-start, transform $UITransitionDefault step-start;
+  }
+
+}
+
+.helpContent {
+  position: relative;
+  width: 400px;
+}
+
+%helpRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin: 0 0 75px;
+}
+
+.helpTouch {
+  @extend %helpRow;
+}
+
+.helpTouchSingle {
+  @include tx-sprite($spt-singleSwipe, $block: true);
+}
+
+.helpTouchDouble {
+  @include tx-sprite($spt-doubleSwipe, $block: true);
+}
+
+.helpTouchPinch {
+  @include tx-sprite($spt-pinch, $block: true);
+}
+
+.helpMouse {
+  @extend %helpRow;
+}
+
+.helpMouseLeft {
+  @include tx-sprite($spt-mouseLeft, $block: true);
+}
+
+.helpMouseRight {
+  @include tx-sprite($spt-mouseRight, $block: true);
+}
+
+.helpMouseWheel {
+  @include tx-sprite($spt-mouseWheel, $block: true);
+  margin: 0 7px 0 0;
+}
+
+$keyGap: 10px;
+
+.helpKeyboard {
+  position: relative;
+  width: (txf-sprite-width($spt-space) + txf-sprite-width($spt-keyLeft) + txf-sprite-width($spt-keyDown) + txf-sprite-width($spt-keyRight) + $keyGap * 3);
+  height: (txf-sprite-height($spt-key1) + txf-sprite-height($spt-key1) + $keyGap);
+  margin: 0 auto;
+}
+
+%key {
+  position: absolute;
+}
+
+.helpKeyboardKey1 {
+  @extend %key;
+  @include tx-sprite($spt-key1, $block: true);
+  top: 0;
+  left: 0;
+}
+
+.helpKeyboardKey2 {
+  @extend %key;
+  @include tx-sprite($spt-key2, $block: true);
+  top: 0;
+  left: (txf-sprite-width($spt-key1) + $keyGap);
+}
+
+.helpKeyboardKeySpace {
+  @extend %key;
+  @include tx-sprite($spt-space, $block: true);
+  top: (txf-sprite-height($spt-key1) + $keyGap);
+  left: 0;
+}
+
+.helpKeyboardKeyUp {
+  @extend %key;
+  @include tx-sprite($spt-keyUp, $block: true);
+  top: 0;
+  left: (txf-sprite-width($spt-space) + txf-sprite-width($spt-keyLeft) + $keyGap * 2);
+}
+
+.helpKeyboardKeyLeft {
+  @extend %key;
+  @include tx-sprite($spt-keyLeft, $block: true);
+  top: (txf-sprite-height($spt-key1) + $keyGap);
+  left: (txf-sprite-width($spt-space) + $keyGap);
+}
+
+.helpKeyboardKeyDown {
+  @extend %key;
+  @include tx-sprite($spt-keyDown, $block: true);
+  top: (txf-sprite-height($spt-key1) + $keyGap);
+  left: (txf-sprite-width($spt-space) + txf-sprite-width($spt-keyLeft) + $keyGap * 2);
+}
+
+.helpKeyboardKeyRight {
+  @extend %key;
+  @include tx-sprite($spt-keyRight, $block: true);
+  top: (txf-sprite-height($spt-key1) + $keyGap);
+  left: (txf-sprite-width($spt-space) + txf-sprite-width($spt-keyDown) + txf-sprite-width($spt-keyLeft) + $keyGap * 3);
+}
+
+.helpKeyboardKeyPgUp {
+  @extend %key;
+  @include tx-sprite($spt-keyPgUp, $block: true);
+  top: 0;
+  left: (txf-sprite-width($spt-space) + $keyGap);
+}
+
+.helpKeyboardKeyPgDown {
+  @extend %key;
+  @include tx-sprite($spt-keyPgDn, $block: true);
+  top: 0;
+  left: (txf-sprite-width($spt-space) + txf-sprite-width($spt-keyDown) + txf-sprite-width($spt-keyLeft) + $keyGap * 3);
+}
+
+.closeHelp {
+  @include tx-sprite($spt-closeHelp, $block: true, $padding: true);
+  position: absolute;
+  top: $gap;
+  right: $gap;
+}

@@ -2,16 +2,19 @@
 
 'use strict';
 
-let panel = require('./input/panel');
-let keyboard = require('./input/keyboard');
-let mouse = require('./input/mouse');
-let touch = require('./input/touch');
+let panel = require('ui/input/panel');
+let keyboard = require('ui/input/keyboard');
+let mouse = require('ui/input/mouse');
+let touch = require('ui/input/touch');
 
-let display = require('./elements/display');
-let help = require('./elements/help');
-let loader = require('./elements/loader');
+let display = require('ui/elements/display');
+let help = require('ui/elements/help');
+let loader = require('ui/elements/loader');
+let error = require('ui/elements/error');
 
-module.exports = (locations, map) => {
+exports.error = error.show;
+
+exports.init = (locations, map) => {
 
   /* Input Options */
 

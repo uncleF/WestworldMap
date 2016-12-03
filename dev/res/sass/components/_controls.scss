@@ -26,7 +26,9 @@
   display: block;
   height: 0;
   margin: 0 $gap;
-  text-indent: -10000px;
+  color: rgba($text, 0);
+  font-size: 0;
+  text-decoration: none;
 
   .mdz-touchevents & {
     margin: $gap 0;
@@ -46,6 +48,7 @@
   &:after {
     @extend %controlTransition;
     @include tx-pseudo;
+    transform: translateZ(0);
   }
 
   &:before {
@@ -80,6 +83,7 @@
   width: txf-sprite-width($spt-topDown) + 4px;
   height: 0;
   padding: txf-sprite-height($spt-topDown) 0 0;
+  transform: translateZ(0);
   perspective: 50px;
 
   &:before,
@@ -94,6 +98,7 @@
     top: 0;
     left: 50%;
     margin: 0 0 0 (txf-sprite-width($spt-topDown) / -2);
+    transform: translateZ(0);
     transition: $UITransitionDefault;
   }
 
@@ -108,7 +113,7 @@
   &-is-active {
 
     &:before {
-      transform: rotateX(50deg);
+      transform: rotateX(50deg) translateZ(0);
     }
 
   }
@@ -217,43 +222,6 @@
   right: $gap;
   display: block;
 }
-
-// .showPanorama {
-//   @extend %control;
-//   @include tx-sprite-block($spt-panoramaStart, $padding: true);
-
-//   &:before,
-//   &:after {
-//     @extend %controlTransition;
-//     @include tx-pseudo;
-//     left: 0;
-//     transition: $UITransitionDefault;
-//   }
-
-//   &:before {
-//     @include tx-sprite($spt-panoramaStart, $block: true);
-//     top: 0;
-//   }
-
-//   &:after {
-//     @include tx-sprite($spt-panoramaStop, $block: true);
-//     top: 2px;
-//     opacity: 0;
-//   }
-
-//   &-is-active {
-
-//     &:before {
-//       opacity: 0;
-//     }
-
-//     &:after {
-//       opacity: 1;
-//     }
-
-//   }
-
-// }
 
 
 

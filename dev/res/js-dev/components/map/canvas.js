@@ -3,6 +3,10 @@
 
 'use strict';
 
+let eventManager = require('patterns/tx-event');
+let uiEvents = require('ui/uiEvents');
+let errorMessages = require('ui/errorMessages');
+
 const GEOMETRY_URL = '/models/placeholder.json';
 
 const CANVAS_HOLDER_ID = 'map';
@@ -46,11 +50,18 @@ module.exports = locationsData => {
     dom = document.getElementById(CANVAS_HOLDER_ID);
     width = dom.clientWidth;
     height = dom.clientHeight;
+    return Promise.resolve();
   }
 
   function setupRenderer() {
-    renderer = new THREE.WebGLRenderer({antialias: true, castShadows: true});
-    renderer.setSize(width, height);
+    try {
+      renderer = new THREE.WebGLRenderer({antialias: true, castShadows: true});
+      renderer.setSize(width, height);
+      return Promise.resolve();
+    }
+    catch (error) {
+      return Promise.reject(errorMessages.webGlInactive);
+    }
   }
 
   function setupScene() {
@@ -104,12 +115,24 @@ module.exports = locationsData => {
       loader.load(GEOMETRY_URL, geometry => {
         addObject(geometry);
         resolve();
+      }, request => {
+        eventManager(document, uiEvents.progress, {total: request.total, loaded: request.loaded});
+      }, error => {
+        reject(error);
       });
     });
   }
 
   function setupDOM() {
     dom.appendChild(renderer.domElement);
+  }
+
+  function setupBase() {
+    setupScene();
+    setupCamera();
+    setupLights();
+    setupRaycaster();
+    return Promise.resolve();
   }
 
   function returnCanvasInterface() {
@@ -124,13 +147,10 @@ module.exports = locationsData => {
     };
   }
 
-  setupCanvas();
-  setupRenderer();
-  setupScene();
-  setupCamera();
-  setupLights();
-  setupRaycaster();
-  return setupObject()
+  return setupCanvas()
+    .then(setupRenderer)
+    .then(setupBase)
+    .then(setupObject)
     .then(setupDOM)
     .then(returnCanvasInterface);
 

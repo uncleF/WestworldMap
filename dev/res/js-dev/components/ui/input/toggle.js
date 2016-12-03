@@ -16,5 +16,6 @@ function onClick(event, uiEvent, dom, activeClass) {
 module.exports = (id, uiEvent) => {
   let dom = document.getElementById(id);
   let activeClass = `${id}${ACTIVE_CLASS_NAME_SUFFIX}`;
-  dom.addEventListener('click', event => onClick(event, uiEvent, dom, activeClass));
+  eventManager.bind(dom, 'click', event => onClick(event, uiEvent, dom, activeClass));
+  eventManager.bind(dom, 'touchstart', event => onClick(event, uiEvent, dom, activeClass));
 };

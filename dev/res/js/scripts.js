@@ -104,7 +104,7 @@ var eventManager = require('patterns/tx-event');
 var download = require('utilities/download');
 var uiEvents = require('ui/uiEvents');
 
-var LOCATIONS_DATA_URL = '//localhost:8000/data/locations.json';
+var LOCATIONS_DATA_URL = '/data/locations.json';
 
 var LOCATIONS_ID = 'locations';
 var ACTIVE_CLASS_NAME = 'locations-is-active';
@@ -184,7 +184,7 @@ module.exports = function (_) {
   return download(LOCATIONS_DATA_URL).then(initialization);
 };
 
-},{"./location":1,"patterns/tx-event":7,"ui/uiEvents":18,"utilities/download":20}],3:[function(require,module,exports){
+},{"./location":1,"patterns/tx-event":7,"ui/uiEvents":20,"utilities/download":21}],3:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -275,6 +275,10 @@ exports.go = go;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+var eventManager = require('patterns/tx-event');
+var uiEvents = require('ui/uiEvents');
+var errorMessages = require('ui/errorMessages');
+
 var GEOMETRY_URL = '/models/placeholder.json';
 
 var CANVAS_HOLDER_ID = 'map';
@@ -318,11 +322,17 @@ module.exports = function (locationsData) {
     dom = document.getElementById(CANVAS_HOLDER_ID);
     width = dom.clientWidth;
     height = dom.clientHeight;
+    return Promise.resolve();
   }
 
   function setupRenderer() {
-    renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
-    renderer.setSize(width, height);
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
+      renderer.setSize(width, height);
+      return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(errorMessages.webGlInactive);
+    }
   }
 
   function setupScene() {
@@ -382,12 +392,24 @@ module.exports = function (locationsData) {
       loader.load(GEOMETRY_URL, function (geometry) {
         addObject(geometry);
         resolve();
+      }, function (request) {
+        eventManager(document, uiEvents.progress, { total: request.total, loaded: request.loaded });
+      }, function (error) {
+        reject(error);
       });
     });
   }
 
   function setupDOM() {
     dom.appendChild(renderer.domElement);
+  }
+
+  function setupBase() {
+    setupScene();
+    setupCamera();
+    setupLights();
+    setupRaycaster();
+    return Promise.resolve();
   }
 
   function returnCanvasInterface() {
@@ -402,16 +424,10 @@ module.exports = function (locationsData) {
     };
   }
 
-  setupCanvas();
-  setupRenderer();
-  setupScene();
-  setupCamera();
-  setupLights();
-  setupRaycaster();
-  return setupObject().then(setupDOM).then(returnCanvasInterface);
+  return setupCanvas().then(setupRenderer).then(setupBase).then(setupObject).then(setupDOM).then(returnCanvasInterface);
 };
 
-},{}],5:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/errorMessages":12,"ui/uiEvents":20}],5:[function(require,module,exports){
 /* jshint browser:true */
 /* global THREE */
 
@@ -436,7 +452,7 @@ var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 var PAN_STEP = 50;
 var PAN_LEFT_STEP = [-PAN_STEP, 0, 0];
 var PAN_RIGHT_STEP = [PAN_STEP, 0, 0];
-var PAN_RATIO = 0.25;
+var PAN_RATIO = 0.35;
 
 var ROTATION_DEFAULT = [0, 0, 0];
 var ROTATION_STEP = Math.PI / 180 * 30;
@@ -447,7 +463,7 @@ var SCALE_DEFAULT = 1;
 var SCALE_STEP = 0.25;
 var SCALE_MAX = 4;
 var SCALE_MIN = 0.25;
-var SCALE_RATIO = 0.001;
+var SCALE_RATIO = 0.0075;
 
 module.exports = function (locationsData) {
 
@@ -770,7 +786,7 @@ module.exports = function (locationsData) {
   return canvas(locationsData).then(setupMap);
 };
 
-},{"./animation":3,"./canvas":4,"patterns/tx-event":7,"ui/uiEvents":18}],6:[function(require,module,exports){
+},{"./animation":3,"./canvas":4,"patterns/tx-event":7,"ui/uiEvents":20}],6:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -859,15 +875,15 @@ var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 
 function enterFullScreen() {
-  document.documentElement.webkitRequestFullscreen();
+  document.documentElement.requestFullscreen();
 }
 
 function exitFullScreen() {
-  document.webkitExitFullscreen();
+  document.exitFullscreen();
 }
 
 function onUIFullscreen() {
-  if (!document.webkitFullscreenElement) {
+  if (!document.fullscreenElement) {
     enterFullScreen();
   } else {
     exitFullScreen();
@@ -878,7 +894,21 @@ module.exports = function (_) {
   eventManager.bind(document, uiEvents.fullscreen, onUIFullscreen);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],9:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":20}],9:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+var ERROR_ID = 'error';
+var ERROR_MESSAGE_ID = 'errorMessage';
+var ERROR_ACTIVE_CLASS_NAME = 'error-is-active';
+
+exports.show = function (error) {
+  document.getElementById(ERROR_MESSAGE_ID).textContent = error;
+  document.getElementById(ERROR_ID).classList.toggle(ERROR_ACTIVE_CLASS_NAME);
+};
+
+},{}],10:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -886,15 +916,22 @@ module.exports = function (_) {
 var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 
-function onUIHelp() {
-  console.log('Help');
+var HELP_ID = 'help';
+var ACTIVE_CLASS_NAME_SUFFIX = '-is-active';
+
+function onUIHelp(dom, activeClass) {
+  dom.classList.toggle(activeClass);
 }
 
 module.exports = function (_) {
-  eventManager.bind(document, uiEvents.help, onUIHelp);
+  var dom = document.getElementById(HELP_ID);
+  var activeClass = '' + HELP_ID + ACTIVE_CLASS_NAME_SUFFIX;
+  eventManager.bind(document, uiEvents.help, function (_) {
+    return onUIHelp(dom, activeClass);
+  });
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],10:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":20}],11:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -913,7 +950,18 @@ function showLoader() {
 exports.show = showLoader;
 exports.remove = removeLoader;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+module.exports = {
+  webGl: 'I am sorry but your browser doesn’t seem to support all the necessary technologies to display this site properly.',
+  webGlInactive: 'I am sorry but your browser doesn’t seem to support all the necessary technologies to display this site properly.',
+  download: 'Something didn\'t download'
+};
+
+},{}],13:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -931,9 +979,12 @@ module.exports = function (id, uiEvent) {
   eventManager.bind(dom, 'click', function (event) {
     return onClick(event, uiEvent);
   });
+  eventManager.bind(dom, 'touchstart', function (event) {
+    return onClick(event, uiEvent);
+  });
 };
 
-},{"patterns/tx-event":7}],12:[function(require,module,exports){
+},{"patterns/tx-event":7}],14:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -965,7 +1016,7 @@ module.exports = function (_) {
   eventManager.bind(document, 'keydown', onKeyDown);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],13:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":20}],15:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1042,7 +1093,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'contextmenu', onContextMenu, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],14:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":20}],16:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1059,12 +1110,10 @@ var ZOOM_IN_ID = 'zoomIn';
 var ZOOM_OUT_ID = 'zoomOut';
 var RESET_ID = 'reset';
 var FULL_SCREEN_ID = 'fullScreen';
-var HELP_ID = 'showHelp';
+var HELP_SHOW_ID = 'showHelp';
+var HELP_CLOSE_ID = 'closeHelp';
 
 module.exports = function (_) {
-
-  /* Panel Initialization */
-
   toggle(LOCATIONS_ID, uiEvents.locations);
   toggle(TOP_DOWN_ID, uiEvents.topDown);
   control(ROTATE_CCW_ID, uiEvents.rotateCCW);
@@ -1073,10 +1122,11 @@ module.exports = function (_) {
   control(ZOOM_IN_ID, uiEvents.zoomIn);
   control(RESET_ID, uiEvents.reset);
   toggle(FULL_SCREEN_ID, uiEvents.fullscreen);
-  control(HELP_ID, uiEvents.help);
+  control(HELP_SHOW_ID, uiEvents.help);
+  control(HELP_CLOSE_ID, uiEvents.help);
 };
 
-},{"./control":11,"./toggle":15,"ui/uiEvents":18}],15:[function(require,module,exports){
+},{"./control":13,"./toggle":17,"ui/uiEvents":20}],17:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1095,12 +1145,15 @@ function onClick(event, uiEvent, dom, activeClass) {
 module.exports = function (id, uiEvent) {
   var dom = document.getElementById(id);
   var activeClass = '' + id + ACTIVE_CLASS_NAME_SUFFIX;
-  dom.addEventListener('click', function (event) {
+  eventManager.bind(dom, 'click', function (event) {
+    return onClick(event, uiEvent, dom, activeClass);
+  });
+  eventManager.bind(dom, 'touchstart', function (event) {
     return onClick(event, uiEvent, dom, activeClass);
   });
 };
 
-},{"patterns/tx-event":7}],16:[function(require,module,exports){
+},{"patterns/tx-event":7}],18:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1110,7 +1163,7 @@ var uiEvents = require('ui/uiEvents');
 
 var CATCHER_ID = 'locations';
 
-var TOUCH_THRESHOLD = 120;
+var TOUCH_THRESHOLD = 100;
 
 var downTouches = void 0;
 var downDistance = void 0;
@@ -1160,6 +1213,7 @@ function onTouchStart(event) {
     eventManager.bind(document, 'touchmove', onSingleToucheMove);
   } else {
     downDistance = calculateDistance(event.touches);
+    eventManager.unbind(document, 'touchmove', onSingleToucheMove);
     if (downDistance <= TOUCH_THRESHOLD) {
       eventManager.bind(document, 'touchmove', onDoubleToucheMove);
     } else {
@@ -1174,21 +1228,24 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'touchstart', onTouchStart, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":18}],17:[function(require,module,exports){
+},{"patterns/tx-event":7,"ui/uiEvents":20}],19:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
-var panel = require('./input/panel');
-var keyboard = require('./input/keyboard');
-var mouse = require('./input/mouse');
-var touch = require('./input/touch');
+var panel = require('ui/input/panel');
+var keyboard = require('ui/input/keyboard');
+var mouse = require('ui/input/mouse');
+var touch = require('ui/input/touch');
 
-var display = require('./elements/display');
-var help = require('./elements/help');
-var loader = require('./elements/loader');
+var display = require('ui/elements/display');
+var help = require('ui/elements/help');
+var loader = require('ui/elements/loader');
+var error = require('ui/elements/error');
 
-module.exports = function (locations, map) {
+exports.error = error.show;
+
+exports.init = function (locations, map) {
 
   /* Input Options */
 
@@ -1204,7 +1261,7 @@ module.exports = function (locations, map) {
   loader.remove();
 };
 
-},{"./elements/display":8,"./elements/help":9,"./elements/loader":10,"./input/keyboard":12,"./input/mouse":13,"./input/panel":14,"./input/touch":16}],18:[function(require,module,exports){
+},{"ui/elements/display":8,"ui/elements/error":9,"ui/elements/help":10,"ui/elements/loader":11,"ui/input/keyboard":14,"ui/input/mouse":15,"ui/input/panel":16,"ui/input/touch":18}],20:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1224,30 +1281,11 @@ module.exports = {
   reset: 'mapuireset',
   snap: 'sceneuisnap',
   fullscreen: 'fullscreenuichange',
-  help: 'helpuichange'
+  helpShow: 'helpuichange',
+  progress: 'progressuiupdate'
 };
 
-},{}],19:[function(require,module,exports){
-/* jshint browser: true */
-/* global Modernizr */
-
-'use strict';
-
-function onSuccess(worker) {
-  console.log('Service worker successfully installed with the scope of: ' + worker.scope);
-}
-
-function onFailure(error) {
-  console.log('Failed to install service worker. ' + error);
-}
-
-module.exports = function (_) {
-  if (Modernizr.serviceworker) {
-    navigator.serviceWorker.register('/service.js').then(onSuccess).catch(onFailure);
-  }
-};
-
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /* jshint browser: true */
 
 'use strict';
@@ -1259,15 +1297,15 @@ module.exports = function (url) {
       var data = JSON.parse(event.target.responseText);
       resolve(data);
     });
-    request.addEventListener('error', function (_) {
-      reject();
+    request.addEventListener('error', function (error) {
+      reject(error);
     });
     request.open('GET', url);
     request.send();
   });
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1275,9 +1313,9 @@ module.exports = function (url) {
 var locations = require('locations/locations');
 var map = require('map/map');
 var ui = require('ui/ui');
-var cache = require('utilities/cache');
+// let cache = require('utilities/cache');
 
-cache();
-locations().then(map).then(ui).catch();
+// cache();
+locations().then(map).then(ui.init).catch(ui.error);
 
-},{"locations/locations":2,"map/map":5,"ui/ui":17,"utilities/cache":19}]},{},[21]);
+},{"locations/locations":2,"map/map":5,"ui/ui":19}]},{},[22]);

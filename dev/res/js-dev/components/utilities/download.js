@@ -9,8 +9,8 @@ module.exports = url => {
       let data = JSON.parse(event.target.responseText);
       resolve(data);
     });
-    request.addEventListener('error', _ => {
-      reject();
+    request.addEventListener('error', error => {
+      reject(error);
     });
     request.open('GET', url);
     request.send();

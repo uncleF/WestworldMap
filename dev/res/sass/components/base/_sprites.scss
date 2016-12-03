@@ -2,16 +2,22 @@
 
 @include ssh-sprites;
 
+@include ssh-helpSprites;
+
 /* HDPI */
 
 @include tx-media(hdpi) {
 
   @include ssh-sprites-2x;
 
+  @include ssh-helpSprites-2x;
+
 }
 
 @include tx-media(xhdpi) {
 
   @include ssh-sprites-3x;
+
+  @include ssh-helpSprites-3x;
 
 }

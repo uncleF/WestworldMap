@@ -6,15 +6,15 @@ let eventManager = require('patterns/tx-event');
 let uiEvents = require('ui/uiEvents');
 
 function enterFullScreen() {
-  document.documentElement.webkitRequestFullscreen();
+  document.documentElement.requestFullscreen();
 }
 
 function exitFullScreen() {
-  document.webkitExitFullscreen();
+  document.exitFullscreen();
 }
 
 function onUIFullscreen() {
-  if (!document.webkitFullscreenElement) {
+  if (!document.fullscreenElement) {
     enterFullScreen();
   } else {
     exitFullScreen();

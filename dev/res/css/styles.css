@@ -5,7 +5,7 @@ kbd {
 
 /* Inline-block IE */
 /* Pseudo Element */
-.showLocations:before, .showLocations:after, .showTopDown:before, .showTopDown:after, .loader:before {
+.showLocations:before, .showLocations:after, .showTopDown:before, .showTopDown:after, .errorMessage:before {
   position: absolute;
   content: '';
   display: block;
@@ -13,7 +13,7 @@ kbd {
 
 /* Verticla Alignment */
 /* Sprite Block */
-.westworld, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen, .showHelp {
+.westworld, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen, .showHelp, .closeHelp {
   overflow: hidden;
   height: 0;
 }
@@ -541,22 +541,34 @@ body {
 }
 
 /* Sprites */
-.westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp {
+.westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp, .closeHelp, .errorMessage:before {
   background-image: url("../images/sprites.png");
+}
+
+.helpTouchSingle, .helpTouchDouble, .helpTouchPinch, .helpMouseLeft, .helpMouseRight, .helpMouseWheel, .helpKeyboardKey1, .helpKeyboardKey2, .helpKeyboardKeySpace, .helpKeyboardKeyUp, .helpKeyboardKeyLeft, .helpKeyboardKeyDown, .helpKeyboardKeyRight, .helpKeyboardKeyPgUp, .helpKeyboardKeyPgDown {
+  background-image: url("../images/helpSprites.png");
 }
 
 /* HDPI */
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5), only screen and (-webkit-min-device-pixel-ratio: 1.5625), only screen and (min-resolution: 150dpi), only screen and (min-resolution: 1.5dppx) {
-  .westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp {
+  .westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp, .closeHelp, .errorMessage:before {
     background-image: url("../images/sprites@2x.png");
-    background-size: 115px 96px;
+    background-size: 138px 94px;
+  }
+  .helpTouchSingle, .helpTouchDouble, .helpTouchPinch, .helpMouseLeft, .helpMouseRight, .helpMouseWheel, .helpKeyboardKey1, .helpKeyboardKey2, .helpKeyboardKeySpace, .helpKeyboardKeyUp, .helpKeyboardKeyLeft, .helpKeyboardKeyDown, .helpKeyboardKeyRight, .helpKeyboardKeyPgUp, .helpKeyboardKeyPgDown {
+    background-image: url("../images/helpSprites@2x.png");
+    background-size: 241px 239px;
   }
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2.5), only screen and (min--moz-device-pixel-ratio: 2.5), only screen and (min-device-pixel-ratio: 2.5), only screen and (-webkit-min-device-pixel-ratio: 2.6041666666666665), only screen and (min-resolution: 250dpi), only screen and (min-resolution: 2.5dppx) {
-  .westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp {
+  .westworld, .showLocations, .showLocations:before, .showLocations:after, .showTopDown:before, .rotateCCW, .rotateCW, .zoomOut, .zoomIn, .reset, .fullScreen:before, .fullScreen:after, .showHelp, .closeHelp, .errorMessage:before {
     background-image: url("../images/sprites@3x.png");
-    background-size: 115px 96px;
+    background-size: 138px 94px;
+  }
+  .helpTouchSingle, .helpTouchDouble, .helpTouchPinch, .helpMouseLeft, .helpMouseRight, .helpMouseWheel, .helpKeyboardKey1, .helpKeyboardKey2, .helpKeyboardKeySpace, .helpKeyboardKeyUp, .helpKeyboardKeyLeft, .helpKeyboardKeyDown, .helpKeyboardKeyRight, .helpKeyboardKeyPgUp, .helpKeyboardKeyPgDown {
+    background-image: url("../images/helpSprites@3x.png");
+    background-size: 241px 239px;
   }
 }
 
@@ -612,7 +624,9 @@ body {
   display: block;
   height: 0;
   margin: 0 10px;
-  text-indent: -10000px;
+  color: rgba(255, 255, 255, 0);
+  font-size: 0;
+  text-decoration: none;
 }
 
 .mdz-touchevents .showLocations, .mdz-touchevents .showTopDown, .mdz-touchevents .rotateCCW, .mdz-touchevents .rotateCW, .mdz-touchevents .zoomOut, .mdz-touchevents .zoomIn, .mdz-touchevents .reset, .mdz-touchevents .fullScreen {
@@ -620,8 +634,8 @@ body {
 }
 
 .showLocations:before, .showLocations:after, .fullScreen:before, .fullScreen:after {
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
+  -webkit-transition: 0.25s;
+  transition: 0.25s;
 }
 
 .showLocations {
@@ -630,10 +644,15 @@ body {
   background-position: -99px 0;
 }
 
+.showLocations:before, .showLocations:after {
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+}
+
 .showLocations:before {
   width: 8px;
   height: 8px;
-  background-position: -99px -55px;
+  background-position: -120px -46px;
   top: 4px;
   left: 4px;
 }
@@ -641,7 +660,7 @@ body {
 .showLocations:after {
   width: 18px;
   height: 18px;
-  background-position: -23px -78px;
+  background-position: -75px -53px;
   top: 0;
   left: -1px;
   opacity: 0;
@@ -659,6 +678,8 @@ body {
   width: 26px;
   height: 0;
   padding: 22px 0 0;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
   -webkit-perspective: 50px;
           perspective: 50px;
 }
@@ -671,12 +692,14 @@ body {
 .showTopDown:before {
   width: 22px;
   height: 22px;
-  background-position: -44px 0;
+  background-position: 0 -26px;
   top: 0;
   left: 50%;
   margin: 0 0 0 -11px;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+  -webkit-transition: 0.25s;
+  transition: 0.25s;
 }
 
 .showTopDown:after {
@@ -687,38 +710,38 @@ body {
 }
 
 .showTopDown-is-active:before {
-  -webkit-transform: rotateX(50deg);
-          transform: rotateX(50deg);
+  -webkit-transform: rotateX(50deg) translateZ(0);
+          transform: rotateX(50deg) translateZ(0);
 }
 
 .rotateCCW {
   width: 23px;
   padding: 20px 0 0;
-  background-position: -71px 0;
+  background-position: -71px -25px;
 }
 
 .rotateCW {
   width: 23px;
   padding: 20px 0 0;
-  background-position: -71px -25px;
+  background-position: -71px 0;
 }
 
 .zoomOut {
   width: 20px;
   padding: 20px 0 0;
-  background-position: -44px -27px;
+  background-position: -50px -53px;
 }
 
 .zoomIn {
   width: 20px;
   padding: 20px 0 0;
-  background-position: 0 -53px;
+  background-position: -25px -53px;
 }
 
 .reset {
   width: 22px;
   padding: 22px 0 0;
-  background-position: 0 -26px;
+  background-position: -44px 0;
 }
 
 .fullScreen {
@@ -737,13 +760,13 @@ body {
 .fullScreen:before {
   width: 18px;
   height: 18px;
-  background-position: -46px -78px;
+  background-position: -120px -23px;
 }
 
 .fullScreen:after {
   width: 18px;
   height: 18px;
-  background-position: 0 -78px;
+  background-position: -120px 0;
   opacity: 0;
 }
 
@@ -821,8 +844,8 @@ body {
   opacity: 0;
   cursor: -webkit-grab;
   cursor: grab;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
+  -webkit-transition: 0.25s;
+  transition: 0.25s;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
@@ -841,7 +864,7 @@ body {
 .location {
   position: absolute;
   bottom: 100%;
-  left: -9px;
+  left: -8px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -849,6 +872,7 @@ body {
       -ms-flex-align: center;
           align-items: center;
   text-decoration: none;
+  text-shadow: 0 0 2px #000;
   white-space: nowrap;
   -webkit-transform-origin: 0 100%;
       -ms-transform-origin: 0 100%;
@@ -862,10 +886,11 @@ body {
   content: "";
   position: relative;
   box-sizing: border-box;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid #fff;
   border-radius: 50%;
+  box-shadow: 0 0 1px #000, 0 0 1px #000 inset;
   vertical-align: middle;
 }
 
@@ -962,6 +987,256 @@ body {
   }
 }
 
+/* Help */
+.help {
+  z-index: 200;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  background: #000;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transform: translateX(-100%) translateZ(0);
+          transform: translateX(-100%) translateZ(0);
+  -webkit-transition: opacity 0.25s, visibility 0.25s step-end, -webkit-transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, -webkit-transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end, -webkit-transform 0.25s step-end;
+}
+
+.help-is-active {
+  visibility: visible;
+  opacity: 1;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+  -webkit-transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start, -webkit-transform 0.25s step-start;
+}
+
+.helpContent {
+  position: relative;
+  width: 400px;
+}
+
+.helpTouch, .helpMouse {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+  margin: 0 0 75px;
+}
+
+.helpTouchSingle {
+  width: 59px;
+  height: 61px;
+  background-position: -182px 0;
+}
+
+.helpTouchDouble {
+  width: 77px;
+  height: 61px;
+  background-position: 0 -67px;
+}
+
+.helpTouchPinch {
+  width: 62px;
+  height: 60px;
+  background-position: -82px -67px;
+}
+
+.helpMouseLeft {
+  width: 86px;
+  height: 62px;
+  background-position: -91px 0;
+}
+
+.helpMouseRight {
+  width: 86px;
+  height: 62px;
+  background-position: 0 0;
+}
+
+.helpMouseWheel {
+  width: 36px;
+  height: 72px;
+  background-position: -182px -66px;
+  margin: 0 7px 0 0;
+}
+
+.helpKeyboard {
+  position: relative;
+  width: 241px;
+  height: 74px;
+  margin: 0 auto;
+}
+
+.helpKeyboardKey1, .helpKeyboardKey2, .helpKeyboardKeySpace, .helpKeyboardKeyUp, .helpKeyboardKeyLeft, .helpKeyboardKeyDown, .helpKeyboardKeyRight, .helpKeyboardKeyPgUp, .helpKeyboardKeyPgDown {
+  position: absolute;
+}
+
+.helpKeyboardKey1 {
+  width: 32px;
+  height: 32px;
+  background-position: -185px -170px;
+  top: 0;
+  left: 0;
+}
+
+.helpKeyboardKey2 {
+  width: 32px;
+  height: 32px;
+  background-position: -74px -170px;
+  top: 0;
+  left: 42px;
+}
+
+.helpKeyboardKeySpace {
+  width: 115px;
+  height: 32px;
+  background-position: 0 -133px;
+  top: 42px;
+  left: 0;
+}
+
+.helpKeyboardKeyUp {
+  width: 32px;
+  height: 32px;
+  background-position: 0 -170px;
+  top: 0;
+  left: 167px;
+}
+
+.helpKeyboardKeyLeft {
+  width: 32px;
+  height: 32px;
+  background-position: -111px -170px;
+  top: 42px;
+  left: 125px;
+}
+
+.helpKeyboardKeyDown {
+  width: 32px;
+  height: 32px;
+  background-position: -120px -133px;
+  top: 42px;
+  left: 167px;
+}
+
+.helpKeyboardKeyRight {
+  width: 32px;
+  height: 32px;
+  background-position: 0 -207px;
+  top: 42px;
+  left: 209px;
+}
+
+.helpKeyboardKeyPgUp {
+  width: 32px;
+  height: 32px;
+  background-position: -148px -170px;
+  top: 0;
+  left: 125px;
+}
+
+.helpKeyboardKeyPgDown {
+  width: 32px;
+  height: 32px;
+  background-position: -37px -170px;
+  top: 0;
+  left: 209px;
+}
+
+.closeHelp {
+  width: 20px;
+  padding: 20px 0 0;
+  background-position: 0 -53px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Error */
+.error {
+  z-index: 201;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  background: #000;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transform: translateX(-100%) translateZ(0);
+          transform: translateX(-100%) translateZ(0);
+  -webkit-transition: opacity 0.25s, visibility 0.25s step-end, -webkit-transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, -webkit-transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end, -webkit-transform 0.25s step-end;
+}
+
+.error-is-active {
+  visibility: visible;
+  opacity: 1;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+  -webkit-transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start, -webkit-transform 0.25s step-start;
+}
+
+.errorMessage {
+  font-size: 19.2px;
+  font-size: 1.2rem;
+  line-height: 1.5625;
+  position: relative;
+  width: 400px;
+}
+
+.errorMessage:before {
+  width: 20px;
+  height: 20px;
+  background-position: -44px -27px;
+  top: .75em;
+  right: 100%;
+  margin: -10px 10px 0 0;
+}
+
 /* Loader */
 .loader {
   z-index: 200;
@@ -971,29 +1246,58 @@ body {
   left: 0;
   width: 100%;
   background: #000;
-  -webkit-transition: opacity 0.2s, visibility 0.2s step-start, -webkit-transform 0.2s step-start;
-  transition: opacity 0.2s, visibility 0.2s step-start, -webkit-transform 0.2s step-start;
-  transition: opacity 0.2s, visibility 0.2s step-start, transform 0.2s step-start;
-  transition: opacity 0.2s, visibility 0.2s step-start, transform 0.2s step-start, -webkit-transform 0.2s step-start;
-}
-
-.loader:before {
-  top: 50%;
-  left: 50%;
-  width: 104px;
-  height: 42px;
-  margin: -21px 0 0 -52px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="102" height="42" viewBox="0 0 104 44"><path d="M22,42a20,20,0,0,1,0,-40c20,0,40,40,60,40a20,20,0,0,0,0,-40c-20,0,-40,40,-60,40a20,20,0,0,1,0,-40" class="loaderSpinner" /><defs><style>.loaderSpinner {stroke: white;stroke-width: 2;animation: spin 1s infinite linear;stroke-dasharray: 0 0 65 272;}@keyframes spin {from {stroke-dasharray: 0 0 65 272;}to {stroke-dasharray: 0 272 65 0;}}</style></defs></svg>');
+  visibility: visible;
+  opacity: 1;
+  -webkit-transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start;
+  transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start, -webkit-transform 0.25s step-start;
 }
 
 .loader-is-hidden {
+  visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  -webkit-transition: opacity 0.2s, visibility 0.2s step-end, -webkit-transform 0.2s step-end;
-  transition: opacity 0.2s, visibility 0.2s step-end, -webkit-transform 0.2s step-end;
-  transition: opacity 0.2s, visibility 0.2s step-end, transform 0.2s step-end;
-  transition: opacity 0.2s, visibility 0.2s step-end, transform 0.2s step-end, -webkit-transform 0.2s step-end;
-  -webkit-transition-delay: 1s;
-          transition-delay: 1s;
+  -webkit-transition: opacity 0.25s, visibility 0.25s step-end, -webkit-transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, -webkit-transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end;
+  transition: opacity 0.25s, visibility 0.25s step-end, transform 0.25s step-end, -webkit-transform 0.25s step-end;
+}
+
+.loaderSVG {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -100px;
+}
+
+.loaderLogo {
+  fill: #fff;
+}
+
+.loaderProgress {
+  -webkit-animation: progress 1s linear infinite;
+          animation: progress 1s linear infinite;
+  stroke: #fff;
+  stroke-width: 4px;
+  fill: none;
+}
+
+@-webkit-keyframes progress {
+  from {
+    stroke-dasharray: 0 0 154px 616px;
+  }
+  to {
+    stroke-dasharray: 0 616px 154px 0;
+  }
+}
+
+@keyframes progress {
+  from {
+    stroke-dasharray: 0 0 154px 616px;
+  }
+  to {
+    stroke-dasharray: 0 616px 154px 0;
+  }
 }
 /*# sourceMappingURL=styles.css.map */

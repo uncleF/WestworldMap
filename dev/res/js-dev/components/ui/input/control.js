@@ -13,4 +13,5 @@ function onClick(event, uiEvent) {
 module.exports = (id, uiEvent) => {
   let dom = document.getElementById(id);
   eventManager.bind(dom, 'click', event => onClick(event, uiEvent));
+  eventManager.bind(dom, 'touchstart', event => onClick(event, uiEvent));
 };

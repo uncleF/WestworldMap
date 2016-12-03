@@ -17,5 +17,6 @@ module.exports = {
   reset: 'mapuireset',
   snap: 'sceneuisnap',
   fullscreen: 'fullscreenuichange',
-  help: 'helpuichange'
+  helpShow: 'helpuichange',
+  progress: 'progressuiupdate'
 };

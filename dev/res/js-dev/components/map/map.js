@@ -20,7 +20,7 @@ const CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 const PAN_STEP = 50;
 const PAN_LEFT_STEP = [-PAN_STEP, 0, 0];
 const PAN_RIGHT_STEP = [PAN_STEP, 0, 0];
-const PAN_RATIO = 0.25;
+const PAN_RATIO = 0.35;
 
 const ROTATION_DEFAULT = [0, 0, 0];
 const ROTATION_STEP = Math.PI / 180 * 30;
@@ -31,7 +31,7 @@ const SCALE_DEFAULT = 1;
 const SCALE_STEP = 0.25;
 const SCALE_MAX = 4;
 const SCALE_MIN = 0.25;
-const SCALE_RATIO = 0.001;
+const SCALE_RATIO = 0.0075;
 
 module.exports = locationsData => {
 

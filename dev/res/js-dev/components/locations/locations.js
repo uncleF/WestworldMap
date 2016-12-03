@@ -7,7 +7,7 @@ let eventManager = require('patterns/tx-event');
 let download = require('utilities/download');
 let uiEvents = require('ui/uiEvents');
 
-const LOCATIONS_DATA_URL = '//localhost:8000/data/locations.json';
+const LOCATIONS_DATA_URL = '/data/locations.json';
 
 const LOCATIONS_ID = 'locations';
 const ACTIVE_CLASS_NAME = 'locations-is-active';
