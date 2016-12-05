@@ -22,19 +22,43 @@
 
 }
 
-%control {
-  position: relative;
-  display: block;
-  height: 0;
-  margin: 0 $gap;
-  color: rgba($text, 0);
+$control-size: 45px;
+
+%controlBase {
+  width: $control-size;
+  height: $control-size;
+  color: rgba($background, 0);
   font-size: 0;
   text-decoration: none;
 
-  .mdz-touchevents & {
-    margin: $gap 0;
+  &:before {
+    @include tx-pseudo;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba($background, .5);
   }
 
+}
+
+%control {
+  @extend %controlBase;
+  position: relative;
+  margin: 0 ($gap / 2);
+
+  .mdz-touchevents & {
+    margin: ($gap / 2) 0;
+  }
+
+}
+
+%controlIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  height: 0;
 }
 
 %controlTransition {
@@ -43,7 +67,12 @@
 
 .showLocations {
   @extend %control;
+}
+
+.showLocationsIcon {
+  @extend %controlIcon;
   @include tx-sprite($spt-showLocations, $block: true);
+  margin: (txf-sprite-height($spt-showLocations) / -2) 0 0 (txf-sprite-width($spt-showLocations) / -2);
 
   &:before,
   &:after {
@@ -81,9 +110,13 @@
 
 .showTopDown {
   @extend %control;
-  width: txf-sprite-width($spt-topDown) + 4px;
-  height: 0;
-  padding: txf-sprite-height($spt-topDown) 0 0;
+}
+
+.showTopDownIcon {
+  @extend %controlIcon;
+  width: txf-sprite-width($spt-topDown);
+  height: txf-sprite-height($spt-topDown);
+  margin: (txf-sprite-height($spt-topDown) / -2) 0 0 (txf-sprite-width($spt-topDown) / -2);
   transform: translateZ(0);
   perspective: 50px;
 
@@ -124,36 +157,66 @@
 .rotateCCW {
   @extend %control;
   @extend %unnecessary;
+}
+
+.rotateCCWIcon {
+  @extend %controlIcon;
   @include tx-sprite($spt-rotateCCW, $block: true, $padding: true);
+  margin: (txf-sprite-height($spt-rotateCCW) / -2) 0 0 (txf-sprite-width($spt-rotateCCW) / -2);
 }
 
 .rotateCW {
   @extend %control;
   @extend %unnecessary;
+}
+
+.rotateCWIcon {
+  @extend %controlIcon;
   @include tx-sprite($spt-rotateCW, $block: true, $padding: true);
+  margin: (txf-sprite-height($spt-rotateCW) / -2) 0 0 (txf-sprite-width($spt-rotateCW) / -2);
 }
 
 .zoomOut {
   @extend %control;
   @extend %unnecessary;
+}
+
+.zoomOutIcon {
+  @extend %controlIcon;
   @include tx-sprite($spt-zoomOut, $block: true, $padding: true);
+  margin: (txf-sprite-height($spt-zoomOut) / -2) 0 0 (txf-sprite-width($spt-zoomOut) / -2);
 }
 
 .zoomIn {
   @extend %control;
   @extend %unnecessary;
+}
+
+.zoomInIcon {
+  @extend %controlIcon;
   @include tx-sprite($spt-zoomIn, $block: true, $padding: true);
+  margin: (txf-sprite-height($spt-topDown) / -2) 0 0 (txf-sprite-width($spt-topDown) / -2);
 }
 
 .reset {
   @extend %control;
+}
+
+.resetIcon {
+  @extend %controlIcon;
   @include tx-sprite($spt-reset, $block: true, $padding: true);
+  margin: (txf-sprite-height($spt-reset) / -2) 0 0 (txf-sprite-width($spt-reset) / -2);
 }
 
 .fullScreen {
   @extend %control;
+}
+
+.fullScreenIcon {
+  @extend %controlIcon;
   @include tx-sprite-block($spt-fullScreen, $padding: true);
   display: none;
+  margin: (txf-sprite-height($spt-fullScreen) / -2) 0 0 (txf-sprite-width($spt-fullScreen) / -2);
 
   &:before,
   &:after {
@@ -216,12 +279,17 @@
 }
 
 .showHelp {
-  @include tx-sprite($spt-help, $block: true, $padding: true);
+  @extend %controlBase;
   @include tx-layer(top);
   position: absolute;
-  top: $gap - 2px;
-  right: $gap + 3px;
-  display: block;
+  top: $gap;
+  right: $gap;
+}
+
+.showHelpIcon {
+  @extend %controlIcon;
+  @include tx-sprite($spt-help, $block: true, $padding: true);
+  margin: (txf-sprite-height($spt-help) / -2) 0 0 (txf-sprite-width($spt-help) / -2);
 }
 
 

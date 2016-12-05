@@ -4,8 +4,8 @@
   @include tx-sprite($spt-westworld, $block: true, $padding: true);
   @include tx-layer(top);
   position: absolute;
-  top: $gap;
-  left: $gap;
+  top: $gap + 13px;
+  left: $gap + 10px;
   display: block;
   margin: 0;
 }

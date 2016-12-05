@@ -44,7 +44,6 @@ $loader-transition: 1s;
   stroke: $loader-color;
   stroke-width: 4;
   stroke-dasharray: 0 0 $loader-part ($loader-length - $loader-part);
-  stroke-dashoffset: -10;
   fill: none;
 }
 
@@ -55,8 +54,7 @@ $loader-transition: 1s;
   }
 
   to {
-    stroke-dasharray: 0 ($loader-length - $loader-part) $loader-part 0;
+    stroke-dasharray: 0 ($loader-length - $loader-part) $loader-part ($loader-length - $loader-part);
   }
 
 }
-
