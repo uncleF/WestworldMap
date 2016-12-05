@@ -1346,10 +1346,10 @@ module.exports = function (_) {
 'use strict';
 
 var polyfills = require('utilities/polyfills');
+var cache = require('utilities/cache');
 var locations = require('locations/locations');
 var map = require('map/map');
 var ui = require('ui/ui');
-var cache = require('utilities/cache');
 
 polyfills();
 cache();
