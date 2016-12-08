@@ -1,0 +1,34 @@
+{
+  "name": "Westworld Map",
+  "short_name": "WestworldMap",
+  "description": "Interactive 3D map of the theme park from HBO's Westworld",
+  "icons": [{
+    "src": "icon-60.png",
+    "type": "image/png",
+    "sizes": "60x60"
+  }, {
+    "src": "icon-60@2x.png",
+    "type": "image/png",
+    "sizes": "120x120"
+  }, {
+    "src": "icon-60@3x.png",
+    "type": "image/png",
+    "sizes": "180x180"
+  }, {
+    "src": "icon-76.png",
+    "type": "image/png",
+    "sizes": "76x76"
+  }, {
+    "src": "icon-76@2x.png",
+    "type": "image/png",
+    "sizes": "152x152"
+  }, {
+    "src": "icon-76@3x.png",
+    "type": "image/png",
+    "sizes": "228x228"
+  }],
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000",
+  "theme_color": "#000"
+}
