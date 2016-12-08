@@ -6,15 +6,16 @@
   position: absolute;
   right: $gap;
   bottom: $gap;
-  width: 100%;
+  left: $gap;
   color: $footer-color;
   background: $gap;
-  text-align: right;
   line-height: 1.75;
 }
 
 .gitHub {
-  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 
@@ -26,7 +27,7 @@
   .footer {
     @include tx-font-size(tiny);
     right: $gap-phone;
-    bottom: $gap-phone;
+    bottom: $gap;
     left: $gap-phone;
     width: auto;
     text-align: center;

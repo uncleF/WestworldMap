@@ -278,18 +278,32 @@ $control-size: 45px;
 
 }
 
-.showHelp {
+%helpControl {
   @extend %controlBase;
-  @include tx-layer(top);
   position: absolute;
   top: $gap;
   right: $gap;
+}
+
+.showHelp {
+  @extend %helpControl;
+  @include tx-layer(top);
 }
 
 .showHelpIcon {
   @extend %controlIcon;
   @include tx-sprite($spt-help, $block: true, $padding: true);
   margin: (txf-sprite-height($spt-help) / -2) 0 0 (txf-sprite-width($spt-help) / -2);
+}
+
+.closeHelp {
+  @extend %helpControl;
+}
+
+.closeHelpIcon {
+  @extend %controlIcon;
+  @include tx-sprite($spt-closeHelp, $block: true, $padding: true);
+  margin: (txf-sprite-height($spt-closeHelp) / -2) 0 0 (txf-sprite-width($spt-closeHelp) / -2);
 }
 
 
@@ -303,7 +317,7 @@ $control-size: 45px;
     .mdz-touchevents & {
       top: auto;
       right: 0;
-      bottom: ($gap * 5);
+      bottom: ($gap * 4.5);
       left: 0;
       flex-direction: row;
       justify-content: space-around;
