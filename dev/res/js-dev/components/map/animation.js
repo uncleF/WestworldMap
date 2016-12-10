@@ -42,7 +42,7 @@ function progressAnimation(startTime, duration, startValues, deltaValues, fracti
 }
 
 function completeAnimation(startValues, deltaValues, fraction, task) {
-  let newValues = calculateNewValues(startValues, deltaValues, fraction);
+  let newValues = calculateNewValues(startValues, deltaValues, 1);
   task(newValues);
 }
 
@@ -52,7 +52,7 @@ function runAnimation(startTime, duration, startValues, deltaValues, task) {
     if (fraction < 1) {
       progressAnimation(startTime, duration, startValues, deltaValues, fraction, task);
     } else {
-      completeAnimation(startValues, deltaValues, 1, task);
+      completeAnimation(startValues, deltaValues, task);
     }
   });
 }
