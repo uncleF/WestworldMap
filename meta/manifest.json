@@ -2,6 +2,7 @@
   "name": "Westworld Map",
   "short_name": "WestworldMap",
   "description": "Interactive 3D map of the theme park from HBO's Westworld",
+  "lang": "@tx-language",
   "icons": [{
     "src": "icon-60.png",
     "type": "image/png",
@@ -27,8 +28,56 @@
     "type": "image/png",
     "sizes": "228x228"
   }],
+  "splash_screens": [    {
+      "src": "screen-320-480.jpg",
+      "sizes": "320x480",
+      "type": "image/jpeg",
+      "density": "1"
+    }, {
+      "src": "screen-320-480@2x.jpg",
+      "sizes": "320x480",
+      "type": "image/jpeg",
+      "density": "2"
+    }, {
+      "src": "screen-320-568@2x.jpg",
+      "sizes": "320x568",
+      "type": "image/jpeg",
+      "density": "2"
+    }, {
+      "src": "screen-375-667@2x.jpg",
+      "sizes": "375x667",
+      "type": "image/jpeg",
+      "density": "2"
+    }, {
+      "src": "screen-414-736@3x.jpg",
+      "sizes": "414x736",
+      "type": "image/jpeg",
+      "density": "3"
+    }, {
+      "src": "screen-768-1024.jpg",
+      "sizes": "1024x768",
+      "type": "image/jpeg",
+      "density": "1"
+    }, {
+      "src": "screen-768-1024@2x.jpg",
+      "sizes": "1024x768",
+      "type": "image/jpeg",
+      "density": "2"
+    }, {
+      "src": "screen-1024-768.jpg",
+      "sizes": "1024x768",
+      "type": "image/jpeg",
+      "density": "1"
+    }, {
+      "src": "screen-1024-768@2x.jpg",
+      "sizes": "1024x768",
+      "type": "image/jpeg",
+      "density": "2"
+    }],
+  "scope": "/",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000",
-  "theme_color": "#000"
+  "theme_color": "#000",
+  "display": "any"
 }

@@ -85,23 +85,23 @@ $control-size: 45px;
     @include tx-sprite($spt-showLocationsHole, $block: true);
     top: 4px;
     left: 4px;
+    opacity: 0;
   }
 
   &:after {
     @include tx-sprite($spt-hideLocationsMarker, $block: true);
     top: 0;
     left: -1px;
-    opacity: 0;
   }
 
-  &-is-active {
+  .showLocations-is-active & {
 
     &:before {
-      opacity: 0;
+      opacity: 1;
     }
 
     &:after {
-      opacity: 1;
+      opacity: 0;
     }
 
   }
@@ -144,7 +144,7 @@ $control-size: 45px;
     left: 0;
   }
 
-  &-is-active {
+  .showTopDown-is-active & {
 
     &:before {
       transform: rotateX(50deg) translateZ(0);
@@ -248,7 +248,7 @@ $control-size: 45px;
 
   }
 
-  &-is-active {
+  .fullScreen-is-active & {
 
     &:before {
       opacity: 0;

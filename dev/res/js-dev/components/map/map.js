@@ -4,9 +4,10 @@
 'use strict';
 
 let eventManager = require('patterns/tx-event');
-let canvas = require('./canvas');
-let animation = require('./animation');
+let canvas = require('map/canvas');
+let animation = require('map/animation');
 let uiEvents = require('ui/uiEvents');
+let mapEvents = require('map/mapEvents');
 
 const RENDER_EVENT = 'maprender';
 
@@ -259,6 +260,7 @@ module.exports = locationsData => {
       moveCameraPerspective();
     }
     view = !view;
+    eventManager.trigger(document, mapEvents.topDown, false);
   }
 
   /* Map Initialization */

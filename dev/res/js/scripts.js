@@ -94,7 +94,7 @@ module.exports = function (locationData) {
   };
 };
 
-},{"patterns/tx-createNode":6}],2:[function(require,module,exports){
+},{"patterns/tx-createNode":7}],2:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -103,6 +103,7 @@ var mapLocation = require('./location');
 var eventManager = require('patterns/tx-event');
 var download = require('utilities/download');
 var uiEvents = require('ui/uiEvents');
+var mapEvents = require('map/mapEvents');
 
 var LOCATIONS_DATA_URL = '/data/locations.json';
 
@@ -128,6 +129,7 @@ module.exports = function (_) {
 
   function toggleLocations() {
     getDOM().classList.toggle(ACTIVE_CLASS_NAME);
+    eventManager.trigger(document, mapEvents.locations, false);
   }
 
   function projectLocations(event) {
@@ -184,7 +186,7 @@ module.exports = function (_) {
   return download(LOCATIONS_DATA_URL).then(initialization);
 };
 
-},{"./location":1,"patterns/tx-event":7,"ui/uiEvents":20,"utilities/download":22}],3:[function(require,module,exports){
+},{"./location":1,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21,"utilities/download":23}],3:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -279,7 +281,7 @@ var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 var errorMessages = require('ui/errorMessages');
 
-var GEOMETRY_URL = '/models/placeholder.json';
+var GEOMETRY_URL = '/models/noDetails.json';
 
 var CANVAS_HOLDER_ID = 'map';
 
@@ -427,7 +429,7 @@ module.exports = function (locationsData) {
   return setupCanvas().then(setupRenderer).then(setupBase).then(setupObject).then(setupDOM).then(returnCanvasInterface);
 };
 
-},{"patterns/tx-event":7,"ui/errorMessages":12,"ui/uiEvents":20}],5:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/errorMessages":13,"ui/uiEvents":21}],5:[function(require,module,exports){
 /* jshint browser:true */
 /* global THREE */
 
@@ -436,9 +438,10 @@ module.exports = function (locationsData) {
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var eventManager = require('patterns/tx-event');
-var canvas = require('./canvas');
-var animation = require('./animation');
+var canvas = require('map/canvas');
+var animation = require('map/animation');
 var uiEvents = require('ui/uiEvents');
+var mapEvents = require('map/mapEvents');
 
 var RENDER_EVENT = 'maprender';
 
@@ -687,6 +690,7 @@ module.exports = function (locationsData) {
       moveCameraPerspective();
     }
     view = !view;
+    eventManager.trigger(document, mapEvents.topDown, false);
   }
 
   /* Map Initialization */
@@ -786,7 +790,18 @@ module.exports = function (locationsData) {
   return canvas(locationsData).then(setupMap);
 };
 
-},{"./animation":3,"./canvas":4,"patterns/tx-event":7,"ui/uiEvents":20}],6:[function(require,module,exports){
+},{"map/animation":3,"map/canvas":4,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21}],6:[function(require,module,exports){
+/* jshint browser:true */
+
+'use strict';
+
+module.exports = {
+  locations: 'map:locationschange',
+  topDown: 'map:maptopdownchange',
+  fullscreen: 'map:fullscreenchange'
+};
+
+},{}],7:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -797,7 +812,7 @@ module.exports = function (html) {
   return element.firstChild;
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -866,13 +881,14 @@ exports.unbind = unbind;
 exports.trigger = trigger;
 exports.target = target;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
 var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
+var mapEvents = require('map/mapEvents');
 
 function enterFullScreen() {
   document.documentElement.requestFullscreen();
@@ -888,13 +904,14 @@ function onUIFullscreen() {
   } else {
     exitFullScreen();
   }
+  eventManager.trigger(document, mapEvents.fullscreen, false);
 }
 
 module.exports = function (_) {
   eventManager.bind(document, uiEvents.fullscreen, onUIFullscreen);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":20}],9:[function(require,module,exports){
+},{"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21}],10:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -908,7 +925,7 @@ exports.show = function (error) {
   document.getElementById(ERROR_ID).classList.toggle(ERROR_ACTIVE_CLASS_NAME);
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -931,7 +948,7 @@ module.exports = function (_) {
   });
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":20}],11:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":21}],12:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -950,7 +967,7 @@ function showLoader() {
 exports.show = showLoader;
 exports.remove = removeLoader;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -961,7 +978,7 @@ module.exports = {
   download: 'Something didn\'t download'
 };
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -984,7 +1001,7 @@ module.exports = function (id, uiEvent) {
   });
 };
 
-},{"patterns/tx-event":7}],14:[function(require,module,exports){
+},{"patterns/tx-event":8}],15:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1016,7 +1033,7 @@ module.exports = function (_) {
   eventManager.bind(document, 'keydown', onKeyDown);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":20}],15:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":21}],16:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1093,7 +1110,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'contextmenu', onContextMenu, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":20}],16:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":21}],17:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1101,6 +1118,7 @@ module.exports = function (_) {
 var control = require('./control');
 var toggle = require('./toggle');
 var uiEvents = require('ui/uiEvents');
+var mapEvents = require('map/mapEvents');
 
 var LOCATIONS_ID = 'showLocations';
 var TOP_DOWN_ID = 'showTopDown';
@@ -1114,19 +1132,19 @@ var HELP_SHOW_ID = 'showHelp';
 var HELP_CLOSE_ID = 'closeHelp';
 
 module.exports = function (_) {
-  toggle(LOCATIONS_ID, uiEvents.locations);
-  toggle(TOP_DOWN_ID, uiEvents.topDown);
+  toggle(LOCATIONS_ID, uiEvents.locations, mapEvents.locations);
+  toggle(TOP_DOWN_ID, uiEvents.topDown, mapEvents.topDown);
   control(ROTATE_CCW_ID, uiEvents.rotateCCW);
   control(ROTATE_CW_ID, uiEvents.rotateCW);
   control(ZOOM_OUT_ID, uiEvents.zoomOut);
   control(ZOOM_IN_ID, uiEvents.zoomIn);
   control(RESET_ID, uiEvents.reset);
-  toggle(FULL_SCREEN_ID, uiEvents.fullscreen);
+  toggle(FULL_SCREEN_ID, uiEvents.fullscreen, mapEvents.fullscreen);
   control(HELP_SHOW_ID, uiEvents.help);
   control(HELP_CLOSE_ID, uiEvents.help);
 };
 
-},{"./control":13,"./toggle":17,"ui/uiEvents":20}],17:[function(require,module,exports){
+},{"./control":14,"./toggle":18,"map/mapEvents":6,"ui/uiEvents":21}],18:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1138,11 +1156,14 @@ var ACTIVE_CLASS_NAME_SUFFIX = '-is-active';
 function onClick(event, uiEvent, dom, activeClass) {
   event.preventDefault();
   event.stopPropagation();
-  dom.classList.toggle(activeClass);
   eventManager.trigger(document, uiEvent, false, 'UIEvent');
 }
 
-module.exports = function (id, uiEvent) {
+function onMapEvent(dom, activeClass) {
+  dom.classList.toggle(activeClass);
+}
+
+module.exports = function (id, uiEvent, mapEvent) {
   var dom = document.getElementById(id);
   var activeClass = '' + id + ACTIVE_CLASS_NAME_SUFFIX;
   eventManager.bind(dom, 'click', function (event) {
@@ -1151,9 +1172,12 @@ module.exports = function (id, uiEvent) {
   eventManager.bind(dom, 'touchstart', function (event) {
     return onClick(event, uiEvent, dom, activeClass);
   });
+  eventManager.bind(document, mapEvent, function (event) {
+    return onMapEvent(dom, activeClass);
+  });
 };
 
-},{"patterns/tx-event":7}],18:[function(require,module,exports){
+},{"patterns/tx-event":8}],19:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1228,7 +1252,7 @@ module.exports = function (_) {
   eventManager.bind(catcher, 'touchstart', onTouchStart, false);
 };
 
-},{"patterns/tx-event":7,"ui/uiEvents":20}],19:[function(require,module,exports){
+},{"patterns/tx-event":8,"ui/uiEvents":21}],20:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1261,31 +1285,31 @@ exports.init = function (locations, map) {
   loader.remove();
 };
 
-},{"ui/elements/display":8,"ui/elements/error":9,"ui/elements/help":10,"ui/elements/loader":11,"ui/input/keyboard":14,"ui/input/mouse":15,"ui/input/panel":16,"ui/input/touch":18}],20:[function(require,module,exports){
+},{"ui/elements/display":9,"ui/elements/error":10,"ui/elements/help":11,"ui/elements/loader":12,"ui/input/keyboard":15,"ui/input/mouse":16,"ui/input/panel":17,"ui/input/touch":19}],21:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
 module.exports = {
-  locations: 'locationsuichange',
-  topDown: 'mapuitopdown',
-  rotate: 'mapuirotate',
-  rotateCCW: 'mapuiccwrotate',
-  rotateCW: 'mapuicwrotate',
-  pan: 'mapuipan',
-  panLeft: 'mapuipanleft',
-  panRight: 'mapuipanright',
-  zoom: 'mapuizoom',
-  zoomIn: 'mapuizoomin',
-  zoomOut: 'mapuizoomout',
-  reset: 'mapuireset',
-  snap: 'sceneuisnap',
-  fullscreen: 'fullscreenuichange',
-  helpShow: 'helpuichange',
-  progress: 'progressuiupdate'
+  locations: 'ui:locationschange',
+  topDown: 'ui:maptopdownchange',
+  rotate: 'ui:maprotate',
+  rotateCCW: 'ui:mapccwrotate',
+  rotateCW: 'ui:mapcwrotate',
+  pan: 'ui:mappan',
+  panLeft: 'ui:mappanleft',
+  panRight: 'ui:mappanright',
+  zoom: 'ui:mapzoom',
+  zoomIn: 'ui:mapzoomin',
+  zoomOut: 'ui:mapzoomout',
+  reset: 'ui:mapreset',
+  snap: 'ui:scenesnap',
+  fullscreen: 'ui:fullscreenchange',
+  help: 'ui:helpchange',
+  progress: 'ui:progressupdate'
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /* jshint browser: true */
 /* global Modernizr */
 
@@ -1305,7 +1329,7 @@ module.exports = function (_) {
   }
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /* jshint browser: true */
 
 'use strict';
@@ -1325,7 +1349,7 @@ module.exports = function (url) {
   });
 };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /* jshint browser: true */
 /* global Modernizr */
 
@@ -1340,7 +1364,7 @@ module.exports = function (_) {
   }
 };
 
-},{"es6-promise":25}],24:[function(require,module,exports){
+},{"es6-promise":26}],25:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -1355,7 +1379,7 @@ polyfills();
 cache();
 locations().then(map).then(ui.init).catch(ui.error);
 
-},{"locations/locations":2,"map/map":5,"ui/ui":19,"utilities/cache":21,"utilities/polyfills":23}],25:[function(require,module,exports){
+},{"locations/locations":2,"map/map":5,"ui/ui":20,"utilities/cache":22,"utilities/polyfills":24}],26:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -2515,7 +2539,7 @@ return Promise;
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":26}],26:[function(require,module,exports){
+},{"_process":27}],27:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2697,4 +2721,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[24]);
+},{}]},{},[25]);

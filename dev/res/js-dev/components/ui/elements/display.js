@@ -4,6 +4,7 @@
 
 let eventManager = require('patterns/tx-event');
 let uiEvents = require('ui/uiEvents');
+let mapEvents = require('map/mapEvents');
 
 function enterFullScreen() {
   document.documentElement.requestFullscreen();
@@ -19,6 +20,7 @@ function onUIFullscreen() {
   } else {
     exitFullScreen();
   }
+  eventManager.trigger(document, mapEvents.fullscreen, false);
 }
 
 module.exports = _ => {

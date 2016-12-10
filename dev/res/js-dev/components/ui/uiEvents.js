@@ -3,20 +3,20 @@
 'use strict';
 
 module.exports = {
-  locations: 'locationsuichange',
-  topDown: 'mapuitopdown',
-  rotate: 'mapuirotate',
-  rotateCCW: 'mapuiccwrotate',
-  rotateCW: 'mapuicwrotate',
-  pan: 'mapuipan',
-  panLeft: 'mapuipanleft',
-  panRight: 'mapuipanright',
-  zoom: 'mapuizoom',
-  zoomIn: 'mapuizoomin',
-  zoomOut: 'mapuizoomout',
-  reset: 'mapuireset',
-  snap: 'sceneuisnap',
-  fullscreen: 'fullscreenuichange',
-  helpShow: 'helpuichange',
-  progress: 'progressuiupdate'
+  locations: 'ui:locationschange',
+  topDown: 'ui:maptopdownchange',
+  rotate: 'ui:maprotate',
+  rotateCCW: 'ui:mapccwrotate',
+  rotateCW: 'ui:mapcwrotate',
+  pan: 'ui:mappan',
+  panLeft: 'ui:mappanleft',
+  panRight: 'ui:mappanright',
+  zoom: 'ui:mapzoom',
+  zoomIn: 'ui:mapzoomin',
+  zoomOut: 'ui:mapzoomout',
+  reset: 'ui:mapreset',
+  snap: 'ui:scenesnap',
+  fullscreen: 'ui:fullscreenchange',
+  help: 'ui:helpchange',
+  progress: 'ui:progressupdate'
 };

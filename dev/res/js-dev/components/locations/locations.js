@@ -6,6 +6,7 @@ let mapLocation = require('./location');
 let eventManager = require('patterns/tx-event');
 let download = require('utilities/download');
 let uiEvents = require('ui/uiEvents');
+let mapEvents = require('map/mapEvents');
 
 const LOCATIONS_DATA_URL = '/data/locations.json';
 
@@ -31,6 +32,7 @@ module.exports = _ => {
 
   function toggleLocations() {
     getDOM().classList.toggle(ACTIVE_CLASS_NAME);
+    eventManager.trigger(document, mapEvents.locations, false);
   }
 
   function projectLocations(event) {

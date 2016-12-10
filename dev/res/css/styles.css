@@ -679,6 +679,7 @@ body {
   background-position: -120px -46px;
   top: 4px;
   left: 4px;
+  opacity: 0;
 }
 
 .showLocationsIcon:after {
@@ -687,15 +688,14 @@ body {
   background-position: -75px -53px;
   top: 0;
   left: -1px;
-  opacity: 0;
 }
 
-.showLocationsIcon-is-active:before {
-  opacity: 0;
-}
-
-.showLocationsIcon-is-active:after {
+.showLocations-is-active .showLocationsIcon:before {
   opacity: 1;
+}
+
+.showLocations-is-active .showLocationsIcon:after {
+  opacity: 0;
 }
 
 .showTopDownIcon {
@@ -733,7 +733,7 @@ body {
   left: 0;
 }
 
-.showTopDownIcon-is-active:before {
+.showTopDown-is-active .showTopDownIcon:before {
   -webkit-transform: rotateX(50deg) translateZ(0);
           transform: rotateX(50deg) translateZ(0);
 }
@@ -808,19 +808,19 @@ body {
   opacity: 1;
 }
 
-.fullScreenIcon-is-active:before {
+.fullScreen-is-active .fullScreenIcon:before {
   opacity: 0;
 }
 
-.fullScreenIcon-is-active:after {
+.fullScreen-is-active .fullScreenIcon:after {
   opacity: 1;
 }
 
-.fullScreenIcon-is-active:active:before {
+.fullScreen-is-active .fullScreenIcon:active:before {
   opacity: 1;
 }
 
-.fullScreenIcon-is-active:active:after {
+.fullScreen-is-active .fullScreenIcon:active:after {
   opacity: 0;
 }
 
@@ -1304,11 +1304,12 @@ body {
   width: 100%;
   background: #000;
   visibility: visible;
-  opacity: .95;
   -webkit-transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start, -webkit-transform 0.25s step-start;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
 }
 
 .loader-is-hidden {

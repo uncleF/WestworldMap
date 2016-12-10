@@ -7,7 +7,7 @@ let eventManager = require('patterns/tx-event');
 let uiEvents = require('ui/uiEvents');
 let errorMessages = require('ui/errorMessages');
 
-const GEOMETRY_URL = '/models/placeholder.json';
+const GEOMETRY_URL = '/models/noDetails.json';
 
 const CANVAS_HOLDER_ID = 'map';
 
