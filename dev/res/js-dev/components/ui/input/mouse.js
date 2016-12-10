@@ -51,9 +51,9 @@ function onMouseDown(event) {
 }
 
 function onWheel(event) {
+  event.preventDefault();
+  event.stopPropagation();
   requestAnimationFrame(_ => {
-    event.preventDefault();
-    event.stopPropagation();
     if (event.deltaY > 0) {
       eventManager.trigger(document, uiEvents.zoomOut, false, 'UIEvent');
     } else if (event.deltaY < 0) {

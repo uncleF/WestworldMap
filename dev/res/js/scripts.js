@@ -234,8 +234,8 @@ function progressAnimation(startTime, duration, startValues, deltaValues, fracti
   runAnimation(startTime, duration, startValues, deltaValues, task);
 }
 
-function completeAnimation(startValues, deltaValues, fraction, task) {
-  var newValues = calculateNewValues(startValues, deltaValues, fraction);
+function completeAnimation(startValues, deltaValues, task) {
+  var newValues = calculateNewValues(startValues, deltaValues, 1);
   task(newValues);
 }
 
@@ -245,7 +245,7 @@ function runAnimation(startTime, duration, startValues, deltaValues, task) {
     if (fraction < 1) {
       progressAnimation(startTime, duration, startValues, deltaValues, fraction, task);
     } else {
-      completeAnimation(startValues, deltaValues, 1, task);
+      completeAnimation(startValues, deltaValues, task);
     }
   });
 }
@@ -1087,9 +1087,9 @@ function onMouseDown(event) {
 }
 
 function onWheel(event) {
+  event.preventDefault();
+  event.stopPropagation();
   requestAnimationFrame(function (_) {
-    event.preventDefault();
-    event.stopPropagation();
     if (event.deltaY > 0) {
       eventManager.trigger(document, uiEvents.zoomOut, false, 'UIEvent');
     } else if (event.deltaY < 0) {

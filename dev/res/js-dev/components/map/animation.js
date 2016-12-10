@@ -41,7 +41,7 @@ function progressAnimation(startTime, duration, startValues, deltaValues, fracti
   runAnimation(startTime, duration, startValues, deltaValues, task);
 }
 
-function completeAnimation(startValues, deltaValues, fraction, task) {
+function completeAnimation(startValues, deltaValues, task) {
   let newValues = calculateNewValues(startValues, deltaValues, 1);
   task(newValues);
 }
