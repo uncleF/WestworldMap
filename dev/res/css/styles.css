@@ -905,6 +905,9 @@ body {
 }
 
 .location {
+  font-size: 12px;
+  font-size: 0.75rem;
+  line-height: 1.5;
   position: absolute;
   bottom: 100%;
   left: -8px;
@@ -943,23 +946,17 @@ body {
 }
 
 .locationInfo {
-  margin: 0 0 0 10px;
+  margin: 0 0 0 5px;
   vertical-align: middle;
 }
 
 .locationName {
   display: block;
-  font-weight: bold;
   text-transform: uppercase;
-  display: none;
 }
 
 .locationDescription {
-  font-size: 12px;
-  font-size: 0.75rem;
-  line-height: 1.5;
   display: block;
-  display: none;
 }
 
 /* Phone */

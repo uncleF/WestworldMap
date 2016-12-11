@@ -29,6 +29,7 @@ $locationMarker-borderColor: $white;
 $locationMarker-shadowColor: $black;
 
 .location {
+  @include tx-font-size(small, .75);
   position: absolute;
   bottom: 100%;
   left: ($locationMarker-size / -2);
@@ -59,21 +60,17 @@ $locationMarker-shadowColor: $black;
 }
 
 .locationInfo {
-  margin: 0 0 0 $gap;
+  margin: 0 0 0 ($gap / 2);
   vertical-align: middle;
 }
 
 .locationName {
   display: block;
-  font-weight: bold;
   text-transform: uppercase;
-  display: none;
 }
 
 .locationDescription {
-  @include tx-font-size(small, .75);
   display: block;
-  display: none;
 }
 
 
