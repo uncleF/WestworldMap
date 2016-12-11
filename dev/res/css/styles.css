@@ -951,6 +951,7 @@ body {
   display: block;
   font-weight: bold;
   text-transform: uppercase;
+  display: none;
 }
 
 .locationDescription {
@@ -958,6 +959,7 @@ body {
   font-size: 0.75rem;
   line-height: 1.5;
   display: block;
+  display: none;
 }
 
 /* Phone */

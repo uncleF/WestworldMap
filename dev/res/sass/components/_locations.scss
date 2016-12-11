@@ -67,11 +67,13 @@ $locationMarker-shadowColor: $black;
   display: block;
   font-weight: bold;
   text-transform: uppercase;
+  display: none;
 }
 
 .locationDescription {
   @include tx-font-size(small, .75);
   display: block;
+  display: none;
 }
 
 
