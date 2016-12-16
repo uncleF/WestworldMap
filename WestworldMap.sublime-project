@@ -16,6 +16,10 @@
       "path": "dev/res/templates"
     }, {
       "follow_symlinks": true,
+      "name": "WestworldMap: Data",
+      "path": "dev/data"
+    }, {
+      "follow_symlinks": true,
       "name": "WestworldMap: Sass",
       "path": "dev/res/sass"
     }, {

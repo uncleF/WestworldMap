@@ -7,7 +7,7 @@ let eventManager = require('patterns/tx-event');
 let uiEvents = require('ui/uiEvents');
 let errorMessages = require('ui/errorMessages');
 
-const GEOMETRY_URL = '/models/noDetails.json';
+const SCENE_URL = '/models/scene.json';
 
 const CANVAS_HOLDER_ID = 'map';
 
@@ -16,8 +16,9 @@ const CAMERA_ANGLE = 45;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 1000;
 
-const LIGHT_POSITION = [0, 150, 500];
-const LIGHT_COLOR = 0xFFFFFF;
+const TILT_SHIFT_FOCUS_POS = 0.40;
+const TILT_SHIFT_AMOUNT = 0.015;
+const TILT_SHIFT_BRIGHTNESS = 0.45;
 
 module.exports = locationsData => {
 
@@ -27,6 +28,7 @@ module.exports = locationsData => {
   let dom;
 
   let renderer;
+  let composer;
 
   let scene;
 
@@ -79,12 +81,6 @@ module.exports = locationsData => {
     scene.add(camera);
   }
 
-  function setupLights() {
-    light = new THREE.PointLight(LIGHT_COLOR);
-    light.position.set(...LIGHT_POSITION);
-    scene.add(light);
-  }
-
   function setupRaycaster() {
     raycaster = new THREE.Raycaster();
   }
@@ -102,18 +98,18 @@ module.exports = locationsData => {
     points = locationsData.map(addLocationPoint);
   }
 
-  function addObject(geometry) {
+  function addObject(loadedObjects) {
     object = new THREE.Object3D();
-    object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
+    object.add(loadedObjects);
     addLocationPoints();
     scene.add(object);
   }
 
   function setupObject() {
     return new Promise((resolve, reject) => {
-      let loader = new THREE.JSONLoader();
-      loader.load(GEOMETRY_URL, geometry => {
-        addObject(geometry);
+      let loader = new THREE.ObjectLoader();
+      loader.load(SCENE_URL, loadedObjects => {
+        addObject(loadedObjects);
         resolve();
       }, request => {
         eventManager.trigger(document, uiEvents.progress, false, 'UIEvent', {total: request.total, loaded: request.loaded});
@@ -130,14 +126,26 @@ module.exports = locationsData => {
   function setupBase() {
     setupScene();
     setupCamera();
-    setupLights();
     setupRaycaster();
     return Promise.resolve();
+  }
+
+  function setupShaders() {
+    let renderPass = new THREE.RenderPass(scene, camera);
+    let tiltShiftPass = new THREE.ShaderPass(THREE.VerticalTiltShiftShader);
+    composer = new THREE.EffectComposer(renderer);
+    tiltShiftPass.uniforms.focusPos.value = TILT_SHIFT_FOCUS_POS;
+    tiltShiftPass.uniforms.amount.value = TILT_SHIFT_AMOUNT;
+    tiltShiftPass.uniforms.brightness.value = TILT_SHIFT_BRIGHTNESS;
+    tiltShiftPass.renderToScreen = true;
+    composer.addPass(renderPass);
+    composer.addPass(tiltShiftPass);
   }
 
   function returnCanvasInterface() {
     return {
       renderer: renderer,
+      composer: composer,
       scene: scene,
       camera: camera,
       light: light,
@@ -150,6 +158,7 @@ module.exports = locationsData => {
   return setupCanvas()
     .then(setupRenderer)
     .then(setupBase)
+    .then(setupShaders)
     .then(setupObject)
     .then(setupDOM)
     .then(returnCanvasInterface);

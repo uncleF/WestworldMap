@@ -281,7 +281,7 @@ var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 var errorMessages = require('ui/errorMessages');
 
-var GEOMETRY_URL = '/models/noDetails.json';
+var SCENE_URL = '/models/scene.json';
 
 var CANVAS_HOLDER_ID = 'map';
 
@@ -290,8 +290,9 @@ var CAMERA_ANGLE = 45;
 var CAMERA_NEAR = 0.1;
 var CAMERA_FAR = 1000;
 
-var LIGHT_POSITION = [0, 150, 500];
-var LIGHT_COLOR = 0xFFFFFF;
+var TILT_SHIFT_FOCUS_POS = 0.40;
+var TILT_SHIFT_AMOUNT = 0.015;
+var TILT_SHIFT_BRIGHTNESS = 0.45;
 
 module.exports = function (locationsData) {
 
@@ -301,6 +302,7 @@ module.exports = function (locationsData) {
   var dom = void 0;
 
   var renderer = void 0;
+  var composer = void 0;
 
   var scene = void 0;
 
@@ -354,14 +356,6 @@ module.exports = function (locationsData) {
     scene.add(camera);
   }
 
-  function setupLights() {
-    var _light$position;
-
-    light = new THREE.PointLight(LIGHT_COLOR);
-    (_light$position = light.position).set.apply(_light$position, LIGHT_POSITION);
-    scene.add(light);
-  }
-
   function setupRaycaster() {
     raycaster = new THREE.Raycaster();
   }
@@ -381,18 +375,18 @@ module.exports = function (locationsData) {
     points = locationsData.map(addLocationPoint);
   }
 
-  function addObject(geometry) {
+  function addObject(loadedObjects) {
     object = new THREE.Object3D();
-    object.add(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
+    object.add(loadedObjects);
     addLocationPoints();
     scene.add(object);
   }
 
   function setupObject() {
     return new Promise(function (resolve, reject) {
-      var loader = new THREE.JSONLoader();
-      loader.load(GEOMETRY_URL, function (geometry) {
-        addObject(geometry);
+      var loader = new THREE.ObjectLoader();
+      loader.load(SCENE_URL, function (loadedObjects) {
+        addObject(loadedObjects);
         resolve();
       }, function (request) {
         eventManager.trigger(document, uiEvents.progress, false, 'UIEvent', { total: request.total, loaded: request.loaded });
@@ -409,14 +403,26 @@ module.exports = function (locationsData) {
   function setupBase() {
     setupScene();
     setupCamera();
-    setupLights();
     setupRaycaster();
     return Promise.resolve();
+  }
+
+  function setupShaders() {
+    var renderPass = new THREE.RenderPass(scene, camera);
+    var tiltShiftPass = new THREE.ShaderPass(THREE.VerticalTiltShiftShader);
+    composer = new THREE.EffectComposer(renderer);
+    tiltShiftPass.uniforms.focusPos.value = TILT_SHIFT_FOCUS_POS;
+    tiltShiftPass.uniforms.amount.value = TILT_SHIFT_AMOUNT;
+    tiltShiftPass.uniforms.brightness.value = TILT_SHIFT_BRIGHTNESS;
+    tiltShiftPass.renderToScreen = true;
+    composer.addPass(renderPass);
+    composer.addPass(tiltShiftPass);
   }
 
   function returnCanvasInterface() {
     return {
       renderer: renderer,
+      composer: composer,
       scene: scene,
       camera: camera,
       light: light,
@@ -426,7 +432,7 @@ module.exports = function (locationsData) {
     };
   }
 
-  return setupCanvas().then(setupRenderer).then(setupBase).then(setupObject).then(setupDOM).then(returnCanvasInterface);
+  return setupCanvas().then(setupRenderer).then(setupBase).then(setupShaders).then(setupObject).then(setupDOM).then(returnCanvasInterface);
 };
 
 },{"patterns/tx-event":8,"ui/errorMessages":13,"ui/uiEvents":21}],5:[function(require,module,exports){
@@ -476,6 +482,7 @@ module.exports = function (locationsData) {
   var halfHeight = void 0;
 
   var renderer = void 0;
+  var composer = void 0;
 
   var scene = void 0;
   var snap = void 0;
@@ -576,7 +583,7 @@ module.exports = function (locationsData) {
   /* Map Actions */
 
   function renderMap() {
-    renderer.render(scene, camera);
+    composer.render();
     eventManager.trigger(document, RENDER_EVENT, false, 'UIEvent', { newPositions: calculateLocationsPositions() });
   }
 
@@ -771,6 +778,7 @@ module.exports = function (locationsData) {
 
   function setupMap(properties) {
     renderer = properties.renderer;
+    composer = properties.composer;
     scene = properties.scene;
     camera = properties.camera;
     light = properties.light;

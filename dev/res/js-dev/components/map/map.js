@@ -42,6 +42,7 @@ module.exports = locationsData => {
   let halfHeight;
 
   let renderer;
+  let composer;
 
   let scene;
   let snap;
@@ -154,7 +155,7 @@ module.exports = locationsData => {
   /* Map Actions */
 
   function renderMap() {
-    renderer.render(scene, camera);
+    composer.render();
     eventManager.trigger(document, RENDER_EVENT, false, 'UIEvent', {newPositions: calculateLocationsPositions()});
   }
 
@@ -340,7 +341,7 @@ module.exports = locationsData => {
   }
 
   function setupMap(properties) {
-    ({renderer, scene, camera, light, raycaster, object, points} = properties);
+    ({renderer, composer, scene, camera, light, raycaster, object, points} = properties);
     ({width, height} = renderer.domElement);
     view = false;
     calculateHalves();

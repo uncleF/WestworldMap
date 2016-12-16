@@ -24,9 +24,8 @@
 
 }
 
-$locationMarker-size: 16px;
+$locationMarker-size: 10px;
 $locationMarker-borderColor: $white;
-$locationMarker-shadowColor: $black;
 
 .location {
   @include tx-font-size(small, .75);
@@ -36,7 +35,6 @@ $locationMarker-shadowColor: $black;
   display: flex;
   align-items: center;
   text-decoration: none;
-  text-shadow: 0 0 1px $locationMarker-shadowColor;
   line-height: 1em;
   white-space: nowrap;
   transform-origin: 0 100%;
@@ -47,9 +45,8 @@ $locationMarker-shadowColor: $black;
     box-sizing: border-box;
     width: $locationMarker-size;
     height: $locationMarker-size;
-    border: 2px solid $locationMarker-borderColor;
     border-radius: 50%;
-    box-shadow: 0 0 1px $locationMarker-shadowColor, 0 0 1px $locationMarker-shadowColor inset;
+    background: $locationMarker-borderColor;
     vertical-align: middle;
   }
 

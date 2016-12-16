@@ -910,7 +910,7 @@ body {
   line-height: 1.5;
   position: absolute;
   bottom: 100%;
-  left: -8px;
+  left: -5px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -918,7 +918,6 @@ body {
       -ms-flex-align: center;
           align-items: center;
   text-decoration: none;
-  text-shadow: 0 0 1px #000;
   line-height: 1em;
   white-space: nowrap;
   -webkit-transform-origin: 0 100%;
@@ -933,11 +932,10 @@ body {
   content: "";
   position: relative;
   box-sizing: border-box;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #fff;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  box-shadow: 0 0 1px #000, 0 0 1px #000 inset;
+  background: #fff;
   vertical-align: middle;
 }
 
