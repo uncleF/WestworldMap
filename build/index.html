@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html class="mdz-no-js" lang="ru">
+
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,shrink-to-fit=no,user-scalable=no">
+    <title>WestworldMap Project</title>
+    <meta name="title" content="WestworldMap Project">
+    <link href="res/css/styles.min.css" rel="stylesheet">
+    <script src="res/js/Modernizr/modernizr.min.js" type="text/javascript"></script>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta http-equiv="cleartype" content="on">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="WestworldMap Project">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link type="text/plain" rel="author" href="/humans.txt">
+    <link href="favicon.ico" rel="icon" type="image/x-icon">
+    <!--[if IE]> <link href="favicon.ico" rel="shortcut icon" type="image/x-icon"> <![endif]-->
+    <link href="maskIcon.svg" rel="mask-icon" type="image/svg+xml" color="#fd746c">
+    <link href="icons-60@2x.png" rel="apple-touch-icon" type="image/png" sizes="120x120">
+    <link href="icons-60@3x.png" rel="apple-touch-icon" type="image/png" sizes="180x180">
+    <link href="icon-76.png" rel="apple-touch-icon" type="image/png" sizes="76x76">
+    <link href="icon-76@2x.png" rel="apple-touch-icon" type="image/png" sizes="152x152">
+    <link href="icon-76@3x.png" rel="apple-touch-icon" type="image/png" sizes="228x228">
+    <link href="icon-60.png" rel="apple-touch-icon" type="image/png">
+    <link href="screen-320-480.png" rel="apple-touch-startup-image" media="(device-width: 320px)" type="image/png">
+    <link href="screen-320-480@2x.png" rel="apple-touch-startup-image" media="(device-width: 640px) and (device-height: 960px) and (-webkit-device-pixel-ratio: 2)" type="image/png">
+    <link href="screen-320-480@2x.png" rel="apple-touch-startup-image" media="(device-width: 640px) and (device-height: 960px) and (-webkit-device-pixel-ratio: 2)" type="image/png">
+    <link href="screen-320-568@2x.png" rel="apple-touch-startup-image" media="(device-width: 640px) and (device-height: 1136px) and (-webkit-device-pixel-ratio: 2)" type="image/png">
+    <link href="screen-375-667@2x.png" rel="apple-touch-startup-image" media="(device-width: 750px) and (device-height: 1334px) and (-webkit-device-pixel-ratio: 2)" type="image/png">
+    <link href="screen-414-736@3x.png" rel="apple-touch-startup-image" media="(device-width: 1242px) and (device-height: 2208px) and (-webkit-device-pixel-ratio: 3)" type="image/png">
+    <link href="screen-768-1024.png" rel="apple-touch-startup-image" media="(device-width: 768px) and (orientation: portrait)" type="image/png">
+    <link href="screen-768-1024.png@2x" rel="apple-touch-startup-image" media="(device-width: 1536px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" type="image/png">
+    <link href="screen-1024-768.png" rel="apple-touch-startup-image" media="(device-width: 768px) and (orientation: landscape)" type="image/png">
+    <link href="screen-1024-768@2x.png" rel="apple-touch-startup-image" media="(device-width: 1536px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" type="image/png">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="msTileIcon.png">
+    <meta name="theme-color" content="#000000">
+  </head>
+
+  <body>
+    <h1 id="westworld" class="westworld">Westworld Map</h1>
+    <section class="controls">
+      <a href="#" id="showLocations" class="showLocations" tabindex="2">
+        <span class="showLocationsIcon">Locations</span>
+      </a>
+      <a href="#" id="showTopDown" class="showTopDown" tabindex="3">
+        <span class="showTopDownIcon">Top-Down View</span>
+      </a>
+      <a href="#" id="rotateCCW" class="rotateCCW" tabindex="4">
+        <span class="rotateCCWIcon">Rotate Counterclockwise</span>
+      </a>
+      <a href="#" id="rotateCW" class="rotateCW" tabindex="5">
+        <span class="rotateCWIcon">Rotate Clockwise</span>
+      </a>
+      <a href="#" id="zoomOut" class="zoomOut" tabindex="6">
+        <span class="zoomOutIcon">Zoom Out</span>
+      </a>
+      <a href="#" id="zoomIn" class="zoomIn" tabindex="7">
+        <span class="zoomInIcon">Zoom In</span>
+      </a>
+      <a href="#" id="reset" class="reset" tabindex="8">
+        <span class="resetIcon">Reset</span>
+      </a>
+      <a href="#" id="fullScreen" class="fullScreen" tabindex="9">
+        <span class="fullScreenIcon">Full Screen</span>
+      </a>
+    </section>
+    <a href="#" id="showHelp" class="showHelp" tabindex="10">
+      <span class="showHelpIcon">Help</span>
+    </a>
+    <section id="map" class="map"></section>
+    <section id="locations" class="locations locations-is-active"></section>
+    <footer class="footer">
+      <span class="copyrights">This site was designed as an homage to <a href="http://hbo.com">HBO's</a> Westworld. All rights belong to them.</span>
+      <span class="gitHub">You can check out this project on <a href="#" class="GitHub">GitHub</a>.</span>
+    </footer>
+    <div id="help" class="help">
+      <div class="helpContent">
+        <div class="helpTouch">
+          <div class="helpTouchSingle"></div>
+          <div class="helpTouchDouble"></div>
+          <div class="helpTouchPinch"></div>
+        </div>
+        <div class="helpMouse">
+          <div class="helpMouseLeft"></div>
+          <div class="helpMouseRight"></div>
+          <div class="helpMouseWheel"></div>
+        </div>
+        <div class="helpKeyboard">
+          <div class="helpKeyboardKey1"></div>
+          <div class="helpKeyboardKeySpace"></div>
+          <div class="helpKeyboardKeyUp"></div>
+          <div class="helpKeyboardKeyLeft"></div>
+          <div class="helpKeyboardKeyDown"></div>
+          <div class="helpKeyboardKeyRight"></div>
+          <div class="helpKeyboardKeyPgUp"></div>
+          <div class="helpKeyboardKeyPgDown"></div>
+        </div>
+      </div>
+      <a href="#" id="closeHelp" class="closeHelp">
+        <span class="closeHelpIcon">Close Help</span>
+      </a>
+    </div>
+    <div id="error" class="error">
+      <div id="errorMessage" class="errorMessage"></div>
+    </div>
+    <div id="loader" class="loader">
+      <svg class="loaderSVG" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g class="loaderLogo">
+          <polygon points="146.357 151 175 71 159.925 71 131.281 151" />
+          <polygon points="129.02 137.415 153.141 71 138.065 71 114.494 137.415" />
+          <polygon points="113.945 137.415 94.896 84.585 109.422 84.585 129.02 137.415" />
+          <polygon points="90.578 84.585 71.529 137.415 86.055 137.415 105.653 84.585" />
+          <polygon points="61.935 71 86.055 137.415 70.98 137.415 47.408 71" />
+          <polygon points="40.09 71 68.761 151 53.671 151 25 71" />
+        </g>
+        <path d="M100 2a98 98 0 1 1 -98 98a98 98 0 0 1 196 0" id="loaderProgress" class="loaderProgress">
+        </path>
+      </svg>
+    </div>
+    <script src="res/js/three/three.min.js" defer></script>
+    <script src="res/js/EffectComposer/CopyShader.js" defer></script>
+    <script src="res/js/EffectComposer/MaskPass.js" defer></script>
+    <script src="res/js/EffectComposer/RenderPass.js" defer></script>
+    <script src="res/js/EffectComposer/EffectComposer.js" defer></script>
+    <script src="res/js/EffectComposer/ShaderPass.js" defer></script>
+    <script src="res/js/EffectComposer/TiltShiftShader.js" defer></script>
+    <script src="res/js/polyfills/fullscreen-api-polyfill.min.js" defer></script>
+    <script src="res/js/scripts.min.js" defer></script>
+  </body>
+
+</html>

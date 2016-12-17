@@ -15,6 +15,7 @@ module.exports = (grunt) => {
   grunt.registerTask('build-finalize', [
     'string-replace:build',
     'cleanempty',
+    'copy:meta',
     'test'
   ]);
 

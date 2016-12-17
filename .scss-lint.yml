@@ -453,7 +453,7 @@ linters:
     enabled: true
     identifier_list: base
     additional_identifiers: []
-    excluded_identifiers: ["hyphens"]
+    excluded_identifiers: ["hyphens", "grabbing"]
 
   ZeroUnit:
     enabled: true

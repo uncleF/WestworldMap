@@ -16,8 +16,8 @@ $loader-transition: 1s;
   width: 100%;
   background: $background;
   visibility: visible;
-  transition: opacity $UITransitionDefault, visibility $UITransitionDefault step-start, transform $UITransitionDefault step-start;
   transform: translateZ(0);
+  transition: opacity $UITransitionDefault, visibility $UITransitionDefault step-start, transform $UITransitionDefault step-start;
 
   &-is-hidden {
     visibility: hidden;

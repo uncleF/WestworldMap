@@ -9,7 +9,9 @@ var CACHE_NAME = 'tx-cache-v1';
 var offline = [
   '/',
   '/res/css/styles.min.css',
-  '/res/js/scripts.min.js'
+  '/res/js/scripts.min.js',
+  '/scene/scene.json',
+  '/data/locations.json'
 ];
 
 function addAllToCahche(cache) {

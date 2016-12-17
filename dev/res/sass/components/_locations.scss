@@ -19,7 +19,7 @@
 
   &:active {
     cursor: -webkit-grabbing;
-    cursor: grabing;
+    cursor: grabbing;
   }
 
 }
@@ -76,7 +76,7 @@ $locationMarker-borderColor: $white;
 
 @include tx-media(phone) {
 
-  $locationMarker-phone-size: 12px;
+  $locationMarker-phone-size: 10px;
 
   .location {
 
@@ -92,7 +92,7 @@ $locationMarker-borderColor: $white;
   }
 
   .locationName {
-    @include tx-font-size(small, .75);
+    @include tx-font-size($locationMarker-phone-size, .75);
   }
 
   .locationDescription {
