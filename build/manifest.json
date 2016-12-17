@@ -29,49 +29,49 @@
     "sizes": "228x228"
   }],
   "splash_screens": [    {
-      "src": "screen-320-480.jpg",
+      "src": "screen-320-480.png",
       "sizes": "320x480",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "1"
     }, {
-      "src": "screen-320-480@2x.jpg",
+      "src": "screen-320-480@2x.png",
       "sizes": "320x480",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "2"
     }, {
-      "src": "screen-320-568@2x.jpg",
+      "src": "screen-320-568@2x.png",
       "sizes": "320x568",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "2"
     }, {
-      "src": "screen-375-667@2x.jpg",
+      "src": "screen-375-667@2x.png",
       "sizes": "375x667",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "2"
     }, {
-      "src": "screen-414-736@3x.jpg",
+      "src": "screen-414-736@3x.png",
       "sizes": "414x736",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "3"
     }, {
-      "src": "screen-768-1024.jpg",
+      "src": "screen-768-1024.png",
       "sizes": "1024x768",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "1"
     }, {
-      "src": "screen-768-1024@2x.jpg",
+      "src": "screen-768-1024@2x.png",
       "sizes": "1024x768",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "2"
     }, {
-      "src": "screen-1024-768.jpg",
+      "src": "screen-1024-768.png",
       "sizes": "1024x768",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "1"
     }, {
-      "src": "screen-1024-768@2x.jpg",
+      "src": "screen-1024-768@2x.png",
       "sizes": "1024x768",
-      "type": "image/jpeg",
+      "type": "image/png",
       "density": "2"
     }],
   "scope": "/",
