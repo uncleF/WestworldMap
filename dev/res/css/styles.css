@@ -904,7 +904,7 @@ body {
 
 .locations:active {
   cursor: -webkit-grabbing;
-  cursor: grabing;
+  cursor: grabbing;
 }
 
 .location {
@@ -1293,12 +1293,12 @@ body {
   width: 100%;
   background: #000;
   visibility: visible;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
   -webkit-transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, -webkit-transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start;
   transition: opacity 0.25s, visibility 0.25s step-start, transform 0.25s step-start, -webkit-transform 0.25s step-start;
-  -webkit-transform: translateZ(0);
-          transform: translateZ(0);
 }
 
 .loader-is-hidden {

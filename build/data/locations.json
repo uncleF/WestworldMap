@@ -1,0 +1,41 @@
+[{
+  "name": "Sweetwater",
+  "description": "",
+  "picture": "#",
+  "position": [17.4, 11.7, -9.9]
+}, {
+  "name": "Pariah",
+  "description": "",
+  "picture": "#",
+  "position": [-4.5, 0.81, 54]
+}, {
+  "name": "Abernathy Ranch",
+  "description": "",
+  "picture": "#",
+  "position": [3.48, 11.4, 0.15]
+}, {
+  "name": "Virgil's Last Stand",
+  "description": "",
+  "picture": "#",
+  "position": [12.36, 11.58, -25.56]
+}, {
+  "name": "Python's Pass",
+  "description": "",
+  "picture": "#",
+  "position": [0.39, 12.15, -61.59]
+}, {
+  "name": "Las Mudas",
+  "description": "",
+  "picture": "#",
+  "position": [-1.53, 11.46, 21.93]
+}, {
+  "name": "Agave Plantation",
+  "description": "",
+  "picture": "#",
+  "position": [-41.97, 11.505, 28.482]
+}, {
+  "name": "Ghost Nation",
+  "description": "",
+  "picture": "#",
+  "position": [-9.99, 0.168, 74.4]
+}]

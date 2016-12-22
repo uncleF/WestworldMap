@@ -1,0 +1,1217 @@
+/* Pseudo Element */
+
+.showLocations:before,
+.showTopDown:before,
+.rotateCCW:before,
+.rotateCW:before,
+.zoomOut:before,
+.zoomIn:before,
+.reset:before,
+.fullScreen:before,
+.showHelp:before,
+.closeHelp:before,
+.showLocationsIcon:before,
+.showLocationsIcon:after,
+.showTopDownIcon:before,
+.showTopDownIcon:after,
+.errorMessage:before {
+  position: absolute;
+  content: '';
+  display: block;
+}
+
+/* Sprite Block */
+
+.westworld,
+.rotateCCWIcon,
+.rotateCWIcon,
+.zoomOutIcon,
+.zoomInIcon,
+.resetIcon,
+.fullScreenIcon,
+.showHelpIcon,
+.closeHelpIcon {
+  overflow: hidden;
+  height: 0;
+}
+
+/* Baseline, Typography & Vertical Rhythm */
+
+footer,
+section {
+  display: block;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  line-height: 1.5;
+}
+
+body {
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, Calibri, Arial, sans-serif;
+  -webkit-font-feature-settings: 'liga' 1, 'clig' 1, 'kern' 1;
+  font-feature-settings: 'liga' 1, 'clig' 1, 'kern' 1;
+  font-display: swap;
+  -epub-hyphens: manual;
+  -webkit-hyphens: manual;
+  -ms-hyphens: manual;
+  hyphens: manual;
+}
+
+h1 {
+  margin: 48px 0 18px;
+  margin: 3rem 0 1.125rem;
+  font-weight: bold;
+  text-rendering: auto;
+  -webkit-column-break-after: avoid;
+  page-break-after: avoid;
+  break-after: avoid;
+  orphans: 3;
+  widows: 3;
+}
+
+h1 {
+  font-size: 39.81312px;
+  font-size: 2.48832rem;
+  line-height: 1.20563;
+}
+
+/* Selection */
+
+::-moz-selection {
+  color: #fff;
+  background: #176191;
+}
+::selection {
+  color: #fff;
+  background: #176191;
+}
+
+/* Focus */
+
+a:focus {
+  outline: 1px dotted #666;
+  outline-offset: 3px;
+}
+
+/* Links */
+
+a {
+  color: #fff;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, .25);
+  text-decoration: underline;
+}
+
+a:visited,
+a:hover,
+a:active {
+  color: #fff;
+}
+
+/* Forms */
+
+
+input::placeholder,
+textarea::placeholder {
+  color: #666;
+  opacity: 1;
+}
+
+/* Fast Touch */
+
+a {
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
+
+/* Link Touch State */
+
+.mdz-touchevents a:hover,
+.mdz-touchevents a:active {
+  color: #fff;
+}
+
+/* Print Baseline, Typography & Vertical Rhythm */
+
+@media print {
+
+  /* csslint ignore:start */
+
+  /* Typography & Vertical Rhythm */
+
+  html,
+  body {
+    background: #fff;
+  }
+
+  @page {
+    size: A4;
+    margin: .5cm;
+  }
+
+  body {
+    color: #000;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  /* Links */
+
+  a[href^='#']:after {
+    content: '';
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  a:visited,
+  a:hover,
+  a:active {
+    color: #000;
+  }
+
+  a:after {
+    content: ' (' attr(href) ')';
+    font-size: 90%;
+  }
+
+  /* csslint ignore:end */
+
+
+}
+
+/* Layout */
+
+html {
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+}
+
+body {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  background: #000;
+}
+
+/* Phone Layout */
+
+@media only screen and (max-width: 45em) {
+
+  /* Layout */
+
+  body {
+    min-width: 0;
+  }
+
+}
+
+/* Print Layout */
+
+@media print {
+
+  /* Layout */
+
+  body {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    padding: 2.54cm;
+  }
+
+}
+
+/* Sprites */
+
+.westworld,
+.showLocationsIcon,
+.showLocationsIcon:before,
+.showLocationsIcon:after,
+.showTopDownIcon:before,
+.rotateCCWIcon,
+.rotateCWIcon,
+.zoomOutIcon,
+.zoomInIcon,
+.resetIcon,
+.fullScreenIcon:before,
+.fullScreenIcon:after,
+.showHelpIcon,
+.closeHelpIcon,
+.errorMessage:before {
+  background-image: url('../images/sprites.png');
+}
+
+.helpTouchSingle,
+.helpTouchDouble,
+.helpTouchPinch,
+.helpMouseLeft,
+.helpMouseRight,
+.helpMouseWheel,
+.helpKeyboardKey1,
+.helpKeyboardKeySpace,
+.helpKeyboardKeyUp,
+.helpKeyboardKeyLeft,
+.helpKeyboardKeyDown,
+.helpKeyboardKeyRight,
+.helpKeyboardKeyPgUp,
+.helpKeyboardKeyPgDown {
+  background-image: url('../images/helpSprites.png');
+}
+
+/* HDPI */
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5), only screen and (-webkit-min-device-pixel-ratio: 1.5625), only screen and (min-resolution: 150dpi), only screen and (min-resolution: 1.5dppx) {
+
+  .westworld,
+  .showLocationsIcon,
+  .showLocationsIcon:before,
+  .showLocationsIcon:after,
+  .showTopDownIcon:before,
+  .rotateCCWIcon,
+  .rotateCWIcon,
+  .zoomOutIcon,
+  .zoomInIcon,
+  .resetIcon,
+  .fullScreenIcon:before,
+  .fullScreenIcon:after,
+  .showHelpIcon,
+  .closeHelpIcon,
+  .errorMessage:before {
+    background-image: url('../images/sprites@2x.png');
+    background-size: 138px 94px;
+  }
+
+  .helpTouchSingle,
+  .helpTouchDouble,
+  .helpTouchPinch,
+  .helpMouseLeft,
+  .helpMouseRight,
+  .helpMouseWheel,
+  .helpKeyboardKey1,
+  .helpKeyboardKeySpace,
+  .helpKeyboardKeyUp,
+  .helpKeyboardKeyLeft,
+  .helpKeyboardKeyDown,
+  .helpKeyboardKeyRight,
+  .helpKeyboardKeyPgUp,
+  .helpKeyboardKeyPgDown {
+    background-image: url('../images/helpSprites@2x.png');
+    background-size: 238px 231px;
+  }
+
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2.5), only screen and (min--moz-device-pixel-ratio: 2.5), only screen and (min-device-pixel-ratio: 2.5), only screen and (-webkit-min-device-pixel-ratio: 2.6041666666666665), only screen and (min-resolution: 250dpi), only screen and (min-resolution: 2.5dppx) {
+
+  .westworld,
+  .showLocationsIcon,
+  .showLocationsIcon:before,
+  .showLocationsIcon:after,
+  .showTopDownIcon:before,
+  .rotateCCWIcon,
+  .rotateCWIcon,
+  .zoomOutIcon,
+  .zoomInIcon,
+  .resetIcon,
+  .fullScreenIcon:before,
+  .fullScreenIcon:after,
+  .showHelpIcon,
+  .closeHelpIcon,
+  .errorMessage:before {
+    background-image: url('../images/sprites@3x.png');
+    background-size: 138px 94px;
+  }
+
+  .helpTouchSingle,
+  .helpTouchDouble,
+  .helpTouchPinch,
+  .helpMouseLeft,
+  .helpMouseRight,
+  .helpMouseWheel,
+  .helpKeyboardKey1,
+  .helpKeyboardKeySpace,
+  .helpKeyboardKeyUp,
+  .helpKeyboardKeyLeft,
+  .helpKeyboardKeyDown,
+  .helpKeyboardKeyRight,
+  .helpKeyboardKeyPgUp,
+  .helpKeyboardKeyPgDown {
+    background-image: url('../images/helpSprites@3x.png');
+    background-size: 238px 231px;
+  }
+
+}
+
+/* Header */
+
+.westworld {
+  position: absolute;
+  z-index: 100;
+  top: 23px;
+  left: 20px;
+  display: block;
+  width: 39px;
+  padding: 21px 0 0;
+  margin: 0;
+  background-position: 0 0;
+}
+
+/* Controls */
+
+.controls {
+  position: absolute;
+  z-index: 52;
+  top: 10px;
+  left: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.mdz-touchevents .controls {
+  top: 0;
+  right: 10px;
+  bottom: 0;
+  left: auto;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  width: auto;
+}
+
+.showLocations,
+.showTopDown,
+.rotateCCW,
+.rotateCW,
+.zoomOut,
+.zoomIn,
+.reset,
+.fullScreen,
+.showHelp,
+.closeHelp {
+  width: 45px;
+  height: 45px;
+  color: transparent;
+  font-size: 0;
+  text-decoration: none;
+}
+
+.showLocations:before,
+.showTopDown:before,
+.rotateCCW:before,
+.rotateCW:before,
+.zoomOut:before,
+.zoomIn:before,
+.reset:before,
+.fullScreen:before,
+.showHelp:before,
+.closeHelp:before {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .5);
+}
+
+.showLocations,
+.showTopDown,
+.rotateCCW,
+.rotateCW,
+.zoomOut,
+.zoomIn,
+.reset,
+.fullScreen {
+  position: relative;
+  margin: 0 5px;
+}
+
+.mdz-touchevents .showLocations,
+.mdz-touchevents .showTopDown,
+.mdz-touchevents .rotateCCW,
+.mdz-touchevents .rotateCW,
+.mdz-touchevents .zoomOut,
+.mdz-touchevents .zoomIn,
+.mdz-touchevents .reset,
+.mdz-touchevents .fullScreen {
+  margin: 5px 0;
+}
+
+.showLocationsIcon,
+.showTopDownIcon,
+.rotateCCWIcon,
+.rotateCWIcon,
+.zoomOutIcon,
+.zoomInIcon,
+.resetIcon,
+.fullScreenIcon,
+.showHelpIcon,
+.closeHelpIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  height: 0;
+}
+
+.showLocationsIcon:before,
+.showLocationsIcon:after,
+.fullScreenIcon:before,
+.fullScreenIcon:after {
+  -webkit-transition: .25s;
+  transition: .25s;
+}
+
+.showLocationsIcon {
+  width: 16px;
+  height: 22px;
+  margin: -11px 0 0 -8px;
+  background-position: -99px 0;
+}
+
+.showLocationsIcon:before,
+.showLocationsIcon:after {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.showLocationsIcon:before {
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  background-position: -120px -46px;
+  opacity: 0;
+}
+
+.showLocationsIcon:after {
+  top: 0;
+  left: -1px;
+  width: 18px;
+  height: 18px;
+  background-position: -75px -53px;
+}
+
+.showLocations-is-active .showLocationsIcon:before {
+  opacity: 1;
+}
+
+.showLocations-is-active .showLocationsIcon:after {
+  opacity: 0;
+}
+
+.showTopDownIcon {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+
+  -webkit-perspective: 50px;
+  perspective: 50px;
+}
+
+.showTopDownIcon:before,
+.showTopDownIcon:after {
+  position: absolute;
+  content: '';
+}
+
+.showTopDownIcon:before {
+  top: 0;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin: 0 0 0 -11px;
+  background-position: 0 -26px;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-transition: .25s;
+  transition: .25s;
+}
+
+.showTopDownIcon:after {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.showTopDown-is-active .showTopDownIcon:before {
+  -webkit-transform: rotateX(50deg) translateZ(0);
+  transform: rotateX(50deg) translateZ(0);
+}
+
+.rotateCCWIcon {
+  width: 23px;
+  padding: 20px 0 0;
+  margin: -10px 0 0 -11.5px;
+  background-position: -71px -25px;
+}
+
+.rotateCWIcon {
+  width: 23px;
+  padding: 20px 0 0;
+  margin: -10px 0 0 -11.5px;
+  background-position: -71px 0;
+}
+
+.zoomOutIcon {
+  width: 20px;
+  padding: 20px 0 0;
+  margin: -10px 0 0 -10px;
+  background-position: -50px -53px;
+}
+
+.zoomInIcon {
+  width: 20px;
+  padding: 20px 0 0;
+  margin: -11px 0 0 -11px;
+  background-position: -25px -53px;
+}
+
+.resetIcon {
+  width: 22px;
+  padding: 22px 0 0;
+  margin: -11px 0 0 -11px;
+  background-position: -44px 0;
+}
+
+.fullScreen {
+  display: none;
+}
+
+.mdz-fullscreen .fullScreen {
+  display: block;
+}
+
+.fullScreenIcon {
+  width: 18px;
+  padding: 18px 0 0;
+  margin: -9px 0 0 -9px;
+}
+
+.fullScreenIcon:before,
+.fullScreenIcon:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+}
+
+.fullScreenIcon:before {
+  width: 18px;
+  height: 18px;
+  background-position: -120px -23px;
+}
+
+.fullScreenIcon:after {
+  width: 18px;
+  height: 18px;
+  background-position: -120px 0;
+  opacity: 0;
+}
+
+.fullScreenIcon:active:before {
+  opacity: 0;
+}
+
+.fullScreenIcon:active:after {
+  opacity: 1;
+}
+
+.fullScreen-is-active .fullScreenIcon:before {
+  opacity: 0;
+}
+
+.fullScreen-is-active .fullScreenIcon:after {
+  opacity: 1;
+}
+
+.fullScreen-is-active .fullScreenIcon:active:before {
+  opacity: 1;
+}
+
+.fullScreen-is-active .fullScreenIcon:active:after {
+  opacity: 0;
+}
+
+.showHelp,
+.closeHelp {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.showHelp {
+  z-index: 100;
+}
+
+.showHelpIcon {
+  width: 14px;
+  padding: 23px 0 0;
+  margin: -11.5px 0 0 -7px;
+  background-position: -99px -27px;
+}
+
+.closeHelpIcon {
+  width: 20px;
+  padding: 20px 0 0;
+  margin: -10px 0 0 -10px;
+  background-position: 0 -53px;
+}
+
+/* Phone */
+
+@media only screen and (max-width: 45em) {
+
+  .mdz-touchevents .controls {
+    top: auto;
+    right: 0;
+    bottom: 45px;
+    left: 0;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+    padding: 0 20px;
+  }
+
+  .mdz-touchevents .showLocations,
+  .mdz-touchevents .showTopDown,
+  .mdz-touchevents .rotateCCW,
+  .mdz-touchevents .rotateCW,
+  .mdz-touchevents .zoomOut,
+  .mdz-touchevents .zoomIn,
+  .mdz-touchevents .reset,
+  .mdz-touchevents .fullScreen {
+    margin: 0;
+  }
+
+  .rotateCCW,
+  .rotateCW,
+  .zoomOut,
+  .zoomIn {
+    display: none;
+  }
+
+}
+
+/* Loactions */
+
+.locations {
+  position: absolute;
+  z-index: 51;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  opacity: 0;
+  cursor: -webkit-grab;
+  cursor: grab;
+  -webkit-transition: .25s;
+  transition: .25s;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.locations-is-active {
+  opacity: 1;
+}
+
+.locations:active {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+.location {
+  position: absolute;
+  bottom: 100%;
+  left: -5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-size: 12px;
+  font-size: .75rem;
+  text-decoration: none;
+  line-height: 1.5;
+  line-height: 1em;
+  white-space: nowrap;
+  -webkit-transform-origin: 0 100%;
+  -ms-transform-origin: 0 100%;
+  transform-origin: 0 100%;
+  -webkit-transition: opacity .1s;
+  transition: opacity .1s;
+}
+
+.location:before {
+  position: relative;
+  content: '';
+  display: block;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  vertical-align: middle;
+}
+
+.location-is-hidden {
+  opacity: 0;
+}
+
+.locationInfo {
+  margin: 0 0 0 5px;
+  vertical-align: middle;
+}
+
+.locationName {
+  display: block;
+  text-transform: uppercase;
+}
+
+.locationDescription {
+  display: block;
+}
+
+/* Phone */
+
+@media only screen and (max-width: 45em) {
+
+  .location:before {
+    width: 10px;
+    height: 10px;
+  }
+
+  .locationInfo {
+    margin: 0 0 0 5px;
+  }
+
+  .locationName {
+    font-size: 10px;
+    font-size: .625rem;
+    line-height: 1.8;
+  }
+
+  .locationDescription {
+    display: none;
+  }
+
+}
+
+/* Map */
+
+.map {
+  position: absolute;
+  z-index: 50;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+/* Footer */
+
+.footer {
+  position: absolute;
+  z-index: 100;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  color: #666;
+  background: 10px;
+  font-size: 12px;
+  font-size: .75rem;
+  line-height: 2;
+  line-height: 1.75;
+}
+
+.gitHub {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* Phone */
+
+@media only screen and (max-width: 45em) {
+
+  .footer {
+    right: 5px;
+    bottom: 10px;
+    left: 5px;
+    width: auto;
+    font-size: 10.4px;
+    font-size: .65rem;
+    text-align: center;
+    line-height: 2.30769;
+    line-height: 1.25;
+  }
+
+  .gitHub {
+    display: none;
+  }
+
+}
+
+/* Help */
+
+.help {
+  position: fixed;
+  z-index: 200;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+  background: #000;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transform: translateX(-100%) translateZ(0);
+  transform: translateX(-100%) translateZ(0);
+  -webkit-transition: opacity .25s, visibility .25s step-end, -webkit-transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, -webkit-transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, transform .25s step-end, -webkit-transform .25s step-end;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.help-is-active {
+  visibility: visible;
+  opacity: 1;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-transition: opacity .25s, visibility .25s step-start, -webkit-transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, -webkit-transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, transform .25s step-start, -webkit-transform .25s step-start;
+}
+
+.helpContent {
+  position: relative;
+  width: 400px;
+}
+
+.helpTouch,
+.helpMouse {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+  margin: 0 0 75px;
+}
+
+.helpTouchSingle {
+  width: 59px;
+  height: 61px;
+  background-position: 0 -133px;
+}
+
+.helpTouchDouble {
+  width: 77px;
+  height: 61px;
+  background-position: 0 0;
+}
+
+.helpTouchPinch {
+  width: 62px;
+  height: 60px;
+  background-position: -132px -66px;
+}
+
+.helpMouseLeft {
+  width: 61px;
+  height: 62px;
+  background-position: 0 -66px;
+}
+
+.helpMouseRight {
+  width: 61px;
+  height: 62px;
+  margin: 0 20px 0 0;
+  background-position: -66px -66px;
+}
+
+.helpMouseWheel {
+  width: 36px;
+  height: 62px;
+  margin: 0 7px 0 0;
+  background-position: -202px 0;
+}
+
+.helpKeyboard {
+  position: relative;
+  width: 241px;
+  height: 74px;
+  margin: 0 auto;
+}
+
+.helpKeyboardKey1,
+.helpKeyboardKeySpace,
+.helpKeyboardKeyUp,
+.helpKeyboardKeyLeft,
+.helpKeyboardKeyDown,
+.helpKeyboardKeyRight,
+.helpKeyboardKeyPgUp,
+.helpKeyboardKeyPgDown {
+  position: absolute;
+}
+
+.helpKeyboardKey1 {
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  background-position: 0 -199px;
+}
+
+.helpKeyboardKeySpace {
+  top: 42px;
+  left: 0;
+  width: 115px;
+  height: 32px;
+  background-position: -82px 0;
+}
+
+.helpKeyboardKeyUp {
+  top: 0;
+  left: 167px;
+  width: 32px;
+  height: 32px;
+  background-position: -202px -67px;
+}
+
+.helpKeyboardKeyLeft {
+  top: 42px;
+  left: 125px;
+  width: 32px;
+  height: 32px;
+  background-position: -64px -133px;
+}
+
+.helpKeyboardKeyDown {
+  top: 42px;
+  left: 167px;
+  width: 32px;
+  height: 32px;
+  background-position: -202px -104px;
+}
+
+.helpKeyboardKeyRight {
+  top: 42px;
+  left: 209px;
+  width: 32px;
+  height: 32px;
+  background-position: -37px -199px;
+}
+
+.helpKeyboardKeyPgUp {
+  top: 0;
+  left: 125px;
+  width: 32px;
+  height: 32px;
+  background-position: -138px -133px;
+}
+
+.helpKeyboardKeyPgDown {
+  top: 0;
+  left: 209px;
+  width: 32px;
+  height: 32px;
+  background-position: -101px -133px;
+}
+
+/* Phone */
+
+@media only screen and (max-width: 45em) {
+
+  .helpContent {
+    position: relative;
+    width: 80%;
+    max-width: 400px;
+    margin: 10% 0 0;
+  }
+
+}
+
+/* Error */
+
+.error {
+  position: fixed;
+  z-index: 201;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+  background: #000;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transform: translateX(-100%) translateZ(0);
+  transform: translateX(-100%) translateZ(0);
+  -webkit-transition: opacity .25s, visibility .25s step-end, -webkit-transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, -webkit-transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, transform .25s step-end, -webkit-transform .25s step-end;
+}
+
+.error-is-active {
+  visibility: visible;
+  opacity: 1;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-transition: opacity .25s, visibility .25s step-start, -webkit-transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, -webkit-transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, transform .25s step-start, -webkit-transform .25s step-start;
+}
+
+.errorMessage {
+  position: relative;
+  width: 400px;
+  font-size: 19.2px;
+  font-size: 1.2rem;
+  line-height: 1.5625;
+}
+
+.errorMessage:before {
+  top: .75em;
+  right: 100%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 10px 0 0;
+  background-position: -44px -27px;
+}
+
+/* Loader */
+
+.loader {
+  position: fixed;
+  z-index: 200;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #000;
+  visibility: visible;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-transition: opacity .25s, visibility .25s step-start, -webkit-transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, -webkit-transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, transform .25s step-start;
+  transition: opacity .25s, visibility .25s step-start, transform .25s step-start, -webkit-transform .25s step-start;
+}
+
+.loader-is-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: opacity .25s, visibility .25s step-end, -webkit-transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, -webkit-transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, transform .25s step-end;
+  transition: opacity .25s, visibility .25s step-end, transform .25s step-end, -webkit-transform .25s step-end;
+}
+
+.loaderSVG {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -100px;
+}
+
+.loaderLogo {
+  fill: #fff;
+}
+
+.loaderProgress {
+  -webkit-animation: progress 1s linear infinite;
+  animation: progress 1s linear infinite;
+  stroke: #fff;
+  stroke-width: 4;
+  stroke-dasharray: 0 0 154px 616px;
+  fill: none;
+}
+
+@-webkit-keyframes progress {
+  from {
+    stroke-dasharray: 0 0 154px 616px;
+  }
+
+  to {
+    stroke-dasharray: 0 616px 154px 616px;
+  }
+
+}
+
+@keyframes progress {
+  from {
+    stroke-dasharray: 0 0 154px 616px;
+  }
+
+  to {
+    stroke-dasharray: 0 616px 154px 616px;
+  }
+
+}

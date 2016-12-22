@@ -1,4 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -95,6 +96,7 @@ module.exports = function (locationData) {
 };
 
 },{"patterns/tx-createNode":7}],2:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -187,6 +189,7 @@ module.exports = function (_) {
 };
 
 },{"./location":1,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21,"utilities/download":23}],3:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -270,6 +273,7 @@ exports.stop = stop;
 exports.go = go;
 
 },{}],4:[function(require,module,exports){
+
 /* jshint browser:true */
 /* global THREE */
 
@@ -281,7 +285,7 @@ var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 var errorMessages = require('ui/errorMessages');
 
-var SCENE_URL = '/models/scene.json';
+var SCENE_URL = '/scene/scene.json';
 
 var CANVAS_HOLDER_ID = 'map';
 
@@ -423,6 +427,7 @@ module.exports = function (locationsData) {
 };
 
 },{"patterns/tx-event":8,"ui/errorMessages":13,"ui/uiEvents":21}],5:[function(require,module,exports){
+
 /* jshint browser:true */
 /* global THREE */
 
@@ -781,6 +786,7 @@ module.exports = function (locationsData) {
 };
 
 },{"map/animation":3,"map/canvas":4,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21}],6:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -792,6 +798,7 @@ module.exports = {
 };
 
 },{}],7:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -803,6 +810,7 @@ module.exports = function (html) {
 };
 
 },{}],8:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -872,6 +880,7 @@ exports.trigger = trigger;
 exports.target = target;
 
 },{}],9:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -902,6 +911,7 @@ module.exports = function (_) {
 };
 
 },{"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21}],10:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -916,6 +926,7 @@ exports.show = function (error) {
 };
 
 },{}],11:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -939,6 +950,7 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],12:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -958,6 +970,7 @@ exports.show = showLoader;
 exports.remove = removeLoader;
 
 },{}],13:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -969,6 +982,7 @@ module.exports = {
 };
 
 },{}],14:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -992,6 +1006,7 @@ module.exports = function (id, uiEvent) {
 };
 
 },{"patterns/tx-event":8}],15:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -1024,6 +1039,7 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],16:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -1101,6 +1117,7 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],17:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -1135,6 +1152,7 @@ module.exports = function (_) {
 };
 
 },{"./control":14,"./toggle":18,"map/mapEvents":6,"ui/uiEvents":21}],18:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -1168,6 +1186,7 @@ module.exports = function (id, uiEvent, mapEvent) {
 };
 
 },{"patterns/tx-event":8}],19:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -1243,6 +1262,7 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],20:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -1276,6 +1296,7 @@ exports.init = function (locations, map) {
 };
 
 },{"ui/elements/display":9,"ui/elements/error":10,"ui/elements/help":11,"ui/elements/loader":12,"ui/input/keyboard":15,"ui/input/mouse":16,"ui/input/panel":17,"ui/input/touch":19}],21:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
@@ -1300,6 +1321,7 @@ module.exports = {
 };
 
 },{}],22:[function(require,module,exports){
+
 /* jshint browser: true */
 /* global Modernizr */
 
@@ -1320,6 +1342,7 @@ module.exports = function (_) {
 };
 
 },{}],23:[function(require,module,exports){
+
 /* jshint browser: true */
 
 'use strict';
@@ -1340,6 +1363,7 @@ module.exports = function (url) {
 };
 
 },{}],24:[function(require,module,exports){
+
 /* jshint browser: true */
 /* global Modernizr */
 
@@ -1355,6 +1379,7 @@ module.exports = function (_) {
 };
 
 },{"es6-promise":26}],25:[function(require,module,exports){
+
 /* jshint browser:true */
 
 'use strict';
