@@ -773,10 +773,17 @@ body {
   margin: -11px 0 0 -11px;
 }
 
+.fullScreen {
+  display: none;
+}
+
+.mdz-fullscreen .fullScreen {
+  display: block;
+}
+
 .fullScreenIcon {
   width: 18px;
   padding: 18px 0 0;
-  display: none;
   margin: -9px 0 0 -9px;
 }
 
@@ -824,10 +831,6 @@ body {
   opacity: 0;
 }
 
-.mdz-fullscreen .fullScreenIcon {
-  display: block;
-}
-
 .showHelp, .closeHelp {
   position: absolute;
   top: 10px;
@@ -857,7 +860,7 @@ body {
   .mdz-touchevents .controls {
     top: auto;
     right: 0;
-    bottom: 45px;
+    bottom: 20px;
     left: 0;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
@@ -960,16 +963,16 @@ body {
 /* Phone */
 @media only screen and (max-width: 45em) {
   .location:before {
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
   }
   .locationInfo {
     margin: 0 0 0 5px;
   }
   .locationName {
-    font-size: 12px;
-    font-size: 0.75rem;
-    line-height: 1.5;
+    font-size: 8px;
+    font-size: 0.5rem;
+    line-height: 2.25;
   }
   .locationDescription {
     display: none;
@@ -1020,17 +1023,6 @@ body {
 /* Phone */
 @media only screen and (max-width: 45em) {
   .footer {
-    font-size: 10.4px;
-    font-size: 0.65rem;
-    line-height: 2.30769;
-    right: 5px;
-    bottom: 10px;
-    left: 5px;
-    width: auto;
-    text-align: center;
-    line-height: 1.25;
-  }
-  .gitHub {
     display: none;
   }
 }
@@ -1335,6 +1327,7 @@ body {
           animation: progress 1s linear infinite;
   stroke: #fff;
   stroke-width: 4;
+  stroke-dashoffset: 1;
   stroke-dasharray: 0 0 154px 616px;
   fill: none;
 }

@@ -7,7 +7,7 @@ let uiEvents = require('ui/uiEvents');
 
 const CATCHER_ID = 'locations';
 
-const TOUCH_THRESHOLD = 100;
+const TOUCH_THRESHOLD = 120;
 
 let downTouches;
 let downDistance;

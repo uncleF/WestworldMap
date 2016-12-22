@@ -16,10 +16,6 @@ const CAMERA_ANGLE = 45;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 1000;
 
-const TILT_SHIFT_FOCUS_POS = 0.40;
-const TILT_SHIFT_AMOUNT = 0.015;
-const TILT_SHIFT_BRIGHTNESS = 0.45;
-
 module.exports = locationsData => {
 
   let width;
@@ -28,7 +24,6 @@ module.exports = locationsData => {
   let dom;
 
   let renderer;
-  let composer;
 
   let scene;
 
@@ -37,8 +32,6 @@ module.exports = locationsData => {
   let cameraAspect;
   let cameraNear;
   let cameraFar;
-
-  let light;
 
   let raycaster;
 
@@ -98,11 +91,19 @@ module.exports = locationsData => {
     points = locationsData.map(addLocationPoint);
   }
 
+  function getLocationPoints() {
+    return points;
+  }
+
   function addObject(loadedObjects) {
     object = new THREE.Object3D();
     object.add(loadedObjects);
     addLocationPoints();
     scene.add(object);
+  }
+
+  function getObject() {
+    return object;
   }
 
   function setupObject() {
@@ -130,35 +131,20 @@ module.exports = locationsData => {
     return Promise.resolve();
   }
 
-  function setupShaders() {
-    let renderPass = new THREE.RenderPass(scene, camera);
-    let tiltShiftPass = new THREE.ShaderPass(THREE.VerticalTiltShiftShader);
-    composer = new THREE.EffectComposer(renderer);
-    tiltShiftPass.uniforms.focusPos.value = TILT_SHIFT_FOCUS_POS;
-    tiltShiftPass.uniforms.amount.value = TILT_SHIFT_AMOUNT;
-    tiltShiftPass.uniforms.brightness.value = TILT_SHIFT_BRIGHTNESS;
-    tiltShiftPass.renderToScreen = true;
-    composer.addPass(renderPass);
-    composer.addPass(tiltShiftPass);
-  }
-
   function returnCanvasInterface() {
     return {
       renderer: renderer,
-      composer: composer,
       scene: scene,
       camera: camera,
-      light: light,
       raycaster: raycaster,
-      object: object,
-      points: points
+      object: getObject,
+      points: getLocationPoints
     };
   }
 
   return setupCanvas()
     .then(setupRenderer)
     .then(setupBase)
-    .then(setupShaders)
     .then(setupObject)
     .then(setupDOM)
     .then(returnCanvasInterface);

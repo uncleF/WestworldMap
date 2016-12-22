@@ -210,12 +210,17 @@ $control-size: 45px;
 
 .fullScreen {
   @extend %control;
+  display: none;
+
+  .mdz-fullscreen & {
+    display: block;
+  }
+
 }
 
 .fullScreenIcon {
   @extend %controlIcon;
   @include tx-sprite-block($spt-fullScreen, $padding: true);
-  display: none;
   margin: (txf-sprite-height($spt-fullScreen) / -2) 0 0 (txf-sprite-width($spt-fullScreen) / -2);
 
   &:before,
@@ -272,10 +277,6 @@ $control-size: 45px;
 
   }
 
-  .mdz-fullscreen & {
-    display: block;
-  }
-
 }
 
 %helpControl {
@@ -317,7 +318,7 @@ $control-size: 45px;
     .mdz-touchevents & {
       top: auto;
       right: 0;
-      bottom: ($gap * 4.5);
+      bottom: $gap * 2;
       left: 0;
       flex-direction: row;
       justify-content: space-around;

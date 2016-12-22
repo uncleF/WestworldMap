@@ -290,10 +290,6 @@ var CAMERA_ANGLE = 45;
 var CAMERA_NEAR = 0.1;
 var CAMERA_FAR = 1000;
 
-var TILT_SHIFT_FOCUS_POS = 0.40;
-var TILT_SHIFT_AMOUNT = 0.015;
-var TILT_SHIFT_BRIGHTNESS = 0.45;
-
 module.exports = function (locationsData) {
 
   var width = void 0;
@@ -302,7 +298,6 @@ module.exports = function (locationsData) {
   var dom = void 0;
 
   var renderer = void 0;
-  var composer = void 0;
 
   var scene = void 0;
 
@@ -311,8 +306,6 @@ module.exports = function (locationsData) {
   var cameraAspect = void 0;
   var cameraNear = void 0;
   var cameraFar = void 0;
-
-  var light = void 0;
 
   var raycaster = void 0;
 
@@ -375,11 +368,19 @@ module.exports = function (locationsData) {
     points = locationsData.map(addLocationPoint);
   }
 
+  function getLocationPoints() {
+    return points;
+  }
+
   function addObject(loadedObjects) {
     object = new THREE.Object3D();
     object.add(loadedObjects);
     addLocationPoints();
     scene.add(object);
+  }
+
+  function getObject() {
+    return object;
   }
 
   function setupObject() {
@@ -407,32 +408,18 @@ module.exports = function (locationsData) {
     return Promise.resolve();
   }
 
-  function setupShaders() {
-    var renderPass = new THREE.RenderPass(scene, camera);
-    var tiltShiftPass = new THREE.ShaderPass(THREE.VerticalTiltShiftShader);
-    composer = new THREE.EffectComposer(renderer);
-    tiltShiftPass.uniforms.focusPos.value = TILT_SHIFT_FOCUS_POS;
-    tiltShiftPass.uniforms.amount.value = TILT_SHIFT_AMOUNT;
-    tiltShiftPass.uniforms.brightness.value = TILT_SHIFT_BRIGHTNESS;
-    tiltShiftPass.renderToScreen = true;
-    composer.addPass(renderPass);
-    composer.addPass(tiltShiftPass);
-  }
-
   function returnCanvasInterface() {
     return {
       renderer: renderer,
-      composer: composer,
       scene: scene,
       camera: camera,
-      light: light,
       raycaster: raycaster,
-      object: object,
-      points: points
+      object: getObject,
+      points: getLocationPoints
     };
   }
 
-  return setupCanvas().then(setupRenderer).then(setupBase).then(setupShaders).then(setupObject).then(setupDOM).then(returnCanvasInterface);
+  return setupCanvas().then(setupRenderer).then(setupBase).then(setupObject).then(setupDOM).then(returnCanvasInterface);
 };
 
 },{"patterns/tx-event":8,"ui/errorMessages":13,"ui/uiEvents":21}],5:[function(require,module,exports){
@@ -482,14 +469,11 @@ module.exports = function (locationsData) {
   var halfHeight = void 0;
 
   var renderer = void 0;
-  var composer = void 0;
 
   var scene = void 0;
   var snap = void 0;
 
   var camera = void 0;
-
-  var light = void 0;
 
   var raycaster = void 0;
 
@@ -583,7 +567,7 @@ module.exports = function (locationsData) {
   /* Map Actions */
 
   function renderMap() {
-    composer.render();
+    renderer.render(scene, camera);
     eventManager.trigger(document, RENDER_EVENT, false, 'UIEvent', { newPositions: calculateLocationsPositions() });
   }
 
@@ -778,17 +762,15 @@ module.exports = function (locationsData) {
 
   function setupMap(properties) {
     renderer = properties.renderer;
-    composer = properties.composer;
     scene = properties.scene;
     camera = properties.camera;
-    light = properties.light;
     raycaster = properties.raycaster;
-    object = properties.object;
-    points = properties.points;
     var _renderer$domElement = renderer.domElement;
     width = _renderer$domElement.width;
     height = _renderer$domElement.height;
 
+    object = properties.object();
+    points = properties.points();
     view = false;
     calculateHalves();
     initializeEvents();
@@ -1195,7 +1177,7 @@ var uiEvents = require('ui/uiEvents');
 
 var CATCHER_ID = 'locations';
 
-var TOUCH_THRESHOLD = 100;
+var TOUCH_THRESHOLD = 120;
 
 var downTouches = void 0;
 var downDistance = void 0;

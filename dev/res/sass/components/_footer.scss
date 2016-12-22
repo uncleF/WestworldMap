@@ -25,16 +25,6 @@
 @include tx-media(phone) {
 
   .footer {
-    @include tx-font-size(tiny);
-    right: $gap-phone;
-    bottom: $gap;
-    left: $gap-phone;
-    width: auto;
-    text-align: center;
-    line-height: 1.25;
-  }
-
-  .gitHub {
     display: none;
   }
 

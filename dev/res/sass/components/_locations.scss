@@ -76,7 +76,7 @@ $locationMarker-borderColor: $white;
 
 @include tx-media(phone) {
 
-  $locationMarker-phone-size: 12px;
+  $locationMarker-phone-size: 8px;
 
   .location {
 
@@ -92,7 +92,7 @@ $locationMarker-borderColor: $white;
   }
 
   .locationName {
-    @include tx-font-size(small, .75);
+    @include tx-font-size(8px, .75);
   }
 
   .locationDescription {
