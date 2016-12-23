@@ -31,12 +31,10 @@
       "name": "WestworldMap: Data",
       "path": "dev/data"
     }, {
-      "folder_exclude_patterns": ["backstop"],
       "follow_symlinks": true,
       "name": "WestworldMap: Tests",
       "path": "tests"
     }, {
-      "file_exclude_patterns": ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.svg", "*.ico"],
       "follow_symlinks": true,
       "name": "WestworldMap: Meta",
       "path": "meta"

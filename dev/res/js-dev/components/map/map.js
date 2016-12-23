@@ -13,9 +13,9 @@ const RENDER_EVENT = 'maprender';
 
 const TRANSITION_DURATION = 300;
 
-const CAMERA_TOP_POSITION = [0, 500, 0];
+const CAMERA_TOP_POSITION = [0, 16.65, 0];
 const CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
-const CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+const CAMERA_PERSPECTIVE_POSITION = [0, 6.65, -11.65];
 const CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
 const PAN_STEP = 50;
@@ -40,6 +40,7 @@ module.exports = locationsData => {
   let height;
   let halfWidth;
   let halfHeight;
+  let ratio;
 
   let renderer;
 
@@ -99,12 +100,12 @@ module.exports = locationsData => {
   function calculateRotationFromDelta(data) {
     let rotation = getSnap().mapRotation.slice(0);
     let startVector = {
-      x: data.startPosition.clientX - halfWidth,
-      y: halfHeight - data.startPosition.clientY
+      x: (data.startPosition.clientX * ratio - halfWidth),
+      y: (halfHeight - data.startPosition.clientY * ratio)
     };
     let currentVector = {
-      x: data.currentPosition.clientX - halfWidth,
-      y: halfHeight - data.currentPosition.clientY
+      x: (data.currentPosition.clientX * ratio - halfWidth),
+      y: (halfHeight - data.currentPosition.clientY * ratio)
     };
     rotation[1] -= Math.atan2(currentVector.x, currentVector.y) - Math.atan2(startVector.x, startVector.y);
     return rotation;
@@ -112,12 +113,12 @@ module.exports = locationsData => {
 
   function calculatePositionFromDelta(delta) {
     let position = getSnap().cameraPosition.slice(0);
-    position[0] += delta.x * -PAN_RATIO;
+    position[0] += (delta.x / ratio * -PAN_RATIO);
     return position;
   }
 
   function calculateScaleFromDistance(delta) {
-    return getSnap().mapScale + delta * SCALE_RATIO;
+    return getSnap().mapScale + delta * ratio * SCALE_RATIO;
   }
 
   function calculatePointProjection(point) {
@@ -129,14 +130,14 @@ module.exports = locationsData => {
   function calculateLocationPosition(point) {
     let projection = calculatePointProjection(point);
     let position = {
-      x: Math.round((projection.x + 1) * halfWidth),
-      y: Math.round((-projection.y + 1) * halfHeight)
+      x: Math.round((projection.x + 1) * halfWidth / ratio),
+      y: Math.round((-projection.y + 1) * halfHeight / ratio)
     };
     let positionNDC = new THREE.Vector2((position.x / width) * 2 - 1, (-position.y / height) * 2 + 1);
     raycaster.setFromCamera(positionNDC, camera);
     return {
       position: position,
-      visibility: (raycaster.intersectObjects(object.children)[0].object === point)
+      visibility: object.children[0].object ? (raycaster.intersectObjects(object.children)[0].object === point) : true
     };
   }
 
@@ -342,6 +343,7 @@ module.exports = locationsData => {
     ({width, height} = renderer.domElement);
     object = properties.object();
     points = properties.points();
+    ratio = window.devicePixelRatio;
     view = false;
     calculateHalves();
     initializeEvents();

@@ -289,14 +289,10 @@ var SCENE_URL = '/scene/scene.json';
 
 var CANVAS_HOLDER_ID = 'map';
 
-var CAMERA_POSITION = [0, 200, -350];
+var CAMERA_POSITION = [0, 6.65, -11.65];
 var CAMERA_ANGLE = 45;
 var CAMERA_NEAR = 0.1;
 var CAMERA_FAR = 1000;
-
-var TILT_SHIFT_FOCUS_POS = 0.40;
-var TILT_SHIFT_AMOUNT = 0.015;
-var TILT_SHIFT_BRIGHTNESS = 0.45;
 
 module.exports = function (locationsData) {
 
@@ -306,7 +302,6 @@ module.exports = function (locationsData) {
   var dom = void 0;
 
   var renderer = void 0;
-  var composer = void 0;
 
   var scene = void 0;
 
@@ -315,8 +310,6 @@ module.exports = function (locationsData) {
   var cameraAspect = void 0;
   var cameraNear = void 0;
   var cameraFar = void 0;
-
-  var light = void 0;
 
   var raycaster = void 0;
 
@@ -336,6 +329,7 @@ module.exports = function (locationsData) {
   function setupRenderer() {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
       return Promise.resolve();
     } catch (error) {
@@ -379,11 +373,19 @@ module.exports = function (locationsData) {
     points = locationsData.map(addLocationPoint);
   }
 
+  function getLocationPoints() {
+    return points;
+  }
+
   function addObject(loadedObjects) {
     object = new THREE.Object3D();
     object.add(loadedObjects);
     addLocationPoints();
     scene.add(object);
+  }
+
+  function getObject() {
+    return object;
   }
 
   function setupObject() {
@@ -411,32 +413,18 @@ module.exports = function (locationsData) {
     return Promise.resolve();
   }
 
-  function setupShaders() {
-    var renderPass = new THREE.RenderPass(scene, camera);
-    var tiltShiftPass = new THREE.ShaderPass(THREE.VerticalTiltShiftShader);
-    composer = new THREE.EffectComposer(renderer);
-    tiltShiftPass.uniforms.focusPos.value = TILT_SHIFT_FOCUS_POS;
-    tiltShiftPass.uniforms.amount.value = TILT_SHIFT_AMOUNT;
-    tiltShiftPass.uniforms.brightness.value = TILT_SHIFT_BRIGHTNESS;
-    tiltShiftPass.renderToScreen = true;
-    composer.addPass(renderPass);
-    composer.addPass(tiltShiftPass);
-  }
-
   function returnCanvasInterface() {
     return {
       renderer: renderer,
-      composer: composer,
       scene: scene,
       camera: camera,
-      light: light,
       raycaster: raycaster,
-      object: object,
-      points: points
+      object: getObject,
+      points: getLocationPoints
     };
   }
 
-  return setupCanvas().then(setupRenderer).then(setupBase).then(setupShaders).then(setupObject).then(setupDOM).then(returnCanvasInterface);
+  return setupCanvas().then(setupRenderer).then(setupBase).then(setupObject).then(setupDOM).then(returnCanvasInterface);
 };
 
 },{"patterns/tx-event":8,"ui/errorMessages":13,"ui/uiEvents":21}],5:[function(require,module,exports){
@@ -458,9 +446,9 @@ var RENDER_EVENT = 'maprender';
 
 var TRANSITION_DURATION = 300;
 
-var CAMERA_TOP_POSITION = [0, 500, 0];
+var CAMERA_TOP_POSITION = [0, 16.65, 0];
 var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
-var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+var CAMERA_PERSPECTIVE_POSITION = [0, 6.65, -11.65];
 var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
 var PAN_STEP = 50;
@@ -485,16 +473,14 @@ module.exports = function (locationsData) {
   var height = void 0;
   var halfWidth = void 0;
   var halfHeight = void 0;
+  var ratio = void 0;
 
   var renderer = void 0;
-  var composer = void 0;
 
   var scene = void 0;
   var snap = void 0;
 
   var camera = void 0;
-
-  var light = void 0;
 
   var raycaster = void 0;
 
@@ -535,12 +521,12 @@ module.exports = function (locationsData) {
   function calculateRotationFromDelta(data) {
     var rotation = getSnap().mapRotation.slice(0);
     var startVector = {
-      x: data.startPosition.clientX - halfWidth,
-      y: halfHeight - data.startPosition.clientY
+      x: data.startPosition.clientX * ratio - halfWidth,
+      y: halfHeight - data.startPosition.clientY * ratio
     };
     var currentVector = {
-      x: data.currentPosition.clientX - halfWidth,
-      y: halfHeight - data.currentPosition.clientY
+      x: data.currentPosition.clientX * ratio - halfWidth,
+      y: halfHeight - data.currentPosition.clientY * ratio
     };
     rotation[1] -= Math.atan2(currentVector.x, currentVector.y) - Math.atan2(startVector.x, startVector.y);
     return rotation;
@@ -548,12 +534,12 @@ module.exports = function (locationsData) {
 
   function calculatePositionFromDelta(delta) {
     var position = getSnap().cameraPosition.slice(0);
-    position[0] += delta.x * -PAN_RATIO;
+    position[0] += delta.x / ratio * -PAN_RATIO;
     return position;
   }
 
   function calculateScaleFromDistance(delta) {
-    return getSnap().mapScale + delta * SCALE_RATIO;
+    return getSnap().mapScale + delta * ratio * SCALE_RATIO;
   }
 
   function calculatePointProjection(point) {
@@ -565,14 +551,14 @@ module.exports = function (locationsData) {
   function calculateLocationPosition(point) {
     var projection = calculatePointProjection(point);
     var position = {
-      x: Math.round((projection.x + 1) * halfWidth),
-      y: Math.round((-projection.y + 1) * halfHeight)
+      x: Math.round((projection.x + 1) * halfWidth / ratio),
+      y: Math.round((-projection.y + 1) * halfHeight / ratio)
     };
     var positionNDC = new THREE.Vector2(position.x / width * 2 - 1, -position.y / height * 2 + 1);
     raycaster.setFromCamera(positionNDC, camera);
     return {
       position: position,
-      visibility: raycaster.intersectObjects(object.children)[0].object === point
+      visibility: object.children[0].object ? raycaster.intersectObjects(object.children)[0].object === point : true
     };
   }
 
@@ -588,7 +574,7 @@ module.exports = function (locationsData) {
   /* Map Actions */
 
   function renderMap() {
-    composer.render();
+    renderer.render(scene, camera);
     eventManager.trigger(document, RENDER_EVENT, false, 'UIEvent', { newPositions: calculateLocationsPositions() });
   }
 
@@ -783,17 +769,16 @@ module.exports = function (locationsData) {
 
   function setupMap(properties) {
     renderer = properties.renderer;
-    composer = properties.composer;
     scene = properties.scene;
     camera = properties.camera;
-    light = properties.light;
     raycaster = properties.raycaster;
-    object = properties.object;
-    points = properties.points;
     var _renderer$domElement = renderer.domElement;
     width = _renderer$domElement.width;
     height = _renderer$domElement.height;
 
+    object = properties.object();
+    points = properties.points();
+    ratio = window.devicePixelRatio;
     view = false;
     calculateHalves();
     initializeEvents();
@@ -1214,7 +1199,7 @@ var uiEvents = require('ui/uiEvents');
 
 var CATCHER_ID = 'locations';
 
-var TOUCH_THRESHOLD = 100;
+var TOUCH_THRESHOLD = 120;
 
 var downTouches = void 0;
 var downDistance = void 0;
@@ -1409,7 +1394,7 @@ var map = require('map/map');
 var ui = require('ui/ui');
 
 polyfills();
-cache();
+// cache();
 locations().then(map).then(ui.init).catch(ui.error);
 
 },{"locations/locations":2,"map/map":5,"ui/ui":20,"utilities/cache":22,"utilities/polyfills":24}],26:[function(require,module,exports){

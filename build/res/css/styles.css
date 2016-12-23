@@ -687,7 +687,7 @@ body {
   .mdz-touchevents .controls {
     top: auto;
     right: 0;
-    bottom: 45px;
+    bottom: 20px;
     left: 0;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
@@ -807,8 +807,8 @@ body {
 @media only screen and (max-width: 45em) {
 
   .location:before {
-    width: 10px;
-    height: 10px;
+    width: 4px;
+    height: 4px;
   }
 
   .locationInfo {
@@ -816,9 +816,9 @@ body {
   }
 
   .locationName {
-    font-size: 10px;
-    font-size: .625rem;
-    line-height: 1.8;
+    font-size: 8px;
+    font-size: .5rem;
+    line-height: 2.25;
   }
 
   .locationDescription {
@@ -866,18 +866,6 @@ body {
 @media only screen and (max-width: 45em) {
 
   .footer {
-    right: 5px;
-    bottom: 10px;
-    left: 5px;
-    width: auto;
-    font-size: 10.4px;
-    font-size: .65rem;
-    text-align: center;
-    line-height: 2.30769;
-    line-height: 1.25;
-  }
-
-  .gitHub {
     display: none;
   }
 
@@ -1075,6 +1063,11 @@ body {
 
 @media only screen and (max-width: 45em) {
 
+  .helpTouch,
+  .helpMouse {
+    margin: 0 0 50px;
+  }
+
   .helpContent {
     position: relative;
     width: 80%;
@@ -1191,6 +1184,7 @@ body {
   stroke: #fff;
   stroke-width: 4;
   stroke-dasharray: 0 0 154px 616px;
+  stroke-dashoffset: 1;
   fill: none;
 }
 

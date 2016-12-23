@@ -157,6 +157,10 @@ $keyGap: 10px;
 
 @include tx-media(phone) {
 
+  %helpRow {
+    margin: 0 0 50px;
+  }
+
   .helpContent {
     position: relative;
     width: 80%;

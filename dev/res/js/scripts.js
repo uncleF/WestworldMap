@@ -1,5 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -96,7 +95,6 @@ module.exports = function (locationData) {
 };
 
 },{"patterns/tx-createNode":7}],2:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -188,8 +186,7 @@ module.exports = function (_) {
   return download(LOCATIONS_DATA_URL).then(initialization);
 };
 
-},{"./location":1,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21,"utilities/download":23}],3:[function(require,module,exports){
-
+},{"./location":1,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21,"utilities/download":22}],3:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
@@ -273,7 +270,6 @@ exports.stop = stop;
 exports.go = go;
 
 },{}],4:[function(require,module,exports){
-
 /* jshint browser:true */
 /* global THREE */
 
@@ -285,11 +281,11 @@ var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 var errorMessages = require('ui/errorMessages');
 
-var SCENE_URL = '/scene/scene.json';
+var SCENE_URL = '/scene/scene.json?v=1';
 
 var CANVAS_HOLDER_ID = 'map';
 
-var CAMERA_POSITION = [0, 200, -350];
+var CAMERA_POSITION = [0, 6.65, -11.65];
 var CAMERA_ANGLE = 45;
 var CAMERA_NEAR = 0.1;
 var CAMERA_FAR = 1000;
@@ -329,6 +325,7 @@ module.exports = function (locationsData) {
   function setupRenderer() {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, castShadows: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
       return Promise.resolve();
     } catch (error) {
@@ -427,7 +424,6 @@ module.exports = function (locationsData) {
 };
 
 },{"patterns/tx-event":8,"ui/errorMessages":13,"ui/uiEvents":21}],5:[function(require,module,exports){
-
 /* jshint browser:true */
 /* global THREE */
 
@@ -445,9 +441,9 @@ var RENDER_EVENT = 'maprender';
 
 var TRANSITION_DURATION = 300;
 
-var CAMERA_TOP_POSITION = [0, 500, 0];
+var CAMERA_TOP_POSITION = [0, 16.65, 0];
 var CAMERA_TOP_ROTATION = [-1.57069, 0, -3.14159];
-var CAMERA_PERSPECTIVE_POSITION = [0, 200, -350];
+var CAMERA_PERSPECTIVE_POSITION = [0, 6.65, -11.65];
 var CAMERA_PERSPECTIVE_ROTATION = [-2.62244, 0, -3.14159];
 
 var PAN_STEP = 50;
@@ -472,6 +468,7 @@ module.exports = function (locationsData) {
   var height = void 0;
   var halfWidth = void 0;
   var halfHeight = void 0;
+  var ratio = void 0;
 
   var renderer = void 0;
 
@@ -519,12 +516,12 @@ module.exports = function (locationsData) {
   function calculateRotationFromDelta(data) {
     var rotation = getSnap().mapRotation.slice(0);
     var startVector = {
-      x: data.startPosition.clientX - halfWidth,
-      y: halfHeight - data.startPosition.clientY
+      x: data.startPosition.clientX * ratio - halfWidth,
+      y: halfHeight - data.startPosition.clientY * ratio
     };
     var currentVector = {
-      x: data.currentPosition.clientX - halfWidth,
-      y: halfHeight - data.currentPosition.clientY
+      x: data.currentPosition.clientX * ratio - halfWidth,
+      y: halfHeight - data.currentPosition.clientY * ratio
     };
     rotation[1] -= Math.atan2(currentVector.x, currentVector.y) - Math.atan2(startVector.x, startVector.y);
     return rotation;
@@ -532,12 +529,12 @@ module.exports = function (locationsData) {
 
   function calculatePositionFromDelta(delta) {
     var position = getSnap().cameraPosition.slice(0);
-    position[0] += delta.x * -PAN_RATIO;
+    position[0] += delta.x / ratio * -PAN_RATIO;
     return position;
   }
 
   function calculateScaleFromDistance(delta) {
-    return getSnap().mapScale + delta * SCALE_RATIO;
+    return getSnap().mapScale + delta * ratio * SCALE_RATIO;
   }
 
   function calculatePointProjection(point) {
@@ -549,14 +546,14 @@ module.exports = function (locationsData) {
   function calculateLocationPosition(point) {
     var projection = calculatePointProjection(point);
     var position = {
-      x: Math.round((projection.x + 1) * halfWidth),
-      y: Math.round((-projection.y + 1) * halfHeight)
+      x: Math.round((projection.x + 1) * halfWidth / ratio),
+      y: Math.round((-projection.y + 1) * halfHeight / ratio)
     };
     var positionNDC = new THREE.Vector2(position.x / width * 2 - 1, -position.y / height * 2 + 1);
     raycaster.setFromCamera(positionNDC, camera);
     return {
       position: position,
-      visibility: raycaster.intersectObjects(object.children)[0].object === point
+      visibility: object.children[0].object ? raycaster.intersectObjects(object.children)[0].object === point : true
     };
   }
 
@@ -776,6 +773,7 @@ module.exports = function (locationsData) {
 
     object = properties.object();
     points = properties.points();
+    ratio = window.devicePixelRatio;
     view = false;
     calculateHalves();
     initializeEvents();
@@ -786,7 +784,6 @@ module.exports = function (locationsData) {
 };
 
 },{"map/animation":3,"map/canvas":4,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21}],6:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -798,7 +795,6 @@ module.exports = {
 };
 
 },{}],7:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -810,7 +806,6 @@ module.exports = function (html) {
 };
 
 },{}],8:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -880,7 +875,6 @@ exports.trigger = trigger;
 exports.target = target;
 
 },{}],9:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -911,7 +905,6 @@ module.exports = function (_) {
 };
 
 },{"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21}],10:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -926,7 +919,6 @@ exports.show = function (error) {
 };
 
 },{}],11:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -950,7 +942,6 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],12:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -970,7 +961,6 @@ exports.show = showLoader;
 exports.remove = removeLoader;
 
 },{}],13:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -982,7 +972,6 @@ module.exports = {
 };
 
 },{}],14:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1006,7 +995,6 @@ module.exports = function (id, uiEvent) {
 };
 
 },{"patterns/tx-event":8}],15:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1039,7 +1027,6 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],16:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1117,7 +1104,6 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],17:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1152,7 +1138,6 @@ module.exports = function (_) {
 };
 
 },{"./control":14,"./toggle":18,"map/mapEvents":6,"ui/uiEvents":21}],18:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1186,7 +1171,6 @@ module.exports = function (id, uiEvent, mapEvent) {
 };
 
 },{"patterns/tx-event":8}],19:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1262,7 +1246,6 @@ module.exports = function (_) {
 };
 
 },{"patterns/tx-event":8,"ui/uiEvents":21}],20:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1296,7 +1279,6 @@ exports.init = function (locations, map) {
 };
 
 },{"ui/elements/display":9,"ui/elements/error":10,"ui/elements/help":11,"ui/elements/loader":12,"ui/input/keyboard":15,"ui/input/mouse":16,"ui/input/panel":17,"ui/input/touch":19}],21:[function(require,module,exports){
-
 /* jshint browser:true */
 
 'use strict';
@@ -1321,28 +1303,6 @@ module.exports = {
 };
 
 },{}],22:[function(require,module,exports){
-
-/* jshint browser: true */
-/* global Modernizr */
-
-'use strict';
-
-function onSuccess(worker) {
-  console.log('Service worker successfully installed with the scope of: ' + worker.scope);
-}
-
-function onFailure(error) {
-  console.log('Failed to install service worker. ' + error);
-}
-
-module.exports = function (_) {
-  if (Modernizr.serviceworker) {
-    navigator.serviceWorker.register('/service.js').then(onSuccess).catch(onFailure);
-  }
-};
-
-},{}],23:[function(require,module,exports){
-
 /* jshint browser: true */
 
 'use strict';
@@ -1362,8 +1322,7 @@ module.exports = function (url) {
   });
 };
 
-},{}],24:[function(require,module,exports){
-
+},{}],23:[function(require,module,exports){
 /* jshint browser: true */
 /* global Modernizr */
 
@@ -1378,23 +1337,23 @@ module.exports = function (_) {
   }
 };
 
-},{"es6-promise":26}],25:[function(require,module,exports){
-
+},{"es6-promise":25}],24:[function(require,module,exports){
 /* jshint browser:true */
 
 'use strict';
 
+// let cache = require('utilities/cache');
+
 var polyfills = require('utilities/polyfills');
-var cache = require('utilities/cache');
 var locations = require('locations/locations');
 var map = require('map/map');
 var ui = require('ui/ui');
 
+// cache();
 polyfills();
-cache();
 locations().then(map).then(ui.init).catch(ui.error);
 
-},{"locations/locations":2,"map/map":5,"ui/ui":20,"utilities/cache":22,"utilities/polyfills":24}],26:[function(require,module,exports){
+},{"locations/locations":2,"map/map":5,"ui/ui":20,"utilities/polyfills":23}],25:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -2554,7 +2513,7 @@ return Promise;
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":27}],27:[function(require,module,exports){
+},{"_process":26}],26:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2736,4 +2695,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[25]);
+},{}]},{},[24]);

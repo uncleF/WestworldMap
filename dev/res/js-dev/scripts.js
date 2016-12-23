@@ -2,14 +2,14 @@
 
 'use strict';
 
+// let cache = require('utilities/cache');
 let polyfills = require('utilities/polyfills');
-let cache = require('utilities/cache');
 let locations = require('locations/locations');
 let map = require('map/map');
 let ui = require('ui/ui');
 
+// cache();
 polyfills();
-cache();
 locations()
   .then(map)
   .then(ui.init)

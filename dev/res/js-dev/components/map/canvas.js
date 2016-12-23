@@ -7,11 +7,11 @@ let eventManager = require('patterns/tx-event');
 let uiEvents = require('ui/uiEvents');
 let errorMessages = require('ui/errorMessages');
 
-const SCENE_URL = '/scene/scene.json';
+const SCENE_URL = '/scene/scene.json?v=1';
 
 const CANVAS_HOLDER_ID = 'map';
 
-const CAMERA_POSITION = [0, 200, -350];
+const CAMERA_POSITION = [0, 6.65, -11.65];
 const CAMERA_ANGLE = 45;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 1000;
@@ -51,6 +51,7 @@ module.exports = locationsData => {
   function setupRenderer() {
     try {
       renderer = new THREE.WebGLRenderer({antialias: true, castShadows: true});
+      renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
       return Promise.resolve();
     }

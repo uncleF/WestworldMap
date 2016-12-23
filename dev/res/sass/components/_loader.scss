@@ -43,8 +43,8 @@ $loader-transition: 1s;
   animation: progress $loader-transition linear infinite;
   stroke: $loader-color;
   stroke-width: 4;
-  stroke-dashoffset: 1;
   stroke-dasharray: 0 0 $loader-part ($loader-length - $loader-part);
+  stroke-dashoffset: 1;
   fill: none;
 }
 
