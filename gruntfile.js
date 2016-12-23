@@ -11,7 +11,7 @@ var CONFIG = {
   ],
 
   DEVELOPMENT_DIR: 'dev',        // Development
-  BUILD_DIR: 'build',            // Build
+  BUILD_DIR: 'docs',             // Build
   META_DIR: 'meta',              // Meta Content
   TESTS_DIR: 'tests',            // Tests
 
