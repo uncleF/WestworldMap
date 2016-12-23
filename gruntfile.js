@@ -1,7 +1,7 @@
 var CONFIG = {
 
   PROJECT: 'WestworldMap',          // Project Name
-  LANGUAGE: 'ru',                // Language
+  LANGUAGE: 'en',                // Language
   BROWSERS: [                    // Browser Support
     '> 1%',
     'last 2 versions',

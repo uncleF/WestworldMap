@@ -2,78 +2,78 @@
   "name": "Westworld Map",
   "short_name": "WestworldMap",
   "description": "Interactive 3D map of the theme park from HBO's Westworld",
-  "lang": "@tx-language",
+  "lang": "en",
   "icons": [{
-    "src": "icon-60.png",
+    "src": "apple-touch-icon-60x60.png",
     "type": "image/png",
     "sizes": "60x60"
   }, {
-    "src": "icon-60@2x.png",
-    "type": "image/png",
-    "sizes": "120x120"
-  }, {
-    "src": "icon-60@3x.png",
-    "type": "image/png",
-    "sizes": "180x180"
-  }, {
-    "src": "icon-76.png",
+    "src": "apple-touch-icon-76x76.png",
     "type": "image/png",
     "sizes": "76x76"
   }, {
-    "src": "icon-76@2x.png",
+    "src": "apple-touch-icon-120x120.png",
+    "type": "image/png",
+    "sizes": "120x120"
+  }, {
+    "src": "apple-touch-icon-152x152.png",
     "type": "image/png",
     "sizes": "152x152"
   }, {
-    "src": "icon-76@3x.png",
+    "src": "apple-touch-icon-180x180.png",
+    "type": "image/png",
+    "sizes": "180x180"
+  }, {
+    "src": "apple-touch-icon-228x228.png",
     "type": "image/png",
     "sizes": "228x228"
   }],
-  "splash_screens": [    {
-      "src": "screen-320-480.png",
-      "sizes": "320x480",
-      "type": "image/png",
-      "density": "1"
-    }, {
-      "src": "screen-320-480@2x.png",
-      "sizes": "320x480",
-      "type": "image/png",
-      "density": "2"
-    }, {
-      "src": "screen-320-568@2x.png",
-      "sizes": "320x568",
-      "type": "image/png",
-      "density": "2"
-    }, {
-      "src": "screen-375-667@2x.png",
-      "sizes": "375x667",
-      "type": "image/png",
-      "density": "2"
-    }, {
-      "src": "screen-414-736@3x.png",
-      "sizes": "414x736",
-      "type": "image/png",
-      "density": "3"
-    }, {
-      "src": "screen-768-1024.png",
-      "sizes": "1024x768",
-      "type": "image/png",
-      "density": "1"
-    }, {
-      "src": "screen-768-1024@2x.png",
-      "sizes": "1024x768",
-      "type": "image/png",
-      "density": "2"
-    }, {
-      "src": "screen-1024-768.png",
-      "sizes": "1024x768",
-      "type": "image/png",
-      "density": "1"
-    }, {
-      "src": "screen-1024-768@2x.png",
-      "sizes": "1024x768",
-      "type": "image/png",
-      "density": "2"
-    }],
+  "splash_screens": [{
+    "src": "apple-touch-startup-image-320x480.png",
+    "sizes": "320x480",
+    "type": "image/png",
+    "density": "1"
+  }, {
+    "src": "apple-touch-startup-image-640x960.png",
+    "sizes": "320x480",
+    "type": "image/png",
+    "density": "2"
+  }, {
+    "src": "apple-touch-startup-image-640x1136.png",
+    "sizes": "320x568",
+    "type": "image/png",
+    "density": "2"
+  }, {
+    "src": "apple-touch-startup-image-750x1334.png",
+    "sizes": "375x667",
+    "type": "image/png",
+    "density": "2"
+  }, {
+    "src": "apple-touch-startup-image-768x1024.png",
+    "sizes": "1024x768",
+    "type": "image/png",
+    "density": "1"
+  }, {
+    "src": "apple-touch-startup-image-1024x768.png",
+    "sizes": "1024x768",
+    "type": "image/png",
+    "density": "1"
+  }, {
+    "src": "apple-touch-startup-image-1242x2208.png",
+    "sizes": "414x736",
+    "type": "image/png",
+    "density": "3"
+  }, {
+    "src": "apple-touch-startup-image-1536x2048.png",
+    "sizes": "1024x768",
+    "type": "image/png",
+    "density": "2"
+  }, {
+    "src": "apple-touch-startup-image-2048x1536.png",
+    "sizes": "1024x768",
+    "type": "image/png",
+    "density": "2"
+  }],
   "scope": "/",
   "start_url": "index.html",
   "display": "standalone",

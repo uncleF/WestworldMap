@@ -188,7 +188,7 @@ module.exports = function (_) {
   return download(LOCATIONS_DATA_URL).then(initialization);
 };
 
-},{"./location":1,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21,"utilities/download":23}],3:[function(require,module,exports){
+},{"./location":1,"map/mapEvents":6,"patterns/tx-event":8,"ui/uiEvents":21,"utilities/download":22}],3:[function(require,module,exports){
 
 /* jshint browser:true */
 
@@ -1326,27 +1326,6 @@ module.exports = {
 },{}],22:[function(require,module,exports){
 
 /* jshint browser: true */
-/* global Modernizr */
-
-'use strict';
-
-function onSuccess(worker) {
-  console.log('Service worker successfully installed with the scope of: ' + worker.scope);
-}
-
-function onFailure(error) {
-  console.log('Failed to install service worker. ' + error);
-}
-
-module.exports = function (_) {
-  if (Modernizr.serviceworker) {
-    navigator.serviceWorker.register('/service.js').then(onSuccess).catch(onFailure);
-  }
-};
-
-},{}],23:[function(require,module,exports){
-
-/* jshint browser: true */
 
 'use strict';
 
@@ -1365,7 +1344,7 @@ module.exports = function (url) {
   });
 };
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
 /* jshint browser: true */
 /* global Modernizr */
@@ -1381,23 +1360,24 @@ module.exports = function (_) {
   }
 };
 
-},{"es6-promise":26}],25:[function(require,module,exports){
+},{"es6-promise":25}],24:[function(require,module,exports){
 
 /* jshint browser:true */
 
 'use strict';
 
+// let cache = require('utilities/cache');
+
 var polyfills = require('utilities/polyfills');
-var cache = require('utilities/cache');
 var locations = require('locations/locations');
 var map = require('map/map');
 var ui = require('ui/ui');
 
-polyfills();
 // cache();
+polyfills();
 locations().then(map).then(ui.init).catch(ui.error);
 
-},{"locations/locations":2,"map/map":5,"ui/ui":20,"utilities/cache":22,"utilities/polyfills":24}],26:[function(require,module,exports){
+},{"locations/locations":2,"map/map":5,"ui/ui":20,"utilities/polyfills":23}],25:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -2557,7 +2537,7 @@ return Promise;
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":27}],27:[function(require,module,exports){
+},{"_process":26}],26:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2739,4 +2719,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[25]);
+},{}]},{},[24]);
