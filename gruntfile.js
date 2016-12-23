@@ -1,6 +1,6 @@
 var CONFIG = {
 
-  PROJECT: 'WestworldMap',          // Project Name
+  PROJECT: 'Westworld Map',      // Project Name
   LANGUAGE: 'en',                // Language
   BROWSERS: [                    // Browser Support
     '> 1%',
