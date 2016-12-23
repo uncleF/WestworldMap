@@ -38,9 +38,5 @@
       "follow_symlinks": true,
       "name": "WestworldMap: Meta",
       "path": "meta"
-    }, {
-      "follow_symlinks": true,
-      "name": "WestworldMap: Docs",
-      "path": "docs"
     }]
 }
