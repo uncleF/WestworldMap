@@ -107,7 +107,7 @@ var download = require('utilities/download');
 var uiEvents = require('ui/uiEvents');
 var mapEvents = require('map/mapEvents');
 
-var LOCATIONS_DATA_URL = '/data/locations.json';
+var LOCATIONS_DATA_URL = 'data/locations.json';
 
 var LOCATIONS_ID = 'locations';
 var ACTIVE_CLASS_NAME = 'locations-is-active';
@@ -285,7 +285,7 @@ var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 var errorMessages = require('ui/errorMessages');
 
-var SCENE_URL = '/scene/scene.json';
+var SCENE_URL = 'scene/scene.json';
 
 var CANVAS_HOLDER_ID = 'map';
 
