@@ -7,7 +7,7 @@ let eventManager = require('patterns/tx-event');
 let uiEvents = require('ui/uiEvents');
 let errorMessages = require('ui/errorMessages');
 
-const SCENE_URL = `${window.location.href}scene/scene.json`;
+const SCENE_URL = '/scene/scene.json';
 
 const CANVAS_HOLDER_ID = 'map';
 

@@ -8,7 +8,7 @@ let download = require('utilities/download');
 let uiEvents = require('ui/uiEvents');
 let mapEvents = require('map/mapEvents');
 
-const LOCATIONS_DATA_URL = `${window.location.href}/data/locations.json`;
+const LOCATIONS_DATA_URL = '/data/locations.json';
 
 const LOCATIONS_ID = 'locations';
 const ACTIVE_CLASS_NAME = 'locations-is-active';
