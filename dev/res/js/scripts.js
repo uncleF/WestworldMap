@@ -285,7 +285,7 @@ var eventManager = require('patterns/tx-event');
 var uiEvents = require('ui/uiEvents');
 var errorMessages = require('ui/errorMessages');
 
-var SCENE_URL = '/scene/scene.json';
+var SCENE_URL = 'scene/scene.json';
 
 var CANVAS_HOLDER_ID = 'map';
 
