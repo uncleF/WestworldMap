@@ -107,7 +107,7 @@ var download = require('utilities/download');
 var uiEvents = require('ui/uiEvents');
 var mapEvents = require('map/mapEvents');
 
-var LOCATIONS_DATA_URL = '/data/locations.json';
+var LOCATIONS_DATA_URL = 'data/locations.json';
 
 var LOCATIONS_ID = 'locations';
 var ACTIVE_CLASS_NAME = 'locations-is-active';
